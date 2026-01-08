@@ -11,7 +11,7 @@ on:
     - cron: "0 */12 * * *"
 
 jobs:
-  update-formula:
+  update-pkgbuild:
     runs-on: ubuntu-latest
     permissions:
       contents: write
