@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=cc-switch-bin
-pkgver=3.8.3
+pkgver=3.9.0
 pkgrel=1
 pkgdesc="Claude Code & Codex 供应商配置管理工具"
 arch=('x86_64')
