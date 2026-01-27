@@ -25,7 +25,7 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            VERSION=$(curl -s https://updates.confirmo.love/latest.yml | grep '^version:' | awk '{print $2}')
+            VERSION=$(curl -s https://updates.confirmo.love/latest.yml | grep '^version:' | awk '{print $2}' | tr -d '"' | tr -d "'")
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
