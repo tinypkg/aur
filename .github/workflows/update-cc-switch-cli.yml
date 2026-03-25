@@ -1,0 +1,76 @@
+name: Update cc-switch-cli Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g., 5.2.1). Leave empty to auto-detect latest version."
+        required: false
+        type: string
+  schedule:
+    - cron: "0 */12 * * *"
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get latest version
+        id: get_version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(curl -s https://api.github.com/repos/SaladDay/cc-switch-cli/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get current version
+        id: current_version
+        run: |
+          CURRENT=$(grep '^pkgver=' cc-switch-cli/PKGBUILD | cut -d'=' -f2)
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: compare
+        run: |
+          if [ "${{ steps.get_version.outputs.version }}" = "${{ steps.current_version.outputs.current }}" ]; then
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "Version ${{ steps.get_version.outputs.version }} is already up to date"
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "Updating from ${{ steps.current_version.outputs.current }} to ${{ steps.get_version.outputs.version }}"
+          fi
+
+      - name: Update PKGBUILD version
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          cd cc-switch-cli
+          sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
+          sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
+
+      - name: Commit changes
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cc-switch-cli/PKGBUILD
+          git commit -m "Update cc-switch-cli to version ${{ steps.get_version.outputs.version }}"
+          git push
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+        with:
+          pkgname: cc-switch-cli
+          pkgbuild: ./cc-switch-cli/PKGBUILD
+          updpkgsums: true
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "Update to version ${{ steps.get_version.outputs.version }}"
+          ssh_keyscan_types: rsa,ecdsa,ed25519
