@@ -74,29 +74,6 @@ jobs:
             sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
           fi
 
-      - name: Update checksums
-        if: steps.compare.outputs.needs_update == 'true'
-        run: |
-          cd cc-switch-cli
-          VERSION="${{ steps.get_version.outputs.version }}"
-
-          X64_URL="https://github.com/SaladDay/cc-switch-cli/releases/download/v${VERSION}/cc-switch-cli-linux-x64-musl.tar.gz"
-          ARM64_URL="https://github.com/SaladDay/cc-switch-cli/releases/download/v${VERSION}/cc-switch-cli-linux-arm64-musl.tar.gz"
-
-          SHA_X64=$(curl -sL "$X64_URL" | sha256sum | cut -d' ' -f1)
-          SHA_ARM64=$(curl -sL "$ARM64_URL" | sha256sum | cut -d' ' -f1)
-
-          # Update source URLs
-          sed -i "s|source_x86_64=.*|source_x86_64=(\"\${pkgname}-\${pkgver}.tar.gz::${X64_URL}\")|" PKGBUILD
-          sed -i "s|source_aarch64=.*|source_aarch64=(\"\${pkgname}-\${pkgver}.tar.gz::${ARM64_URL}\")|" PKGBUILD
-
-          # Update checksums
-          sed -i "s/^sha256sums_x86_64=.*/sha256sums_x86_64=('${SHA_X64}')/" PKGBUILD
-          sed -i "s/^sha256sums_aarch64=.*/sha256sums_aarch64=('${SHA_ARM64}')/" PKGBUILD
-
-          echo "x86_64: $SHA_X64"
-          echo "aarch64: $SHA_ARM64"
-
       - name: Commit changes
         if: steps.compare.outputs.needs_update == 'true'
         run: |
