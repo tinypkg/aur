@@ -6,6 +6,7 @@
 
 - **[karing-bin](https://aur.archlinux.org/packages/karing-bin)** - Simple & Powerful proxy utility
 - **[cc-switch-bin](https://aur.archlinux.org/packages/cc-switch-bin)** - Claude Code & Codex 供应商配置管理工具
+- **[cc-switch-cli](https://aur.archlinux.org/packages/cc-switch-cli)** - Cross-platform CLI assistant for Claude Code, Codex & Gemini CLI
 - **[blink1control2](https://aur.archlinux.org/packages/blink1control2-bin)** - Blink1Control GUI 用于控制 blink(1) USB RGB LED 设备。
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel
