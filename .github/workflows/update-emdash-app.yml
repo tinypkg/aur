@@ -69,6 +69,7 @@ jobs:
           pkgname: emdash-app
           pkgbuild: ./emdash-app/PKGBUILD
           updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
