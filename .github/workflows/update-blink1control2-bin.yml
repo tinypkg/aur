@@ -62,7 +62,7 @@ jobs:
 
       - name: Publish to AUR
         if: steps.compare.outputs.needs_update == 'true'
-        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.2
         with:
           pkgname: blink1control2-bin
           pkgbuild: ./blink1control2-bin/PKGBUILD
