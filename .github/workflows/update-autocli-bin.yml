@@ -93,6 +93,7 @@ jobs:
         with:
           pkgname: autocli-bin
           pkgbuild: ./autocli-bin/PKGBUILD
+          assets: ./autocli-bin/autocli-bin.install
           updpkgsums: true
           post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}
