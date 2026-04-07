@@ -7,6 +7,11 @@ on:
         description: "Version number (e.g., 3.8.3). Leave empty to auto-detect latest version."
         required: false
         type: string
+      force:
+        description: "Force update even if version is the same (bump pkgrel)"
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: "0 */12 * * *"
 
@@ -39,10 +44,17 @@ jobs:
         id: compare
         run: |
           if [ "${{ steps.get_version.outputs.version }}" = "${{ steps.current_version.outputs.current }}" ]; then
-            echo "needs_update=false" >> $GITHUB_OUTPUT
-            echo "Version ${{ steps.get_version.outputs.version }} is already up to date"
+            if [ "${{ github.event.inputs.force }}" = "true" ]; then
+              echo "needs_update=true" >> $GITHUB_OUTPUT
+              echo "bump_rel=true" >> $GITHUB_OUTPUT
+              echo "Forcing pkgrel bump for version ${{ steps.get_version.outputs.version }}"
+            else
+              echo "needs_update=false" >> $GITHUB_OUTPUT
+              echo "Version ${{ steps.get_version.outputs.version }} is already up to date"
+            fi
           else
             echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "bump_rel=false" >> $GITHUB_OUTPUT
             echo "Updating from ${{ steps.current_version.outputs.current }} to ${{ steps.get_version.outputs.version }}"
           fi
 
@@ -50,8 +62,17 @@ jobs:
         if: steps.compare.outputs.needs_update == 'true'
         run: |
           cd cc-switch-bin
-          sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
-          sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            # Bump pkgrel for same version fix
+            CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
+            NEW_REL=$((CURRENT_REL + 1))
+            sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
+            echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
+          else
+            # New version - update version and reset pkgrel to 1
+            sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
+            sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
+          fi
 
       - name: Commit changes
         if: steps.compare.outputs.needs_update == 'true'
@@ -59,7 +80,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add cc-switch-bin/PKGBUILD
-          git commit -m "Update cc-switch-bin to version ${{ steps.get_version.outputs.version }}"
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            git commit -m "Bump pkgrel for cc-switch-bin ${{ steps.get_version.outputs.version }}"
+          else
+            git commit -m "Update cc-switch-bin to version ${{ steps.get_version.outputs.version }}"
+          fi
           git push
 
       - name: Publish to AUR
@@ -73,5 +98,5 @@ jobs:
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: "Update to version ${{ steps.get_version.outputs.version }}"
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', steps.get_version.outputs.version) || format('Update to version {0}', steps.get_version.outputs.version) }}
           ssh_keyscan_types: rsa,ecdsa,ed25519

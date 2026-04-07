@@ -10,7 +10,7 @@
 - **[blink1control2](https://aur.archlinux.org/packages/blink1control2-bin)** - Blink1Control GUI 用于控制 blink(1) USB RGB LED 设备。
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel
-- **[opencli-rs-bin](https://aur.archlinux.org/packages/opencli-rs-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites
+- **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites
 
 ## 自动化
 

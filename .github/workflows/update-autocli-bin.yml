@@ -1,10 +1,10 @@
-name: Update emdash-app Version
+name: Update autocli-bin Version
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version number (e.g., 0.4.9). Leave empty to auto-detect latest version."
+        description: "Version number (e.g., 0.2.4). Leave empty to auto-detect latest version."
         required: false
         type: string
       force:
@@ -30,14 +30,14 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            VERSION=$(curl -s https://api.github.com/repos/generalaction/emdash/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            VERSION=$(curl -s https://api.github.com/repos/nashsu/AutoCLI/releases/latest | jq -r '.tag_name' | sed 's/^v//')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
       - name: Get current version
         id: current_version
         run: |
-          CURRENT=$(grep '^pkgver=' emdash-app/PKGBUILD | cut -d'=' -f2)
+          CURRENT=$(grep '^pkgver=' autocli-bin/PKGBUILD | cut -d'=' -f2)
           echo "current=$CURRENT" >> $GITHUB_OUTPUT
 
       - name: Compare versions
@@ -61,7 +61,7 @@ jobs:
       - name: Update PKGBUILD version
         if: steps.compare.outputs.needs_update == 'true'
         run: |
-          cd emdash-app
+          cd autocli-bin
           if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
             # Bump pkgrel for same version fix
             CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
@@ -79,11 +79,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add emdash-app/PKGBUILD
+          git add autocli-bin/PKGBUILD
           if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
-            git commit -m "Bump pkgrel for emdash-app ${{ steps.get_version.outputs.version }}"
+            git commit -m "Bump pkgrel for autocli-bin ${{ steps.get_version.outputs.version }}"
           else
-            git commit -m "Update emdash-app to version ${{ steps.get_version.outputs.version }}"
+            git commit -m "Update autocli-bin to version ${{ steps.get_version.outputs.version }}"
           fi
           git push
 
@@ -91,8 +91,8 @@ jobs:
         if: steps.compare.outputs.needs_update == 'true'
         uses: KSXGitHub/github-actions-deploy-aur@v4.1.2
         with:
-          pkgname: emdash-app
-          pkgbuild: ./emdash-app/PKGBUILD
+          pkgname: autocli-bin
+          pkgbuild: ./autocli-bin/PKGBUILD
           updpkgsums: true
           post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}
