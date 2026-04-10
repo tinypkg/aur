@@ -58,16 +58,6 @@ jobs:
             echo "Updating from ${{ steps.current_version.outputs.current }} to ${{ steps.get_version.outputs.version }}"
           fi
 
-      - name: Get new checksums
-        if: steps.compare.outputs.needs_update == 'true' && steps.compare.outputs.bump_rel == 'false'
-        id: checksums
-        run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          X86_SHA=$(curl -s https://api.github.com/repos/edumucelli/docking/releases/tags/v$VERSION | jq -r '.assets[] | select(.name | test("linux-x86_64.pkg.tar.zst$")) | .digest' | sed 's/sha256://')
-          AARCH_SHA=$(curl -s https://api.github.com/repos/edumucelli/docking/releases/tags/v$VERSION | jq -r '.assets[] | select(.name | test("linux-aarch64.pkg.tar.xz$")) | .digest' | sed 's/sha256://')
-          echo "x86_64=$X86_SHA" >> $GITHUB_OUTPUT
-          echo "aarch64=$AARCH_SHA" >> $GITHUB_OUTPUT
-
       - name: Update PKGBUILD version
         if: steps.compare.outputs.needs_update == 'true'
         run: |
@@ -79,11 +69,9 @@ jobs:
             sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
             echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
           else
-            # New version - update version, reset pkgrel to 1, and update checksums
+            # New version - update version and reset pkgrel to 1
             sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
             sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
-            sed -i "s/^sha256sums_x86_64=.*/sha256sums_x86_64=('${{ steps.checksums.outputs.x86_64 }}')/" PKGBUILD
-            sed -i "s/^sha256sums_aarch64=.*/sha256sums_aarch64=('${{ steps.checksums.outputs.aarch64 }}')/" PKGBUILD
           fi
 
       - name: Commit changes

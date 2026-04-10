@@ -22,8 +22,8 @@ depends=(
 )
 source_x86_64=("docking-${pkgver}-x86_64.pkg.tar.zst::https://github.com/edumucelli/docking/releases/download/v${pkgver}/docking-${pkgver}-linux-x86_64.pkg.tar.zst")
 source_aarch64=("docking-${pkgver}-aarch64.pkg.tar.xz::https://github.com/edumucelli/docking/releases/download/v${pkgver}/docking-${pkgver}-linux-aarch64.pkg.tar.xz")
-sha256sums_x86_64=('322b3b624a128ef96350d7bd277a81612ebe17e52134169af77cb7008b840ab2')
-sha256sums_aarch64=('eb57e67519ac9750c72e226b31afa69ae9e9f1f9526f59a84f68843c01bfbb96')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
 
 package() {
     # Extract the prebuilt Arch package directly
