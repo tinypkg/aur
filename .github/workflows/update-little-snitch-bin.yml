@@ -1,0 +1,98 @@
+name: Update little-snitch-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g., 1.0.4). Required for non-GitHub projects."
+        required: true
+        type: string
+      force:
+        description: "Force update even if version is the same (bump pkgrel)"
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: "0 0 1 * *"  # Monthly check (manual version required for updates)
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Get current version
+        id: current_version
+        run: |
+          CURRENT=$(grep '^pkgver=' little-snitch-bin/PKGBUILD | cut -d'=' -f2)
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: compare
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          CURRENT="${{ steps.current_version.outputs.current }}"
+          if [ "$VERSION" = "$CURRENT" ]; then
+            if [ "${{ github.event.inputs.force }}" = "true" ]; then
+              echo "needs_update=true" >> $GITHUB_OUTPUT
+              echo "bump_rel=true" >> $GITHUB_OUTPUT
+              echo "Forcing pkgrel bump for version $VERSION"
+            else
+              echo "needs_update=false" >> $GITHUB_OUTPUT
+              echo "Version $VERSION is already up to date"
+            fi
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "bump_rel=false" >> $GITHUB_OUTPUT
+            echo "Updating from $CURRENT to $VERSION"
+          fi
+
+      - name: Update PKGBUILD version
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          cd little-snitch-bin
+          VERSION="${{ github.event.inputs.version }}"
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            # Bump pkgrel for same version fix
+            CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
+            NEW_REL=$((CURRENT_REL + 1))
+            sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
+            echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
+          else
+            # New version - update version and reset pkgrel to 1
+            sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
+            sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
+            # Update source URLs with new version
+            sed -i "s/littlesnitch_[0-9]\+\.[0-9]\+\.[0-9]\+_amd64\.deb/littlesnitch_${VERSION}_amd64.deb/g" PKGBUILD
+            sed -i "s/littlesnitch_[0-9]\+\.[0-9]\+\.[0-9]\+_arm64\.deb/littlesnitch_${VERSION}_arm64.deb/g" PKGBUILD
+          fi
+
+      - name: Commit changes
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add little-snitch-bin/PKGBUILD
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            git commit -m "Bump pkgrel for little-snitch-bin ${{ github.event.inputs.version }}"
+          else
+            git commit -m "Update little-snitch-bin to version ${{ github.event.inputs.version }}"
+          fi
+          git push
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.3
+        with:
+          pkgname: little-snitch-bin
+          pkgbuild: ./little-snitch-bin/PKGBUILD
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', github.event.inputs.version) || format('Update to version {0}', github.event.inputs.version) }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519
