@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version number (e.g., 1.0.4). Required for non-GitHub projects."
+        description: "Version number (e.g., 1.0.4)"
         required: true
         type: string
       force:
@@ -12,8 +12,6 @@ on:
         required: false
         default: false
         type: boolean
-  schedule:
-    - cron: "0 0 1 * *"  # Monthly check (manual version required for updates)
 
 jobs:
   update-pkgbuild:
@@ -56,18 +54,15 @@ jobs:
           cd little-snitch-bin
           VERSION="${{ github.event.inputs.version }}"
           if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
-            # Bump pkgrel for same version fix
             CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
             NEW_REL=$((CURRENT_REL + 1))
             sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
             echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
           else
-            # New version - update version and reset pkgrel to 1
             sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
             sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
-            # Update source URLs with new version
-            sed -i "s/littlesnitch_[0-9]\+\.[0-9]\+\.[0-9]\+_amd64\.deb/littlesnitch_${VERSION}_amd64.deb/g" PKGBUILD
-            sed -i "s/littlesnitch_[0-9]\+\.[0-9]\+\.[0-9]\+_arm64\.deb/littlesnitch_${VERSION}_arm64.deb/g" PKGBUILD
+            # Update source URLs with new version (pkg.tar.zst format)
+            sed -i "s/littlesnitch-[0-9]\+\.[0-9]\+\.[0-9]\+-1/littlesnitch-${VERSION}-1/g" PKGBUILD
           fi
 
       - name: Commit changes
@@ -89,6 +84,7 @@ jobs:
         with:
           pkgname: little-snitch-bin
           pkgbuild: ./little-snitch-bin/PKGBUILD
+          assets: ./little-snitch-bin/little-snitch-bin.install
           updpkgsums: true
           post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}

@@ -2,30 +2,31 @@
 pkgname=little-snitch-bin
 pkgver=1.0.3
 pkgrel=1
-pkgdesc="Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection"
-arch=('x86_64' 'aarch64')
+pkgdesc="Little Snitch for Linux - monitors outgoing network connections and lets you decide which applications are allowed to connect to the internet"
+arch=('x86_64' 'aarch64' 'ppc64le' 'riscv64')
 url="https://obdev.at/products/littlesnitch"
-license=('custom')
-depends=('gtk3' 'libnotify' 'polkit')
-provides=('little-snitch')
-conflicts=('little-snitch')
+license=('GPL-2.0-only' 'custom')
+depends=('pam' 'sqlite' 'gcc-libs' 'libaudit' 'libcap-ng')
+provides=('littlesnitch')
+conflicts=('littlesnitch')
+install=little-snitch-bin.install
 options=('!strip')
-source_x86_64=("littlesnitch_${pkgver}_amd64.deb::https://obdev.at/downloads/littlesnitch-linux/littlesnitch_${pkgver}_amd64.deb")
-source_aarch64=("littlesnitch_${pkgver}_arm64.deb::https://obdev.at/downloads/littlesnitch-linux/littlesnitch_${pkgver}_arm64.deb")
+source_x86_64=("littlesnitch-${pkgver}-1-x86_64.pkg.tar.zst::https://obdev.at/downloads/littlesnitch-linux/littlesnitch-${pkgver}-1-x86_64.pkg.tar.zst")
+source_aarch64=("littlesnitch-${pkgver}-1-aarch64.pkg.tar.zst::https://obdev.at/downloads/littlesnitch-linux/littlesnitch-${pkgver}-1-aarch64.pkg.tar.zst")
+source_ppc64le=("littlesnitch-${pkgver}-1-ppc64le.pkg.tar.zst::https://obdev.at/downloads/littlesnitch-linux/littlesnitch-${pkgver}-1-ppc64le.pkg.tar.zst")
+source_riscv64=("littlesnitch-${pkgver}-1-riscv64.pkg.tar.zst::https://obdev.at/downloads/littlesnitch-linux/littlesnitch-${pkgver}-1-riscv64.pkg.tar.zst")
 sha256sums_x86_64=('SKIP')
 sha256sums_aarch64=('SKIP')
+sha256sums_ppc64le=('SKIP')
+sha256sums_riscv64=('SKIP')
 
 package() {
-    local _debfile
-    if [[ "$CARCH" == "x86_64" ]]; then
-        _debfile="littlesnitch_${pkgver}_amd64.deb"
-    else
-        _debfile="littlesnitch_${pkgver}_arm64.deb"
-    fi
+    # Extract the pacman package directly
+    tar -xf "${srcdir}/littlesnitch-${pkgver}-1-${CARCH}.pkg.tar.zst" -C "${pkgdir}" \
+        --exclude='.PKGINFO' \
+        --exclude='.MTREE' \
+        --exclude='.INSTALL'
 
-    # Extract the deb package
-    ar p "${srcdir}/${_debfile}" data.tar.gz | tar xz -C "${pkgdir}"
-
-    # Fix permissions
-    chmod -R u=rwX,go=rX "${pkgdir}"
+    # Install license
+    install -Dm644 "${pkgdir}/usr/share/doc/littlesnitch/copyright" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
