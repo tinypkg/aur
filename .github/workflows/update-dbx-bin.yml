@@ -72,8 +72,10 @@ jobs:
             # New version - update version and reset pkgrel to 1
             sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
             sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
-            # Update source URL with new version
-            sed -i "s|dbx_.*_amd64.deb|dbx_${{ steps.get_version.outputs.version }}_amd64.deb|g" PKGBUILD
+            # Update source URL with new version (using accelerator)
+            sed -i "s|^source_x86_64=.*|source_x86_64=(\"dbx_${{ steps.get_version.outputs.version }}_amd64.deb::https://xget.xi-xu.me/gh/t8y2/dbx/releases/download/v${{ steps.get_version.outputs.version }}/dbx_${{ steps.get_version.outputs.version }}_amd64.deb\")|" PKGBUILD
+            # Update package() function to use new version
+            sed -i "s|dbx_[0-9]*\.[0-9]*\.[0-9]*_amd64.deb|dbx_${{ steps.get_version.outputs.version }}_amd64.deb|g" PKGBUILD
           fi
 
       - name: Commit changes
