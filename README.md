@@ -8,6 +8,8 @@
 - **[cc-switch-bin](https://aur.archlinux.org/packages/cc-switch-bin)** - Claude Code & Codex 供应商配置管理工具 ([主页](https://github.com/farion1231/cc-switch))
 - **[cc-switch-cli](https://aur.archlinux.org/packages/cc-switch-cli)** - Cross-platform CLI assistant for Claude Code, Codex & Gemini CLI ([主页](https://github.com/SaladDay/cc-switch-cli))
 - **[blink1control2](https://aur.archlinux.org/packages/blink1control2-bin)** - Blink1Control GUI 用于控制 blink(1) USB RGB LED 设备 ([主页](https://github.com/todbot/Blink1Control2))
+- **[blink1-tool-bin](https://aur.archlinux.org/packages/blink1-tool-bin)** - Command-line tool for controlling blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
+- **[blink1-tiny-server-bin](https://aur.archlinux.org/packages/blink1-tiny-server-bin)** - Simple HTTP JSON API server to control blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop ([主页](https://confirmo.love))
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
 - **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites ([主页](https://github.com/nashsu/AutoCLI))
