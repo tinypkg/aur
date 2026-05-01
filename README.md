@@ -12,6 +12,7 @@
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel
 - **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites
 - **[docking-bin](https://aur.archlinux.org/packages/docking-bin)** - A lightweight, feature-rich dock for Linux written in Python with GTK 3 and Cairo
+- **[dbx-bin](https://aur.archlinux.org/packages/dbx-bin)** - Open-source, lightweight, cross-platform database client (Tauri 2)
 - **[herdr-bin](https://aur.archlinux.org/packages/herdr-bin)** - Supervise multiple coding agents in one terminal
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection
 
