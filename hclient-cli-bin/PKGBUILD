@@ -1,0 +1,26 @@
+# Maintainer: czyt <czytcn@gmail.com>
+pkgname=hclient-cli-bin
+pkgver=1.1.1
+pkgrel=1
+pkgdesc="Lazycat Microserver CLI client (懒猫微服命令行客户端)"
+arch=('x86_64' 'aarch64' 'riscv64')
+url="https://lazycat.cloud/download"
+license=('MIT')
+
+source_x86_64=("${pkgname}::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-amd64")
+source_aarch64=("${pkgname}::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-arm64")
+source_riscv64=("${pkgname}::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-riscv64")
+
+install="hclient-cli.install"
+source=("hclient-cli.service" "hclient-cli.install")
+
+sha256sums=('SKIP' 'SKIP')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+sha256sums_riscv64=('SKIP')
+
+package() {
+    install -Dm755 "${srcdir}/${pkgname}" "${pkgdir}/usr/bin/hclient-cli"
+    install -Dm644 "${srcdir}/hclient-cli.service" \
+        "${pkgdir}/usr/lib/systemd/system/hclient-cli.service"
+}
