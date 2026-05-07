@@ -1,0 +1,88 @@
+name: Update hclient-cli-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g., 1.1.1)"
+        required: true
+        type: string
+      force:
+        description: "Force update even if version is the same (bump pkgrel)"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Get current version
+        id: current_version
+        run: |
+          CURRENT=$(grep '^pkgver=' hclient-cli-bin/PKGBUILD | cut -d'=' -f2)
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: compare
+        run: |
+          if [ "${{ github.event.inputs.version }}" = "${{ steps.current_version.outputs.current }}" ]; then
+            if [ "${{ github.event.inputs.force }}" = "true" ]; then
+              echo "needs_update=true" >> $GITHUB_OUTPUT
+              echo "bump_rel=true" >> $GITHUB_OUTPUT
+              echo "Forcing pkgrel bump for version ${{ github.event.inputs.version }}"
+            else
+              echo "needs_update=false" >> $GITHUB_OUTPUT
+              echo "Version ${{ github.event.inputs.version }} is already up to date"
+            fi
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "bump_rel=false" >> $GITHUB_OUTPUT
+            echo "Updating from ${{ steps.current_version.outputs.current }} to ${{ github.event.inputs.version }}"
+          fi
+
+      - name: Update PKGBUILD version
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          cd hclient-cli-bin
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
+            NEW_REL=$((CURRENT_REL + 1))
+            sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
+            echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
+          else
+            sed -i "s/^pkgver=.*/pkgver=${{ github.event.inputs.version }}/" PKGBUILD
+            sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
+          fi
+
+      - name: Commit changes
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add hclient-cli-bin/PKGBUILD
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            git commit -m "Bump pkgrel for hclient-cli-bin ${{ github.event.inputs.version }}"
+          else
+            git commit -m "Update hclient-cli-bin to version ${{ github.event.inputs.version }}"
+          fi
+          git push
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.3
+        with:
+          pkgname: hclient-cli-bin
+          pkgbuild: ./hclient-cli-bin/PKGBUILD
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', github.event.inputs.version) || format('Update to version {0}', github.event.inputs.version) }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519
