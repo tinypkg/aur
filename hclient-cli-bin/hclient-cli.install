@@ -1,4 +1,7 @@
 post_install() {
+    # Load TUN kernel module
+    modprobe tun 2>/dev/null || true
+
     echo ""
     echo "==> Start service / 启动服务："
     echo "      systemctl enable --now hclient-cli"
@@ -26,5 +29,5 @@ post_install() {
 }
 
 post_upgrade() {
-    post_install
+    modprobe tun 2>/dev/null || true
 }
