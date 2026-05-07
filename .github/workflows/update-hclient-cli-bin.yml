@@ -79,9 +79,6 @@ jobs:
         with:
           pkgname: hclient-cli-bin
           pkgbuild: ./hclient-cli-bin/PKGBUILD
-          assets: |
-            ./hclient-cli-bin/hclient-cli.install
-            ./hclient-cli-bin/hclient-cli.service
           updpkgsums: true
           post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}
