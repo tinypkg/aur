@@ -17,6 +17,7 @@
 - **[dbx-bin](https://aur.archlinux.org/packages/dbx-bin)** - Open-source, lightweight, cross-platform database client (Tauri 2) ([主页](https://github.com/t8y2/dbx))
 - **[herdr-bin](https://aur.archlinux.org/packages/herdr-bin)** - Supervise multiple coding agents in one terminal ([主页](https://github.com/ogulcancelik/herdr))
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection ([主页](https://obdev.at/products/littlesnitch))
+- **[hclient-cli-bin](https://aur.archlinux.org/packages/hclient-cli-bin)** - 懒猫微服命令行客户端 (Lazycat Microserver CLI client) ([主页](https://lazycat.cloud/download))
 
 ## 自动化
 
