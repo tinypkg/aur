@@ -6,6 +6,8 @@ pkgdesc="Lazycat Microserver CLI client (懒猫微服命令行客户端)"
 arch=('x86_64' 'aarch64' 'riscv64')
 url="https://lazycat.cloud/download"
 license=('MIT')
+provides=('hclient-cli')
+conflicts=('hclient-cli')
 
 source_x86_64=("${pkgname}::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-amd64")
 source_aarch64=("${pkgname}::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-arm64")
