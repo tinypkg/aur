@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=whatcable-cli-bin
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do (CLI)"
 arch=('x86_64')
