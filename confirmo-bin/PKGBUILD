@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=confirmo-bin
-pkgver=1.0.94
+pkgver=1.0.95
 pkgrel=1
 pkgdesc="Your AI coding companion that lives on your desktop"
 arch=('x86_64')
