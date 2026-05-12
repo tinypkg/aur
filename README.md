@@ -22,6 +22,7 @@
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
 - **[whatcable-cli-bin](https://aur.archlinux.org/packages/whatcable-cli-bin)** - A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do ([主页](https://github.com/Zetaphor/whatcable-linux))
 - **[uniclipboard-bin](https://aur.archlinux.org/packages/uniclipboard-bin)** - Real-time clipboard sync across macOS, Windows and Linux — local-first, peer-to-peer, and end-to-end encrypted ([主页](https://www.uniclipboard.app))
+- **[tunnix-bin](https://aur.archlinux.org/packages/tunnix-bin)** - An encrypted SOCKS5/HTTP proxy tunnel over HTTP/SSE ([主页](https://github.com/aeroxy/tunnix))
 
 ## 自动化
 
