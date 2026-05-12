@@ -6,16 +6,20 @@ pkgdesc="An encrypted SOCKS5/HTTP proxy tunnel over HTTP/SSE"
 arch=('x86_64')
 url="https://github.com/aeroxy/tunnix"
 license=('MIT')
-depends=('glibc' 'unzip')
+depends=('glibc')
+makedepends=('unzip')
 provides=('tunnix')
 conflicts=('tunnix')
-source_x86_64=("tunnix_linux_x86_64.zip::https://github.com/aeroxy/tunnix/releases/download/v${pkgver}/tunnix_linux_x86_64.zip")
+
+source_x86_64=("tunnix_linux_x86_64_v${pkgver}.zip::https://github.com/aeroxy/tunnix/releases/download/v${pkgver}/tunnix_linux_x86_64.zip")
 sha256sums_x86_64=('SKIP')
+
+prepare() {
+    cd "${srcdir}"
+    unzip -o "tunnix_linux_x86_64_v${pkgver}.zip"
+}
 
 package() {
     cd "${srcdir}"
-
-    unzip -o tunnix_linux_x86_64.zip
-
     install -Dm755 tunnix "${pkgdir}/usr/bin/tunnix"
 }
