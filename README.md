@@ -23,6 +23,7 @@
 - **[whatcable-cli-bin](https://aur.archlinux.org/packages/whatcable-cli-bin)** - A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do ([主页](https://github.com/Zetaphor/whatcable-linux))
 - **[uniclipboard-bin](https://aur.archlinux.org/packages/uniclipboard-bin)** - Real-time clipboard sync across macOS, Windows and Linux — local-first, peer-to-peer, and end-to-end encrypted ([主页](https://www.uniclipboard.app))
 - **[tunnix-bin](https://aur.archlinux.org/packages/tunnix-bin)** - An encrypted SOCKS5/HTTP proxy tunnel over HTTP/SSE ([主页](https://github.com/aeroxy/tunnix))
+- **[velotype-bin](https://aur.archlinux.org/packages/velotype-bin)** - Write at the speed of thought - high-performance native Markdown editor built with Rust and GPUI ([主页](https://github.com/manyougz/velotype))
 
 ## 自动化
 
