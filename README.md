@@ -11,6 +11,7 @@
 - **[blink1-tool-bin](https://aur.archlinux.org/packages/blink1-tool-bin)** - Command-line tool for controlling blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[blink1-tiny-server-bin](https://aur.archlinux.org/packages/blink1-tiny-server-bin)** - Simple HTTP JSON API server to control blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop ([主页](https://confirmo.love))
+- **[cumora-bin](https://aur.archlinux.org/packages/cumora-bin)** - A workspace where AI teammates live, not visit. ([主页](https://cumora.ai))
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
 - **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites ([主页](https://github.com/nashsu/AutoCLI))
 - **[docking-bin](https://aur.archlinux.org/packages/docking-bin)** - A lightweight, feature-rich dock for Linux written in Python with GTK 3 and Cairo ([主页](https://github.com/edumucelli/docking))
