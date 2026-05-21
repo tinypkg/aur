@@ -7,12 +7,17 @@ pkgdesc="A beautiful, minimal, local diff viewer for reviewing staged and unstag
 arch=('x86_64')
 url="https://github.com/nkzw-tech/codiff"
 license=('MIT')
+depends=('gtk3' 'nss' 'at-spi2-core' 'alsa-lib' 'cups' 'mesa' 'libxcomposite' 'libxdamage' 'libxkbcommon' 'libxrandr')
 provides=('codiff')
 conflicts=('codiff')
 source_x86_64=("codiff_${pkgver}_amd64.deb::https://github.com/nkzw-tech/codiff/releases/download/v${_tag}/codiff_${pkgver}_amd64.deb")
 sha256sums_x86_64=('SKIP')
 
 package() {
-    bsdtar -xOf "${srcdir}/codiff_${pkgver}_amd64.deb" data.tar.xz | bsdtar -xC "${pkgdir}"
+    bsdtar -xOf "${srcdir}/codiff_${pkgver}_amd64.deb" data.tar.zst | bsdtar -xC "${pkgdir}"
+
+    # Remove Debian-specific files
+    rm -rf "${pkgdir}/usr/share/lintian" "${pkgdir}/usr/share/doc"
+
     chmod -R u=rwX,go=rX "${pkgdir}"
 }
