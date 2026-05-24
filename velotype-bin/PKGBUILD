@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=velotype-bin
-pkgver=0.4.2
+pkgver=0.4.9
 pkgrel=1
 pkgdesc="Write at the speed of thought - high-performance native Markdown editor built with Rust and GPUI"
 arch=('x86_64' 'aarch64')
