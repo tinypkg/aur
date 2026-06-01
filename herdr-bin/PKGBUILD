@@ -5,8 +5,8 @@ pkgrel=1
 pkgdesc="Supervise multiple coding agents in one terminal"
 arch=('x86_64' 'aarch64')
 url="https://github.com/ogulcancelik/herdr"
-license=('AGPL-3.0')
-provides=('herdr')
+license=('AGPL-3.0-or-later')
+provides=("herdr=${pkgver}")
 conflicts=('herdr')
 source_x86_64=("herdr-${pkgver}-x86_64::https://github.com/ogulcancelik/herdr/releases/download/v${pkgver}/herdr-linux-x86_64")
 source_aarch64=("herdr-${pkgver}-aarch64::https://github.com/ogulcancelik/herdr/releases/download/v${pkgver}/herdr-linux-aarch64")
@@ -14,5 +14,5 @@ sha256sums_x86_64=('SKIP')
 sha256sums_aarch64=('SKIP')
 
 package() {
-    install -Dm755 herdr-${pkgver}-${CARCH} "${pkgdir}/usr/bin/herdr"
+    install -Dm755 "herdr-${pkgver}-${CARCH}" "${pkgdir}/usr/bin/herdr"
 }
