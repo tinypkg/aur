@@ -6,18 +6,13 @@ pkgdesc="CLI and TUI for Nowledge Mem - AI memory management"
 arch=('any')
 url="https://mem.nowledge.co/docs/cli"
 license=('MIT')
-depends=('python>=3.11')
-makedepends=('python-installer' 'python-build' 'python-wheel')
-source=("https://files.pythonhosted.org/packages/source/n/nmem-cli/nmem_cli-${pkgver}.tar.gz")
+depends=('python' 'python-rich' 'python-httpx' 'python-pyperclip' 'python-qrcode' 'python-textual')
+makedepends=('python-installer')
+_wheelname="nmem_cli-${pkgver}-py3-none-any.whl"
+source=("https://files.pythonhosted.org/packages/py3/n/nmem-cli/${_wheelname}")
+noextract=("${_wheelname}")
 sha256sums=('SKIP')
 
-build() {
-    cd "nmem_cli-${pkgver}"
-    python -m build --wheel --no-isolation
-}
-
 package() {
-    cd "nmem_cli-${pkgver}"
-    python -m installer --destdir="$pkgdir" dist/*.whl
-    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE" 2>/dev/null || true
+    python -m installer --destdir="$pkgdir" "${srcdir}/${_wheelname}"
 }
