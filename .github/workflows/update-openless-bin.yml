@@ -28,11 +28,17 @@ jobs:
         id: get_version
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
-            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+            VERSION="${{ github.event.inputs.version }}"
           else
-            VERSION=$(curl -s https://api.github.com/repos/appergb/openless/releases/latest | jq -r '.tag_name' | sed 's/^v//' | sed 's/-tauri$//')
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            # -L follows the appergb -> Open-Less rename redirect; -f fails on HTTP errors.
+            # grep extracts the numeric version from tags like "v1.3.5-tauri".
+            VERSION=$(curl -fsSL "https://api.github.com/repos/Open-Less/openless/releases/latest" | jq -r '.tag_name' | grep -oE '[0-9]+(\.[0-9]+)+' | head -1 || true)
           fi
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "::error::Failed to detect a valid upstream version from Open-Less/openless"
+            exit 1
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Get current version
         id: current_version

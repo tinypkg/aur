@@ -22,7 +22,7 @@
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection ([主页](https://obdev.at/products/littlesnitch))
 - **[mise-bin](https://aur.archlinux.org/packages/mise-bin)** - dev tools, env vars, task runner ([主页](https://github.com/jdx/mise))
 - **[hclient-cli-bin](https://aur.archlinux.org/packages/hclient-cli-bin)** - 懒猫微服命令行客户端 (Lazycat Microserver CLI client) ([主页](https://lazycat.cloud/download))
-- **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/appergb/openless))
+- **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/Open-Less/openless))
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
 - **[whatcable-cli-bin](https://aur.archlinux.org/packages/whatcable-cli-bin)** - A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do ([主页](https://github.com/Zetaphor/whatcable-linux))
 - **[uniclipboard-bin](https://aur.archlinux.org/packages/uniclipboard-bin)** - Real-time clipboard sync across macOS, Windows and Linux — local-first, peer-to-peer, and end-to-end encrypted ([主页](https://www.uniclipboard.app))
