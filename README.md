@@ -20,6 +20,7 @@
 - **[dbx-bin](https://aur.archlinux.org/packages/dbx-bin)** - Open-source, lightweight, cross-platform database client (Tauri 2) ([主页](https://github.com/t8y2/dbx))
 - **[herdr-bin](https://aur.archlinux.org/packages/herdr-bin)** - Supervise multiple coding agents in one terminal ([主页](https://github.com/ogulcancelik/herdr))
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection ([主页](https://obdev.at/products/littlesnitch))
+- **[lucarned-bin](https://aur.archlinux.org/packages/lucarned-bin)** - Stop babysitting local AI agents. Just notifications, approve, and resume your Codex, Pi, or Claude code sessions anywhere. ([主页](https://github.com/tuchg/Lucarne))
 - **[mise-bin](https://aur.archlinux.org/packages/mise-bin)** - dev tools, env vars, task runner ([主页](https://github.com/jdx/mise))
 - **[hclient-cli-bin](https://aur.archlinux.org/packages/hclient-cli-bin)** - 懒猫微服命令行客户端 (Lazycat Microserver CLI client) ([主页](https://lazycat.cloud/download))
 - **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/Open-Less/openless))
