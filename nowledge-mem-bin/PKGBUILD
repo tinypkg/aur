@@ -6,6 +6,7 @@ pkgdesc="你的智能体、AI 助手、代码工具，共享一套记忆"
 arch=('x86_64')
 url="https://mem.nowledge.co"
 license=('Proprietary')
+options=(!debug !strip)
 depends=('gtk3' 'webkit2gtk-4.1' 'libayatana-appindicator')
 makedepends=('zstd')
 optdepends=('gnome-keyring: for credential storage'
