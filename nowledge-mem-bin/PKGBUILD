@@ -6,23 +6,43 @@ pkgdesc="你的智能体、AI 助手、代码工具，共享一套记忆"
 arch=('x86_64')
 url="https://mem.nowledge.co"
 license=('Proprietary')
-depends=('gtk3' 'webkit2gtk' 'libayatana-appindicator' 'zstd' 'libnotify' 'nss' 'libxss' 'libxtst' 'xdg-utils' 'at-spi2-core' 'libsecret')
+depends=('gtk3' 'webkit2gtk-4.1' 'libayatana-appindicator' 'zstd' 'libnotify' 'nss' 'libxss' 'libxtst' 'xdg-utils' 'at-spi2-core' 'libsecret')
 optdepends=('gnome-keyring: for credential storage')
 provides=('nowledge-mem')
 conflicts=('nowledge-mem')
-source_x86_64=("nowledge-mem.deb::https://download-mem.nowledge.co/app/${pkgver}/x86_64-unknown-linux-gnu.deb")
+source_x86_64=("nowledge-mem-${pkgver}.deb::https://download-mem.nowledge.co/app/${pkgver}/x86_64-unknown-linux-gnu.deb")
 sha256sums_x86_64=('SKIP')
 
 package() {
     # Extract deb package
-    ar p "${srcdir}/nowledge-mem.deb" data.tar.gz | tar xz -C "${pkgdir}"
+    local _debfile="nowledge-mem-${pkgver}.deb"
+    ar p "${srcdir}/${_debfile}" data.tar.gz | tar xz -C "${pkgdir}"
 
     # Fix permissions
     chmod -R u=rwX,go=rX "${pkgdir}"
 
-    # Create symlink for easier access if needed
-    if [ -d "${pkgdir}/opt/Nowledge Mem" ]; then
+    # Extract bundled Python runtime (required for backend)
+    local _up_dir="${pkgdir}/usr/lib/Nowledge Mem/_up_"
+    if [ -f "${_up_dir}/python-runtime.tar.zst" ]; then
+        mkdir -p "${_up_dir}/python-standalone"
+        tar --zstd -xf "${_up_dir}/python-runtime.tar.zst" -C "${_up_dir}/python-standalone"
+    fi
+
+    # Install CLI wrappers (nmem and browse-now)
+    local _install_path="${_up_dir}/python-standalone"
+    if [ -d "${_install_path}/python" ] && [ -f "${_install_path}/app/src/nowledge_graph_server/ncli.py" ]; then
         install -dm755 "${pkgdir}/usr/bin"
-        ln -sf "/opt/Nowledge Mem/nowledge-mem" "${pkgdir}/usr/bin/nowledge-mem"
+
+        # nmem CLI wrapper
+        cat > "${_install_path}/nmem-wrapper" << 'EOF'
+#!/bin/bash
+PYTHON_STANDALONE="/usr/lib/Nowledge Mem/_up_/python-standalone"
+PYTHON="$PYTHON_STANDALONE/python/bin/python3"
+NCLI="$PYTHON_STANDALONE/app/src/nowledge_graph_server/ncli.py"
+export PYTHONPATH="$PYTHON_STANDALONE/app/src:$PYTHONPATH"
+exec "$PYTHON" -m nowledge_graph_server.ncli "$@"
+EOF
+        chmod +x "${_install_path}/nmem-wrapper"
+        ln -sf "${_install_path}/nmem-wrapper" "${pkgdir}/usr/bin/nmem"
     fi
 }
