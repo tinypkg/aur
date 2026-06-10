@@ -30,6 +30,7 @@ jobs:
           echo "current=$CURRENT" >> $GITHUB_OUTPUT
 
       - name: Update PKGBUILD
+        id: update_pkgbuild
         run: |
           cd nowledge-mem-bin
           if [ "${{ github.event.inputs.force }}" = "true" ]; then
@@ -48,6 +49,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add nowledge-mem-bin/PKGBUILD
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
           if [ "${{ github.event.inputs.force }}" = "true" ]; then
             git commit -m "Bump nowledge-mem-bin pkgrel"
           else
@@ -61,9 +66,10 @@ jobs:
           pkgname: nowledge-mem-bin
           pkgbuild: ./nowledge-mem-bin/PKGBUILD
           updpkgsums: true
+          test: true
           post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: "Update to version ${{ github.event.inputs.version }}"
+          commit_message: ${{ github.event.inputs.force == 'true' && format('Bump pkgrel for version {0}', steps.update_pkgbuild.outputs.version) || format('Update to version {0}', steps.update_pkgbuild.outputs.version) }}
           ssh_keyscan_types: rsa,ecdsa,ed25519
