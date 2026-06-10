@@ -1,0 +1,28 @@
+# Maintainer: czyt <czyt@users.noreply.github.com>
+pkgname=nowledge-mem-bin
+pkgver=0.9.0
+pkgrel=1
+pkgdesc="你的智能体、AI 助手、代码工具，共享一套记忆"
+arch=('x86_64')
+url="https://mem.nowledge.co"
+license=('Proprietary')
+depends=('gtk3' 'libnotify' 'nss' 'libxss' 'libxtst' 'xdg-utils' 'at-spi2-core' 'libsecret')
+optdepends=('gnome-keyring: for credential storage')
+provides=('nowledge-mem')
+conflicts=('nowledge-mem')
+source_x86_64=("nowledge-mem.deb::https://download-mem.nowledge.co/app/${pkgver}/x86_64-unknown-linux-gnu.deb")
+sha256sums_x86_64=('SKIP')
+
+package() {
+    # Extract deb package
+    ar p "${srcdir}/nowledge-mem.deb" data.tar.gz | tar xz -C "${pkgdir}"
+
+    # Fix permissions
+    chmod -R u=rwX,go=rX "${pkgdir}"
+
+    # Create symlink for easier access if needed
+    if [ -d "${pkgdir}/opt/Nowledge Mem" ]; then
+        install -dm755 "${pkgdir}/usr/bin"
+        ln -sf "/opt/Nowledge Mem/nowledge-mem" "${pkgdir}/usr/bin/nowledge-mem"
+    fi
+}
