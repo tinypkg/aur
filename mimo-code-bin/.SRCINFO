@@ -1,0 +1,18 @@
+pkgbase = mimo-code-bin
+	pkgdesc = Next-generation AI coding assistant for developers with unlimited context
+	pkgver = 0.0.9
+	pkgrel = 1
+	url = https://mimo.xiaomi.com/mimocode
+	arch = x86_64
+	arch = aarch64
+	license = MIT
+	depends = musl
+	depends = gcc-libs
+	provides = mimo-code
+	conflicts = mimo-code
+	source_x86_64 = mimo-code-bin-amd64::https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v0.0.9/mimocode-linux-x64-musl.tar.gz
+	sha256sums_x86_64 = SKIP
+	source_aarch64 = mimo-code-bin-arm64::https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v0.0.9/mimocode-linux-arm64-musl.tar.gz
+	sha256sums_aarch64 = SKIP
+
+pkgname = mimo-code-bin
