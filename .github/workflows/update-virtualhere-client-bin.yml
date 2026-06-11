@@ -4,16 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version number (e.g., 5.5.6). Leave empty to auto-detect latest version."
-        required: false
+        description: "Version number (e.g., 5.5.6)"
+        required: true
         type: string
       force:
         description: "Force update even if version is the same (bump pkgrel)"
         required: false
         default: false
         type: boolean
-  schedule:
-    - cron: "0 */12 * * *"
 
 jobs:
   update-pkgbuild:
@@ -24,23 +22,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Get latest version
+      - name: Get version
         id: get_version
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-          else
-            # VirtualHere doesn't have a version API, so we need to detect from the binary
-            # Download x86_64 binary to detect version
-            wget -q https://www.virtualhere.com/sites/default/files/usbclient/vhclientx86_64 -O /tmp/vhclient
-            chmod +x /tmp/vhclient
-            VERSION=$(/tmp/vhclient --help 2>&1 | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-            if [ -z "$VERSION" ]; then
-              echo "Failed to detect version from binary. Please specify version manually."
-              exit 1
-            fi
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-          fi
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
 
       - name: Get current version
         id: current_version
