@@ -9,15 +9,15 @@ license=('MIT')
 depends=('musl' 'gcc-libs')
 provides=('mimo-code')
 conflicts=('mimo-code')
-source_x86_64=("${pkgname}-amd64::https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v${pkgver}/mimocode-linux-x64-musl.tar.gz")
-source_aarch64=("${pkgname}-arm64::https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v${pkgver}/mimocode-linux-arm64-musl.tar.gz")
+source_x86_64=("${pkgname}-amd64-${pkgver}.tar.gz::https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v${pkgver}/mimocode-linux-x64-musl.tar.gz")
+source_aarch64=("${pkgname}-arm64-${pkgver}.tar.gz::https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v${pkgver}/mimocode-linux-arm64-musl.tar.gz")
 sha256sums_x86_64=('SKIP')
 sha256sums_aarch64=('SKIP')
 
 package() {
     case "$CARCH" in
-        x86_64)  _src="${pkgname}-amd64" ;;
-        aarch64) _src="${pkgname}-arm64" ;;
+        x86_64)  _src="${pkgname}-amd64-${pkgver}" ;;
+        aarch64) _src="${pkgname}-arm64-${pkgver}" ;;
     esac
     install -Dm755 "${srcdir}/${_src}/mimo" "${pkgdir}/usr/bin/mimo"
 }
