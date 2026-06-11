@@ -86,6 +86,7 @@ jobs:
         with:
           pkgname: virtualhere-client-bin
           pkgbuild: ./virtualhere-client-bin/PKGBUILD
+          assets: ./virtualhere-client-bin/virtualhere-client-bin.install
           updpkgsums: true
           post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}
