@@ -23,8 +23,8 @@ optdepends=(
 provides=('zcode')
 conflicts=('zcode' 'zcode-bin' 'zcode-desktop-bin')
 options=('!strip' '!debug')
-source_x86_64=("${pkgname}-${pkgver}-amd64::https://cdn.codegeex.cn/zcode/electron/releases/${pkgver}/ZCode-${pkgver}-linux-x64.deb")
-source_aarch64=("${pkgname}-${pkgver}-arm64::https://cdn.codegeex.cn/zcode/electron/releases/${pkgver}/ZCode-${pkgver}-linux-arm64.deb")
+source_x86_64=("${pkgname}-${pkgver}-amd64::https://cdn-zcode.z.ai/zcode/electron/releases/${pkgver}/ZCode-${pkgver}-linux-x64.deb")
+source_aarch64=("${pkgname}-${pkgver}-arm64::https://cdn-zcode.z.ai/zcode/electron/releases/${pkgver}/ZCode-${pkgver}-linux-arm64.deb")
 sha256sums_x86_64=('SKIP')
 sha256sums_aarch64=('SKIP')
 
