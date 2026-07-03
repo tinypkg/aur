@@ -43,5 +43,5 @@ package() {
 
     # Create symlink for the binary
     install -dm755 "${pkgdir}/usr/bin"
-    ln -sf "/usr/share/karing/karing" "${pkgdir}/usr/bin/karing"
+    ln -sf "/opt/karing/karing" "${pkgdir}/usr/bin/karing"
 }
