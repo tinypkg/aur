@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=cc-switchy-bin
-pkgver=0.2.1
+pkgver=0.3.0
 pkgrel=1
 pkgdesc="CLI/TUI for restoring CC Switch cloud snapshots from WebDAV or S3"
 arch=('x86_64' 'aarch64')
