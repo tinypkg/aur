@@ -5,6 +5,7 @@
 ## 包含的软件包
 
 - **[karing-bin](https://aur.archlinux.org/packages/karing-bin)** - Simple & Powerful proxy utility ([主页](https://github.com/KaringX/karing))
+- **[tldraw-offline-bin](https://aur.archlinux.org/packages/tldraw-offline-bin)** - A local whiteboard for you and your agents ([主页](https://github.com/tldraw/tldraw-offline))
 - **[cc-switch-bin](https://aur.archlinux.org/packages/cc-switch-bin)** - Claude Code & Codex 供应商配置管理工具 ([主页](https://github.com/farion1231/cc-switch))
 - **[cc-switch-cli](https://aur.archlinux.org/packages/cc-switch-cli)** - Cross-platform CLI assistant for Claude Code, Codex & Gemini CLI ([主页](https://github.com/SaladDay/cc-switch-cli))
 - **[cc-switchy-bin](https://aur.archlinux.org/packages/cc-switchy-bin)** - CLI/TUI for restoring CC Switch cloud snapshots from WebDAV or S3 ([主页](https://github.com/ca-x/cc-switchy))
