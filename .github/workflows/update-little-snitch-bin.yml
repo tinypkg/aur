@@ -4,14 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version number (e.g., 1.0.4)"
-        required: true
+        description: "Version number. Leave empty to auto-detect from GitHub Releases."
+        required: false
         type: string
       force:
         description: "Force update even if version is the same (bump pkgrel)"
         required: false
         default: false
         type: boolean
+  schedule:
+    - cron: "0 */12 * * *"
 
 jobs:
   update-pkgbuild:
@@ -22,6 +24,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Get latest version
+        id: get_version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          if [ -n "$INPUT_VERSION" ]; then
+            VERSION="$INPUT_VERSION"
+          else
+            TAG=$(curl --fail --silent --show-error --location \
+              --connect-timeout 10 --max-time 30 --retry 3 \
+              -H "Accept: application/vnd.github+json" \
+              https://api.github.com/repos/obdev/littlesnitch-linux/releases/latest \
+              | jq -er '.tag_name')
+            VERSION="${TAG##*/}"
+          fi
+
+          VERSION="${VERSION#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+(\.[0-9]+)+$ ]]; then
+            echo "Invalid version: $VERSION" >&2
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Get current version
         id: current_version
         run: |
@@ -30,11 +56,13 @@ jobs:
 
       - name: Compare versions
         id: compare
+        env:
+          VERSION: ${{ steps.get_version.outputs.version }}
+          CURRENT: ${{ steps.current_version.outputs.current }}
+          FORCE_UPDATE: ${{ github.event.inputs.force }}
         run: |
-          VERSION="${{ github.event.inputs.version }}"
-          CURRENT="${{ steps.current_version.outputs.current }}"
           if [ "$VERSION" = "$CURRENT" ]; then
-            if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            if [ "$FORCE_UPDATE" = "true" ]; then
               echo "needs_update=true" >> $GITHUB_OUTPUT
               echo "bump_rel=true" >> $GITHUB_OUTPUT
               echo "Forcing pkgrel bump for version $VERSION"
@@ -50,10 +78,12 @@ jobs:
 
       - name: Update PKGBUILD version
         if: steps.compare.outputs.needs_update == 'true'
+        env:
+          VERSION: ${{ steps.get_version.outputs.version }}
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
         run: |
           cd little-snitch-bin
-          VERSION="${{ github.event.inputs.version }}"
-          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+          if [ "$BUMP_REL" = "true" ]; then
             CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
             NEW_REL=$((CURRENT_REL + 1))
             sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
@@ -61,20 +91,21 @@ jobs:
           else
             sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
             sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
-            # Update source URLs with new version (pkg.tar.zst format)
-            sed -i "s/littlesnitch-[0-9]\+\.[0-9]\+\.[0-9]\+-1/littlesnitch-${VERSION}-1/g" PKGBUILD
           fi
 
       - name: Commit changes
         if: steps.compare.outputs.needs_update == 'true'
+        env:
+          VERSION: ${{ steps.get_version.outputs.version }}
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add little-snitch-bin/PKGBUILD
-          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
-            git commit -m "Bump pkgrel for little-snitch-bin ${{ github.event.inputs.version }}"
+          if [ "$BUMP_REL" = "true" ]; then
+            git commit -m "Bump pkgrel for little-snitch-bin $VERSION"
           else
-            git commit -m "Update little-snitch-bin to version ${{ github.event.inputs.version }}"
+            git commit -m "Update little-snitch-bin to version $VERSION"
           fi
           git push
 
@@ -90,5 +121,5 @@ jobs:
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', github.event.inputs.version) || format('Update to version {0}', github.event.inputs.version) }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', steps.get_version.outputs.version) || format('Update to version {0}', steps.get_version.outputs.version) }}
           ssh_keyscan_types: rsa,ecdsa,ed25519
