@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=codiff-bin
-_tag="1.9.0"
-pkgver=1.9.0
+_tag="1.9.1"
+pkgver=1.9.1
 pkgrel=1
 pkgdesc="A beautiful, minimal, local diff viewer for reviewing staged and unstaged Git changes before committing"
 arch=('x86_64')
