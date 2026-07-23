@@ -9,9 +9,9 @@ license=('MIT')
 provides=('hclient-cli')
 conflicts=('hclient-cli')
 
-source_x86_64=("${pkgname}-amd64::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-amd64")
-source_aarch64=("${pkgname}-arm64::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-arm64")
-source_riscv64=("${pkgname}-riscv64::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-riscv64")
+source_x86_64=("${pkgname}-${pkgver}-amd64::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-amd64")
+source_aarch64=("${pkgname}-${pkgver}-arm64::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-arm64")
+source_riscv64=("${pkgname}-${pkgver}-riscv64::https://dl.lazycatmicroserver.com/hclient-cli/v${pkgver}/hclient-cli-linux-riscv64")
 
 sha256sums_x86_64=('SKIP')
 sha256sums_aarch64=('SKIP')
@@ -19,9 +19,9 @@ sha256sums_riscv64=('SKIP')
 
 package() {
     case "$CARCH" in
-        x86_64)  _src="${pkgname}-amd64" ;;
-        aarch64) _src="${pkgname}-arm64" ;;
-        riscv64) _src="${pkgname}-riscv64" ;;
+        x86_64)  _src="${pkgname}-${pkgver}-amd64" ;;
+        aarch64) _src="${pkgname}-${pkgver}-arm64" ;;
+        riscv64) _src="${pkgname}-${pkgver}-riscv64" ;;
     esac
     install -Dm755 "${srcdir}/${_src}" "${pkgdir}/usr/bin/hclient-cli"
 }
