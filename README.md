@@ -15,6 +15,7 @@
 - **[blink1-tool-bin](https://aur.archlinux.org/packages/blink1-tool-bin)** - Command-line tool for controlling blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[blink1-tiny-server-bin](https://aur.archlinux.org/packages/blink1-tiny-server-bin)** - Simple HTTP JSON API server to control blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[boo-bin](https://aur.archlinux.org/packages/boo-bin)** - A GNU screen style terminal multiplexer built on libghostty ([主页](https://github.com/coder/boo))
+- **[tty7-bin](https://aur.archlinux.org/packages/tty7-bin)** - A terminal workbench in pure Rust: shells, persistent sessions, SSH, coding agents ([主页](https://github.com/l0ng-ai/tty7))
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop ([主页](https://confirmo.love))
 - **[cumora-bin](https://aur.archlinux.org/packages/cumora-bin)** - A workspace where AI teammates live, not visit. ([主页](https://cumora.ai))
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
