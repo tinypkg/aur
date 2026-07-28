@@ -4,6 +4,7 @@
 
 ## 包含的软件包
 
+- **[bast-bin](https://aur.archlinux.org/packages/bast-bin)** - 终端中的 SSH 主机浏览器与密钥管理工具，可快速查找主机、管理密钥并发起连接（[官网](https://bast.sh) · [源码](https://github.com/ellipse-software/bast)）
 - **[karing-bin](https://aur.archlinux.org/packages/karing-bin)** - Simple & Powerful proxy utility ([主页](https://github.com/KaringX/karing))
 - **[tldraw-offline-bin](https://aur.archlinux.org/packages/tldraw-offline-bin)** - A local whiteboard for you and your agents ([主页](https://github.com/tldraw/tldraw-offline))
 - **[cc-switch-bin](https://aur.archlinux.org/packages/cc-switch-bin)** - Claude Code & Codex 供应商配置管理工具 ([主页](https://github.com/farion1231/cc-switch))
