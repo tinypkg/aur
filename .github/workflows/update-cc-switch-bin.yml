@@ -30,7 +30,16 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            VERSION=$(curl -s https://api.github.com/repos/farion1231/cc-switch/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            if VERSION=$(curl --fail --silent --show-error --location --retry 3 \
+              https://dl.ccswitch.io/latest.json | jq -er '.version | strings | select(length > 0)'); then
+              echo "Detected version from dl.ccswitch.io/latest.json"
+            else
+              echo "::warning::Failed to get version from dl.ccswitch.io/latest.json; falling back to GitHub Releases API"
+              VERSION=$(curl --fail --silent --show-error --location --retry 3 \
+                https://api.github.com/repos/farion1231/cc-switch/releases/latest | \
+                jq -er '.tag_name | strings | select(length > 0)')
+            fi
+            VERSION="${VERSION#v}"
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
