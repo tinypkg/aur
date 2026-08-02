@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=fizzy-cli-bin
 pkgver=4.0.1
-pkgrel=2
+pkgrel=3
 pkgdesc="CLI for managing Fizzy boards, cards, comments, and tasks"
 arch=('x86_64' 'aarch64')
 url="https://github.com/basecamp/fizzy-cli"
