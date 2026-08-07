@@ -1,10 +1,10 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=herdr-bin
-pkgver=null
+pkgver=0.8.0
 pkgrel=1
 pkgdesc="Supervise multiple coding agents in one terminal"
 arch=('x86_64' 'aarch64')
-url="https://github.com/ogulcancelik/herdr"
+url="https://github.com/herdrdev/herdr"
 license=('AGPL-3.0-or-later')
 provides=("herdr=${pkgver}")
 conflicts=('herdr')
