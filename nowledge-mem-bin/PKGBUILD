@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=nowledge-mem-bin
 pkgver=0.10.55
-pkgrel=2
+pkgrel=3
 pkgdesc="你的智能体、AI 助手、代码工具，共享一套记忆"
 arch=('x86_64')
 url="https://mem.nowledge.co"
