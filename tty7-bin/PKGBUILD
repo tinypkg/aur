@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=tty7-bin
 pkgver=26.8.2
-pkgrel=1
+pkgrel=2
 pkgdesc="A terminal workbench in pure Rust: shells, persistent sessions, SSH, coding agents. GPU-rendered on Zed's gpui, VT core from Alacritty."
 arch=('x86_64')
 url="https://github.com/l0ng-ai/tty7"
