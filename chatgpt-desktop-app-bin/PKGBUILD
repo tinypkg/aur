@@ -1,9 +1,9 @@
 # Maintainer: czyt <czytcn@gmail.com>
 # Official downloads: https://chatgpt.com/codex/
 
-pkgname=codex-desktop-app
+pkgname=chatgpt-desktop-app-bin
 pkgver=26.803.81509
-pkgrel=3
+pkgrel=1
 pkgdesc="Official ChatGPT desktop app with Codex"
 arch=('x86_64' 'aarch64')
 url="https://chatgpt.com/codex/"
@@ -50,8 +50,9 @@ optdepends=(
 )
 
 makedepends=('libarchive')
-provides=('chatgpt' 'openai-codex-desktop')
-conflicts=('chatgpt' 'openai-codex-desktop')
+provides=('chatgpt' 'chatgpt-desktop-app' 'openai-codex-desktop')
+conflicts=('chatgpt' 'chatgpt-desktop-app' 'codex-desktop-app' 'openai-codex-desktop')
+replaces=('codex-desktop-app')
 options=('!debug' '!strip')
 
 _deb_x86_64="chatgpt_${pkgver}_amd64.deb"
