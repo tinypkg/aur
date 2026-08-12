@@ -1,0 +1,216 @@
+name: Update codex-desktop-app Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Expected upstream version. Leave empty to read it from the latest deb."
+        required: false
+        type: string
+      force:
+        description: "Force a packaging-only pkgrel bump"
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: "0 */12 * * *"
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check upstream validators
+        id: validators
+        env:
+          FORCE_UPDATE: ${{ github.event.inputs.force }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+
+          header_value() {
+            local url=$1
+            local header=$2
+            curl --fail --silent --show-error --location --head \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              "$url" |
+              awk -v wanted="$header" '
+                tolower($1) == tolower(wanted) ":" {
+                  sub(/^[^:]+:[[:space:]]*/, "")
+                  sub(/\r$/, "")
+                  print
+                }
+              ' | tail -n1
+          }
+
+          AMD64_URL='https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb'
+          ARM64_URL='https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_arm64.deb'
+          AMD64_ETAG=$(header_value "$AMD64_URL" etag)
+          ARM64_ETAG=$(header_value "$ARM64_URL" etag)
+          CURRENT_AMD64_ETAG=$(sed -n 's/^ETAG_X86_64=//p' codex-desktop-app/upstream.env)
+          CURRENT_ARM64_ETAG=$(sed -n 's/^ETAG_AARCH64=//p' codex-desktop-app/upstream.env)
+
+          if [[ -z "$AMD64_ETAG" || -z "$ARM64_ETAG" ]]; then
+            echo "Upstream did not return both ETag validators; downloading for verification"
+            echo "download=true" >> "$GITHUB_OUTPUT"
+          elif [[ -n "$INPUT_VERSION" || "$AMD64_ETAG" != "$CURRENT_AMD64_ETAG" || "$ARM64_ETAG" != "$CURRENT_ARM64_ETAG" ]]; then
+            echo "Upstream validators changed; downloading both packages"
+            echo "download=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "download=false" >> "$GITHUB_OUTPUT"
+            echo "Upstream packages are unchanged"
+          fi
+
+          echo "amd64_etag=$AMD64_ETAG" >> "$GITHUB_OUTPUT"
+          echo "arm64_etag=$ARM64_ETAG" >> "$GITHUB_OUTPUT"
+          echo "force=${FORCE_UPDATE:-false}" >> "$GITHUB_OUTPUT"
+
+      - name: Download and inspect latest deb packages
+        if: steps.validators.outputs.download == 'true'
+        id: release
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 900 \
+            'https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb' \
+            --output chatgpt_amd64.deb
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 900 \
+            'https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_arm64.deb' \
+            --output chatgpt_arm64.deb
+
+          AMD64_VERSION=$(dpkg-deb --field chatgpt_amd64.deb Version)
+          ARM64_VERSION=$(dpkg-deb --field chatgpt_arm64.deb Version)
+          AMD64_ARCH=$(dpkg-deb --field chatgpt_amd64.deb Architecture)
+          ARM64_ARCH=$(dpkg-deb --field chatgpt_arm64.deb Architecture)
+
+          [[ "$AMD64_ARCH" == amd64 ]] || { echo "Unexpected amd64 package architecture: $AMD64_ARCH" >&2; exit 1; }
+          [[ "$ARM64_ARCH" == arm64 ]] || { echo "Unexpected arm64 package architecture: $ARM64_ARCH" >&2; exit 1; }
+          [[ "$AMD64_VERSION" == "$ARM64_VERSION" ]] || {
+            echo "Architecture versions differ: amd64=$AMD64_VERSION arm64=$ARM64_VERSION" >&2
+            exit 1
+          }
+          [[ "$AMD64_VERSION" =~ ^[0-9]+(\.[0-9]+)+$ ]] || {
+            echo "Unsupported upstream version format: $AMD64_VERSION" >&2
+            exit 1
+          }
+          if [[ -n "$INPUT_VERSION" && "${INPUT_VERSION#v}" != "$AMD64_VERSION" ]]; then
+            echo "Expected version ${INPUT_VERSION#v}, but latest deb contains $AMD64_VERSION" >&2
+            exit 1
+          fi
+
+          echo "version=$AMD64_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Compare release with PKGBUILD
+        id: compare
+        env:
+          DOWNLOADED: ${{ steps.validators.outputs.download }}
+          FORCE_UPDATE: ${{ steps.validators.outputs.force }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          CURRENT_VERSION=$(sed -n 's/^pkgver=//p' codex-desktop-app/PKGBUILD)
+          PACKAGE_UPDATE=false
+          BUMP_REL=false
+
+          if [[ "$DOWNLOADED" == true ]]; then
+            if [[ "$LATEST_VERSION" != "$CURRENT_VERSION" ]]; then
+              OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
+              [[ "$OLDEST_VERSION" == "$CURRENT_VERSION" ]] || {
+                echo "Refusing automatic downgrade from $CURRENT_VERSION to $LATEST_VERSION" >&2
+                exit 1
+              }
+              PACKAGE_UPDATE=true
+            else
+              PACKAGE_UPDATE=true
+              BUMP_REL=true
+              echo "Upstream validators changed without a Version change"
+            fi
+          fi
+
+          if [[ "$FORCE_UPDATE" == true && "$PACKAGE_UPDATE" == false ]]; then
+            PACKAGE_UPDATE=true
+            BUMP_REL=true
+          fi
+
+          echo "package_update=$PACKAGE_UPDATE" >> "$GITHUB_OUTPUT"
+          echo "bump_rel=$BUMP_REL" >> "$GITHUB_OUTPUT"
+
+      - name: Update package metadata
+        if: steps.validators.outputs.download == 'true' || steps.compare.outputs.package_update == 'true'
+        env:
+          AMD64_ETAG: ${{ steps.validators.outputs.amd64_etag }}
+          ARM64_ETAG: ${{ steps.validators.outputs.arm64_etag }}
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          DOWNLOADED: ${{ steps.validators.outputs.download }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+          PACKAGE_UPDATE: ${{ steps.compare.outputs.package_update }}
+        run: |
+          set -euo pipefail
+          cd codex-desktop-app
+
+          if [[ "$DOWNLOADED" == true ]]; then
+            [[ -z "$AMD64_ETAG" ]] || sed -i "s/^ETAG_X86_64=.*/ETAG_X86_64=$AMD64_ETAG/" upstream.env
+            [[ -z "$ARM64_ETAG" ]] || sed -i "s/^ETAG_AARCH64=.*/ETAG_AARCH64=$ARM64_ETAG/" upstream.env
+          fi
+
+          if [[ "$PACKAGE_UPDATE" == true ]]; then
+            if [[ "$BUMP_REL" == true ]]; then
+              CURRENT_REL=$(sed -n 's/^pkgrel=//p' PKGBUILD)
+              sed -i "s/^pkgrel=.*/pkgrel=$((CURRENT_REL + 1))/" PKGBUILD
+            else
+              sed -i "s/^pkgver=.*/pkgver=$LATEST_VERSION/" PKGBUILD
+              sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
+            fi
+
+          fi
+
+      - name: Commit changes
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- codex-desktop-app/PKGBUILD codex-desktop-app/upstream.env; then
+            echo "No package metadata changes to commit"
+            exit 0
+          fi
+
+          VERSION=$(sed -n 's/^pkgver=//p' codex-desktop-app/PKGBUILD)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add codex-desktop-app/PKGBUILD codex-desktop-app/upstream.env
+          git commit \
+            -m "Keep the Codex desktop package aligned with its mutable upstream" \
+            -m "The official latest URLs do not expose a version in their paths, so the release monitor reads Debian metadata and lets the AUR publisher calculate checksums." \
+            -m "Constraint: Upstream exposes mutable latest URLs instead of immutable versioned assets" \
+            -m "Confidence: high" \
+            -m "Scope-risk: narrow" \
+            -m "Tested: Validated version and architecture metadata for both deb packages" \
+            -m "Related: codex-desktop-app $VERSION"
+          git push
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.package_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@084b0d9b15415bf9cdb65d44dad1efe37a354050 # v4.2.0
+        with:
+          pkgname: codex-desktop-app
+          pkgbuild: ./codex-desktop-app/PKGBUILD
+          # Include the launcher required by source=(); upstream.env remains
+          # GitHub-only workflow state and must never be published to AUR.
+          assets: ./codex-desktop-app/chatgpt-launcher.sh
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh . chatgpt-launcher.sh && test -f chatgpt-launcher.sh && test ! -e upstream.env
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && 'Refresh mutable upstream package contents' || 'Update to latest upstream version' }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519

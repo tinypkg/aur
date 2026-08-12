@@ -3,6 +3,7 @@
 set -euo pipefail
 
 workdir=${1:-.}
+shift || true
 
 if [[ ! -d "${workdir}" ]]; then
   echo "workdir does not exist: ${workdir}" >&2
@@ -19,6 +20,12 @@ for path in "${workdir}"/*; do
       continue
       ;;
   esac
+
+  for asset in "$@"; do
+    if [[ "${name}" == "${asset}" ]]; then
+      continue 2
+    fi
+  done
 
   rm -rf -- "${path}"
 done

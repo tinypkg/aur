@@ -4,6 +4,7 @@
 
 ## 包含的软件包
 
+- **[codex-desktop-app](https://aur.archlinux.org/packages/codex-desktop-app)** - OpenAI 官方 ChatGPT 桌面应用，集成 Codex（[官网](https://chatgpt.com/codex/)）
 - **[fizzy-cli-bin](https://aur.archlinux.org/packages/fizzy-cli-bin)** - Fizzy 命令行客户端，可从终端或 AI Agent 管理看板、卡片、评论和任务（[官网](https://fizzy.do) · [源码](https://github.com/basecamp/fizzy-cli)）
 - **[bast-bin](https://aur.archlinux.org/packages/bast-bin)** - 终端中的 SSH 主机浏览器与密钥管理工具，可快速查找主机、管理密钥并发起连接（[官网](https://bast.sh) · [源码](https://github.com/ellipse-software/bast)）
 - **[druk-bin](https://aur.archlinux.org/packages/druk-bin)** - 终端代码编辑器，支持文件树、标签页、搜索、Git 状态和 30 多种语言的语法高亮（[源码](https://github.com/letstri/druk)）

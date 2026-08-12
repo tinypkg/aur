@@ -18,12 +18,13 @@ touch "${workdir}/fix.patch"
 touch "${workdir}/service.conf"
 touch "${workdir}/daemon.service"
 touch "${workdir}/app.desktop"
+touch "${workdir}/launcher.sh"
 touch "${workdir}/opencli-rs-bin-0.2.3-x86_64.tar.gz"
 touch "${workdir}/opencli-rs"
 mkdir -p "${workdir}/src" "${workdir}/pkg" "${workdir}/.git"
 touch "${workdir}/src/source.tmp" "${workdir}/pkg/package.tmp"
 
-bash "${PRUNE_SCRIPT}" "${workdir}"
+bash "${PRUNE_SCRIPT}" "${workdir}" launcher.sh
 
 test -f "${workdir}/PKGBUILD"
 test -f "${workdir}/.SRCINFO"
@@ -32,6 +33,7 @@ test -f "${workdir}/fix.patch"
 test -f "${workdir}/service.conf"
 test -f "${workdir}/daemon.service"
 test -f "${workdir}/app.desktop"
+test -f "${workdir}/launcher.sh"
 test -d "${workdir}/.git"
 
 test ! -e "${workdir}/opencli-rs-bin-0.2.3-x86_64.tar.gz"
