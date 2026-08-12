@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=cc-switch-bin
 pkgver=3.19.2
-pkgrel=2
+pkgrel=3
 pkgdesc="A cross-platform desktop All-in-One assistant tool for Claude Code, Codex & Gemini CLI."
 arch=('x86_64' 'aarch64')
 url="https://github.com/farion1231/cc-switch"
