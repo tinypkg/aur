@@ -89,7 +89,7 @@ jobs:
 
       - name: Publish to AUR
         if: steps.compare.outputs.needs_update == 'true'
-        uses: KSXGitHub/github-actions-deploy-aur@v4.1.3
+        uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
         with:
           pkgname: karing-bin
           pkgbuild: ./karing-bin/PKGBUILD
