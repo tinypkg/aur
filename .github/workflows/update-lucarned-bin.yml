@@ -30,7 +30,7 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            VERSION=$(curl -s https://api.github.com/repos/tuchg/Lucarne/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            VERSION=$(curl -fsSL -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/tuchg/Lucarne/releases/latest | jq -er '.tag_name' | sed 's/^v//')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 

@@ -30,7 +30,7 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             VERSION="${{ github.event.inputs.version }}"
           else
-            VERSION=$(curl -s https://api.github.com/repos/manyougz/velotype/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            VERSION=$(curl -fsSL -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/manyougz/velotype/releases/latest | jq -er '.tag_name' | sed 's/^v//')
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 

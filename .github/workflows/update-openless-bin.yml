@@ -32,7 +32,7 @@ jobs:
           else
             # -L follows the appergb -> Open-Less rename redirect; -f fails on HTTP errors.
             # grep extracts the numeric version from tags like "v1.3.5-tauri".
-            VERSION=$(curl -fsSL "https://api.github.com/repos/Open-Less/openless/releases/latest" | jq -r '.tag_name' | grep -oE '[0-9]+(\.[0-9]+)+' | head -1 || true)
+            VERSION=$(curl -fsSL -H "Authorization: Bearer ${{ github.token }}" "https://api.github.com/repos/Open-Less/openless/releases/latest" | jq -er '.tag_name' | grep -oE '[0-9]+(\.[0-9]+)+' | head -1 || true)
           fi
           if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
             echo "::error::Failed to detect a valid upstream version from Open-Less/openless"

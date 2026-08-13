@@ -35,6 +35,7 @@ jobs:
             TAG=$(curl --fail --silent --show-error --location \
               --connect-timeout 10 --max-time 30 --retry 3 \
               -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ github.token }}" \
               https://api.github.com/repos/obdev/littlesnitch-linux/releases/latest \
               | jq -er '.tag_name')
             VERSION="${TAG##*/}"

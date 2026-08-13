@@ -30,7 +30,7 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             UPSTREAM="${{ github.event.inputs.version }}"
           else
-            UPSTREAM=$(curl -s https://api.github.com/repos/nowledge-co/con-terminal/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            UPSTREAM=$(curl -fsSL -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/nowledge-co/con-terminal/releases/latest | jq -er '.tag_name' | sed 's/^v//')
           fi
           # Convert upstream version (0.1.0-beta.60) to Arch convention (0.1.0.beta.60)
           ARCH_VERSION="${UPSTREAM//-/.}"

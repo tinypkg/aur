@@ -36,6 +36,7 @@ jobs:
             else
               echo "::warning::Failed to get version from dl.ccswitch.io/latest.json; falling back to GitHub Releases API"
               VERSION=$(curl --fail --silent --show-error --location --retry 3 \
+                --header "Authorization: Bearer ${{ github.token }}" \
                 https://api.github.com/repos/farion1231/cc-switch/releases/latest | \
                 jq -er '.tag_name | strings | select(length > 0)')
             fi

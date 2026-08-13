@@ -34,6 +34,7 @@ jobs:
             VERSION="${INPUT_VERSION#v}"
           else
             VERSION=$(curl -fsSL --retry 3 \
+              -H "Authorization: Bearer ${{ github.token }}" \
               https://api.github.com/repos/basecamp/fizzy-cli/releases/latest | \
               jq -er '.tag_name | sub("^v"; "")')
           fi
