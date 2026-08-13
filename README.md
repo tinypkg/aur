@@ -4,6 +4,7 @@
 
 ## 包含的软件包
 
+- **[cherry-studio-desktop-bin](https://aur.archlinux.org/packages/cherry-studio-desktop-bin)** - AI productivity studio with smart chat, autonomous agents, and 300+ assistants（[官网](https://cherryai.com) · [源码](https://github.com/CherryHQ/cherry-studio)）
 - **[chatgpt-desktop-app-bin](https://aur.archlinux.org/packages/chatgpt-desktop-app-bin)** - OpenAI 官方 ChatGPT 桌面应用，集成 Codex（[官网](https://chatgpt.com/codex/)）
 - **[fizzy-cli-bin](https://aur.archlinux.org/packages/fizzy-cli-bin)** - Fizzy 命令行客户端，可从终端或 AI Agent 管理看板、卡片、评论和任务（[官网](https://fizzy.do) · [源码](https://github.com/basecamp/fizzy-cli)）
 - **[bast-bin](https://aur.archlinux.org/packages/bast-bin)** - 终端中的 SSH 主机浏览器与密钥管理工具，可快速查找主机、管理密钥并发起连接（[官网](https://bast.sh) · [源码](https://github.com/ellipse-software/bast)）
