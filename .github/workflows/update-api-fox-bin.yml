@@ -1,0 +1,211 @@
+name: Update api-fox-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Expected upstream version. Leave empty to read it from the latest deb."
+        required: false
+        type: string
+      force:
+        description: "Force verification and publishing"
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: "0 * * * *"
+
+concurrency:
+  group: aur-api-fox-bin
+  cancel-in-progress: false
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check upstream validator
+        id: validator
+        env:
+          FORCE_UPDATE: ${{ inputs.force }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          header_value() {
+            local url=$1
+            local header=$2
+            curl --fail --silent --show-error --location --head \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              "$url" |
+              awk -v wanted="$header" '
+                tolower($1) == tolower(wanted) ":" {
+                  sub(/^[^:]+:[[:space:]]*/, "")
+                  sub(/\r$/, "")
+                  print
+                }
+              ' | tail -n1
+          }
+
+          AMD64_URL='https://file-assets.apifox.com/download/Apifox-linux-deb-latest.zip'
+          AMD64_ETAG=$(header_value "$AMD64_URL" etag)
+          CURRENT_ETAG=$(sed -n 's/^ETAG_X86_64=//p' api-fox-bin/upstream.env)
+          AUR_COUNT=$(
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+              'https://aur.archlinux.org/rpc/?v=5&type=info&arg=api-fox-bin' |
+              jq -er '.resultcount'
+          )
+
+          if [[ "$AUR_COUNT" == 0 ]]; then
+            echo "first_publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "first_publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [[ "$AUR_COUNT" == 0 || "${FORCE_UPDATE:-false}" == true || \
+                -n "${INPUT_VERSION:-}" || -z "$AMD64_ETAG" || \
+                "$AMD64_ETAG" != "$CURRENT_ETAG" ]]; then
+            echo "download=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "download=false" >> "$GITHUB_OUTPUT"
+            echo "The upstream package is unchanged"
+          fi
+
+          echo "amd64_etag=$AMD64_ETAG" >> "$GITHUB_OUTPUT"
+          echo "force=${FORCE_UPDATE:-false}" >> "$GITHUB_OUTPUT"
+
+      - name: Download and inspect latest deb package
+        if: steps.validator.outputs.download == 'true'
+        id: release
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 1200 \
+            'https://file-assets.apifox.com/download/Apifox-linux-deb-latest.zip' \
+            --output apifox-amd64.zip
+
+          mapfile -t DEB_MEMBERS < <(bsdtar -tf apifox-amd64.zip | awk '/[.]deb$/')
+          [[ ${#DEB_MEMBERS[@]} -eq 1 ]] || {
+            echo "Expected exactly one deb in the latest zip" >&2
+            exit 1
+          }
+          bsdtar -xOf apifox-amd64.zip "${DEB_MEMBERS[0]}" > apifox-amd64.deb
+
+          VERSION=$(dpkg-deb --field apifox-amd64.deb Version)
+          ARCHITECTURE=$(dpkg-deb --field apifox-amd64.deb Architecture)
+          [[ "$ARCHITECTURE" == amd64 ]] || {
+            echo "Unexpected package architecture: $ARCHITECTURE" >&2
+            exit 1
+          }
+          [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+            echo "Unsupported upstream version format: $VERSION" >&2
+            exit 1
+          }
+          if [[ -n "${INPUT_VERSION:-}" && "${INPUT_VERSION#v}" != "$VERSION" ]]; then
+            echo "Expected version ${INPUT_VERSION#v}, but the deb contains $VERSION" >&2
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Decide update
+        id: compare
+        env:
+          DOWNLOADED: ${{ steps.validator.outputs.download }}
+          FIRST_PUBLISH: ${{ steps.validator.outputs.first_publish }}
+          FORCE_UPDATE: ${{ steps.validator.outputs.force }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          CURRENT_VERSION=$(sed -n 's/^pkgver=//p' api-fox-bin/PKGBUILD)
+          PACKAGE_UPDATE=false
+          BUMP_REL=false
+
+          if [[ "$DOWNLOADED" == true ]]; then
+            if [[ "$LATEST_VERSION" != "$CURRENT_VERSION" ]]; then
+              OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
+              [[ "$OLDEST_VERSION" == "$CURRENT_VERSION" ]] || {
+                echo "Refusing automatic downgrade from $CURRENT_VERSION to $LATEST_VERSION" >&2
+                exit 1
+              }
+              PACKAGE_UPDATE=true
+            elif [[ "$FIRST_PUBLISH" == true ]]; then
+              PACKAGE_UPDATE=true
+            else
+              PACKAGE_UPDATE=true
+              BUMP_REL=true
+              echo "The upstream ETag changed without a Version change"
+            fi
+          elif [[ "$FORCE_UPDATE" == true ]]; then
+            PACKAGE_UPDATE=true
+            BUMP_REL=true
+          fi
+
+          echo "package_update=$PACKAGE_UPDATE" >> "$GITHUB_OUTPUT"
+          echo "bump_rel=$BUMP_REL" >> "$GITHUB_OUTPUT"
+
+      - name: Stage PKGBUILD
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd api-fox-bin
+
+          if [[ "$BUMP_REL" == true ]]; then
+            CURRENT_REL=$(sed -n 's/^pkgrel=//p' PKGBUILD)
+            sed -i "s/^pkgrel=.*/pkgrel=$((CURRENT_REL + 1))/" PKGBUILD
+          else
+            sed -i "s/^pkgver=.*/pkgver=$LATEST_VERSION/" PKGBUILD
+            sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
+          fi
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.package_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@084b0d9b15415bf9cdb65d44dad1efe37a354050 # v4.2.0
+        with:
+          pkgname: api-fox-bin
+          pkgbuild: ./api-fox-bin/PKGBUILD
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh . && test ! -e upstream.env
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "Update to ${{ steps.release.outputs.version }}"
+          ssh_keyscan_types: rsa,ecdsa,ed25519
+
+      - name: Record successfully published state
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          AMD64_ETAG: ${{ steps.validator.outputs.amd64_etag }}
+        run: |
+          set -euo pipefail
+
+          if [[ -n "$AMD64_ETAG" ]]; then
+            sed -i "s|^ETAG_X86_64=.*|ETAG_X86_64=$AMD64_ETAG|" api-fox-bin/upstream.env
+          fi
+
+          if git diff --quiet -- api-fox-bin/PKGBUILD api-fox-bin/upstream.env; then
+            echo "No GitHub package state changed"
+            exit 0
+          fi
+
+          VERSION=$(sed -n 's/^pkgver=//p' api-fox-bin/PKGBUILD)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add api-fox-bin/PKGBUILD api-fox-bin/upstream.env
+          git commit -m "Keep api-fox-bin aligned with Apifox $VERSION"
+          git push

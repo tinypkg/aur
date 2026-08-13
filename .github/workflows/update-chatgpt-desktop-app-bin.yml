@@ -13,7 +13,11 @@ on:
         default: false
         type: boolean
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: "0 * * * *"
+
+concurrency:
+  group: aur-chatgpt-desktop-app-bin
+  cancel-in-progress: false
 
 jobs:
   update-pkgbuild:

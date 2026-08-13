@@ -6,6 +6,7 @@
 
 - **[cherry-studio-desktop-bin](https://aur.archlinux.org/packages/cherry-studio-desktop-bin)** - AI productivity studio with smart chat, autonomous agents, and 300+ assistants（[官网](https://cherryai.com) · [源码](https://github.com/CherryHQ/cherry-studio)）
 - **[chatgpt-desktop-app-bin](https://aur.archlinux.org/packages/chatgpt-desktop-app-bin)** - OpenAI 官方 ChatGPT 桌面应用，集成 Codex（[官网](https://chatgpt.com/codex/)）
+- **[api-fox-bin](https://aur.archlinux.org/packages/api-fox-bin)** - Apifox API 文档、调试、Mock 与自动化测试工具（[官网](https://apifox.com)）
 - **[fizzy-cli-bin](https://aur.archlinux.org/packages/fizzy-cli-bin)** - Fizzy 命令行客户端，可从终端或 AI Agent 管理看板、卡片、评论和任务（[官网](https://fizzy.do) · [源码](https://github.com/basecamp/fizzy-cli)）
 - **[bast-bin](https://aur.archlinux.org/packages/bast-bin)** - 终端中的 SSH 主机浏览器与密钥管理工具，可快速查找主机、管理密钥并发起连接（[官网](https://bast.sh) · [源码](https://github.com/ellipse-software/bast)）
 - **[druk-bin](https://aur.archlinux.org/packages/druk-bin)** - 终端代码编辑器，支持文件树、标签页、搜索、Git 状态和 30 多种语言的语法高亮（[源码](https://github.com/letstri/druk)）
@@ -50,7 +51,7 @@
 
 本仓库使用 GitHub Actions 自动检测上游版本更新并发布到 AUR：
 
-- ⏰ 每 12 小时自动检查新版本
+- ⏰ 按各软件包的发布节奏定时检查新版本（ChatGPT 与 Apifox 每小时检查）
 - 🔄 自动更新 PKGBUILD 文件
 - ✅ 自动计算并更新 checksum
 - 🚀 自动发布到 AUR
