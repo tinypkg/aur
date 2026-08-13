@@ -95,12 +95,12 @@ jobs:
             'https://file-assets.apifox.com/download/Apifox-linux-deb-latest.zip' \
             --output apifox-amd64.zip
 
-          mapfile -t DEB_MEMBERS < <(bsdtar -tf apifox-amd64.zip | awk '/[.]deb$/')
+          mapfile -t DEB_MEMBERS < <(unzip -Z1 apifox-amd64.zip | awk '/[.]deb$/')
           [[ ${#DEB_MEMBERS[@]} -eq 1 ]] || {
             echo "Expected exactly one deb in the latest zip" >&2
             exit 1
           }
-          bsdtar -xOf apifox-amd64.zip "${DEB_MEMBERS[0]}" > apifox-amd64.deb
+          unzip -p apifox-amd64.zip "${DEB_MEMBERS[0]}" > apifox-amd64.deb
 
           VERSION=$(dpkg-deb --field apifox-amd64.deb Version)
           ARCHITECTURE=$(dpkg-deb --field apifox-amd64.deb Architecture)
