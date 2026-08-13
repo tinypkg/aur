@@ -2,8 +2,8 @@
 # Official downloads: https://chatgpt.com/codex/
 
 pkgname=chatgpt-desktop-app-bin
-pkgver=26.803.81509
-pkgrel=2
+pkgver=26.810.41047
+pkgrel=1
 pkgdesc="Official ChatGPT desktop app with Codex"
 arch=('x86_64' 'aarch64')
 url="https://chatgpt.com/codex/"
