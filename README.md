@@ -25,6 +25,7 @@
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop ([主页](https://confirmo.love))
 - **[cumora-bin](https://aur.archlinux.org/packages/cumora-bin)** - A workspace where AI teammates live, not visit. ([主页](https://cumora.ai))
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
+- **[docker-sbx-bin](https://aur.archlinux.org/packages/docker-sbx-bin)** - Docker Sandboxes：在隔离的 microVM 沙箱中运行 AI 编程代理（[官网](https://www.docker.com/products/docker-sandboxes/) · [发布](https://github.com/docker/sbx-releases)）
 - **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites ([主页](https://github.com/nashsu/AutoCLI))
 - **[docking-bin](https://aur.archlinux.org/packages/docking-bin)** - A lightweight, feature-rich dock for Linux written in Python with GTK 3 and Cairo ([主页](https://github.com/edumucelli/docking))
 - **[dbx-bin](https://aur.archlinux.org/packages/dbx-bin)** - Open-source, lightweight, cross-platform database client (Tauri 2) ([主页](https://github.com/t8y2/dbx))
