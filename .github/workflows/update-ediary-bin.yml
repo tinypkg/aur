@@ -36,9 +36,9 @@ jobs:
           fi
 
           UPSTREAM_VERSION=${TAG%-*}
-          PKGVER=${UPSTREAM_VERSION//~/.}
+          PKGVER=${UPSTREAM_VERSION//\~/.}
           PKGREL=${TAG##*-}
-          EXPECTED_DESKTOP_VERSION=${UPSTREAM_VERSION//~/-}
+          EXPECTED_DESKTOP_VERSION=${UPSTREAM_VERSION//\~/-}
           DOWNLOAD_URL="https://down.haoxg.net/download/ediary/linux/ediary_${TAG}_amd64.deb"
 
           curl --fail --silent --show-error --location \
