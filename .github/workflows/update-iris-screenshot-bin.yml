@@ -1,0 +1,116 @@
+name: Update iris-screenshot-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g., 0.4.1). Leave empty to auto-detect latest release."
+        required: false
+        type: string
+      force:
+        description: "Force update even if version is the same (bump pkgrel)"
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: "0 */12 * * *"
+
+concurrency:
+  group: aur-iris-screenshot-bin
+  cancel-in-progress: false
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Get latest version
+        id: get_version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(curl --fail --silent --show-error --location --retry 3 \
+              --retry-all-errors --connect-timeout 15 --max-time 120 \
+              https://api.github.com/repos/brijr/iris/releases/latest | \
+              jq -er '.tag_name | sub("^v"; "")')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get current version
+        id: current_version
+        run: |
+          CURRENT=$(grep '^pkgver=' iris-screenshot-bin/PKGBUILD | cut -d'=' -f2)
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: compare
+        run: |
+          TARGET="${{ steps.get_version.outputs.version }}"
+          CURRENT="${{ steps.current_version.outputs.current }}"
+          FORCE="${{ github.event.inputs.force }}"
+          if [ "$TARGET" = "$CURRENT" ]; then
+            if [ "$FORCE" = "true" ]; then
+              echo "needs_update=true" >> $GITHUB_OUTPUT
+              echo "bump_rel=true" >> $GITHUB_OUTPUT
+              echo "Forcing pkgrel bump for version $TARGET"
+            else
+              echo "needs_update=false" >> $GITHUB_OUTPUT
+              echo "Version $TARGET is already up to date"
+            fi
+          else
+            if [ "$(printf '%s\n%s\n' "$CURRENT" "$TARGET" | sort -V | head -n1)" = "$TARGET" ]; then
+              echo "Refusing automatic downgrade from $CURRENT to $TARGET" >&2
+              exit 1
+            fi
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "bump_rel=false" >> $GITHUB_OUTPUT
+            echo "Updating from $CURRENT to $TARGET"
+          fi
+
+      - name: Update PKGBUILD version
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          cd iris-screenshot-bin
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            # Bump pkgrel for same version fix
+            CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
+            NEW_REL=$((CURRENT_REL + 1))
+            sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
+            echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
+          else
+            # New version - update version and reset pkgrel to 1
+            sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
+            sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
+          fi
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
+        with:
+          pkgname: iris-screenshot-bin
+          pkgbuild: ./iris-screenshot-bin/PKGBUILD
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', steps.get_version.outputs.version) || format('Update to version {0}', steps.get_version.outputs.version) }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519
+
+      - name: Commit changes to GitHub after successful AUR publish
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add iris-screenshot-bin/PKGBUILD
+          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+            git commit -m "Bump pkgrel for iris-screenshot-bin ${{ steps.get_version.outputs.version }}"
+          else
+            git commit -m "Update iris-screenshot-bin to version ${{ steps.get_version.outputs.version }}"
+          fi
+          git push
