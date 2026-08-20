@@ -2,7 +2,7 @@
 
 pkgname=minke-bin
 pkgver=0.1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Minke desktop agent powered by DeepSeek Harness"
 arch=('x86_64')
 url="https://github.com/lencx/Minke"
