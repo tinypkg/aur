@@ -2,7 +2,7 @@
 
 pkgname=iris-screenshot-bin
 pkgver=0.4.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Screenshots of live websites. Minimal interface, powerful engine."
 arch=('x86_64')
 url="https://github.com/brijr/iris"
