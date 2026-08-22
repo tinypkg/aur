@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=tcut-bin
-pkgver=0.6.4
+pkgver=1.0.0
 pkgrel=1
 pkgdesc="Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun"
 arch=('x86_64' 'aarch64')
