@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=cherry-studio-desktop-bin
-pkgver=2.0.8
+pkgver=2.0.9
 pkgrel=1
 pkgdesc="AI productivity studio with smart chat, autonomous agents, and 300+ assistants"
 arch=('x86_64' 'aarch64')
