@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=luvus-bin
 pkgver=0.12.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Mission control for your AI coding agents"
 arch=('x86_64' 'aarch64')
 url="https://github.com/RizRiyz/luvus"
