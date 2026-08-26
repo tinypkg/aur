@@ -21,6 +21,7 @@
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop ([主页](https://confirmo.love))
 - **[cumora-bin](https://aur.archlinux.org/packages/cumora-bin)** - A workspace where AI teammates live, not visit. ([主页](https://cumora.ai))
 - **[dbx-bin](https://aur.archlinux.org/packages/dbx-bin)** - Open-source, lightweight, cross-platform database client (Tauri 2) ([主页](https://github.com/t8y2/dbx))
+- **[dim-agent-bin](https://aur.archlinux.org/packages/dim-agent-bin)** - 一个可在桌面、终端、脚本和编辑器中运行的本地 agent 运行时，模型任你选择、随项目成长（[官网](https://dimagent.com)）
 - **[docker-sbx-bin](https://aur.archlinux.org/packages/docker-sbx-bin)** - Docker Sandboxes：在隔离的 microVM 沙箱中运行 AI 编程代理（[官网](https://www.docker.com/products/docker-sandboxes/) · [发布](https://github.com/docker/sbx-releases)）
 - **[docking-bin](https://aur.archlinux.org/packages/docking-bin)** - A lightweight, feature-rich dock for Linux written in Python with GTK 3 and Cairo ([主页](https://github.com/edumucelli/docking))
 - **[druk-bin](https://aur.archlinux.org/packages/druk-bin)** - 终端代码编辑器，支持文件树、标签页、搜索、Git 状态和 30 多种语言的语法高亮（[源码](https://github.com/letstri/druk)）
