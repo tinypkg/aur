@@ -1,0 +1,133 @@
+name: Update mise-musl-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g., 2026.8.14). Leave empty to auto-detect latest version."
+        required: false
+        type: string
+      force:
+        description: "Force update even if version is the same (bump pkgrel)"
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: "30 0 * * *"
+
+concurrency:
+  group: mise-package-updates
+  cancel-in-progress: false
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Get latest version
+        id: get_version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${INPUT_VERSION:-}" ]]; then
+            VERSION="${INPUT_VERSION#v}"
+          else
+            VERSION=$(curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              https://api.github.com/repos/jdx/mise/releases/latest |
+              jq -er '.tag_name | select(type == "string" and length > 0) | sub("^v"; "")')
+          fi
+          [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+            echo "Unsupported version: $VERSION" >&2
+            exit 1
+          }
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Get current version
+        id: current_version
+        run: |
+          set -euo pipefail
+          CURRENT=$(sed -n 's/^pkgver=//p' mise-musl-bin/PKGBUILD)
+          REL=$(sed -n 's/^pkgrel=//p' mise-musl-bin/PKGBUILD)
+          [[ "$CURRENT" =~ ^[0-9]+([.][0-9]+)+$ && "$REL" =~ ^[0-9]+$ ]]
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "rel=$REL" >> "$GITHUB_OUTPUT"
+
+      - name: Compare versions
+        id: compare
+        env:
+          CURRENT: ${{ steps.current_version.outputs.current }}
+          FORCE: ${{ inputs.force }}
+          VERSION: ${{ steps.get_version.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [[ "$VERSION" == "$CURRENT" ]]; then
+            if [[ "${FORCE:-false}" == true ]]; then
+              echo 'needs_update=true' >> "$GITHUB_OUTPUT"
+              echo 'bump_rel=true' >> "$GITHUB_OUTPUT"
+            else
+              echo 'needs_update=false' >> "$GITHUB_OUTPUT"
+              echo 'bump_rel=false' >> "$GITHUB_OUTPUT"
+            fi
+          else
+            oldest=$(printf '%s\n%s\n' "$CURRENT" "$VERSION" | sort -V | head -n1)
+            [[ "$oldest" == "$CURRENT" ]] || {
+              echo "Refusing automatic downgrade from $CURRENT to $VERSION" >&2
+              exit 1
+            }
+            echo 'needs_update=true' >> "$GITHUB_OUTPUT"
+            echo 'bump_rel=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update PKGBUILD
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          VERSION: ${{ steps.get_version.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd mise-musl-bin
+          if [[ "$BUMP_REL" == true ]]; then
+            REL=$(sed -n 's/^pkgrel=//p' PKGBUILD)
+            sed -i "s/^pkgrel=.*/pkgrel=$((REL + 1))/" PKGBUILD
+          else
+            sed -i "s/^pkgver=.*/pkgver=$VERSION/" PKGBUILD
+            sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
+          fi
+
+      - name: Commit changes
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          VERSION: ${{ steps.get_version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add mise-musl-bin/PKGBUILD
+          if [[ "$BUMP_REL" == true ]]; then
+            git commit -m "Bump pkgrel for mise-musl-bin $VERSION"
+          else
+            git commit -m "Update mise-musl-bin to version $VERSION"
+          fi
+          git push
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
+        with:
+          pkgname: mise-musl-bin
+          pkgbuild: ./mise-musl-bin/PKGBUILD
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for mise-musl-bin {0}', steps.get_version.outputs.version) || format('Update mise-musl-bin to version {0}', steps.get_version.outputs.version) }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519

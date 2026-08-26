@@ -1,8 +1,8 @@
 # Maintainer: czyt <czytcn@gmail.com>
-pkgname=mise-bin
+pkgname=mise-musl-bin
 pkgver=2026.8.14
-pkgrel=3
-pkgdesc="dev tools, env vars, task runner"
+pkgrel=1
+pkgdesc="Portable musl build of mise: dev tools, env vars, task runner"
 arch=('x86_64' 'aarch64')
 url="https://github.com/jdx/mise"
 license=('MIT')
@@ -13,10 +13,10 @@ optdepends=(
     'zsh: zsh completion support'
 )
 provides=('mise')
-conflicts=('mise' 'mise-musl-bin' 'rtx')
+conflicts=('mise' 'mise-bin' 'rtx')
 replaces=('rtx')
-source_x86_64=("https://github.com/jdx/mise/releases/download/v${pkgver}/mise-v${pkgver}-linux-x64.tar.xz")
-source_aarch64=("https://github.com/jdx/mise/releases/download/v${pkgver}/mise-v${pkgver}-linux-arm64.tar.xz")
+source_x86_64=("https://github.com/jdx/mise/releases/download/v${pkgver}/mise-v${pkgver}-linux-x64-musl.tar.xz")
+source_aarch64=("https://github.com/jdx/mise/releases/download/v${pkgver}/mise-v${pkgver}-linux-arm64-musl.tar.xz")
 sha256sums_x86_64=('SKIP')
 sha256sums_aarch64=('SKIP')
 
