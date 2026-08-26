@@ -9,7 +9,6 @@ license=('custom')
 depends=(
   'gtk3'
   'libnotify'
-  'libnss'
   'libxss'
   'libxtst'
   'xdg-utils'
