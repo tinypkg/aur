@@ -49,6 +49,7 @@
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
 - **[tldraw-offline-bin](https://aur.archlinux.org/packages/tldraw-offline-bin)** - A local whiteboard for you and your agents ([主页](https://github.com/tldraw/tldraw-offline))
+- **[thinkrail-bin](https://aur.archlinux.org/packages/thinkrail-bin)** - Vibe code with pi in a lightweight, real IDE - The Vibe You Need ([官网](https://thinkrail.ai) · [源码](https://github.com/JetBrains/thinkrail))
 - **[tty7-bin](https://aur.archlinux.org/packages/tty7-bin)** - A terminal workbench in pure Rust: shells, persistent sessions, SSH, coding agents ([主页](https://github.com/l0ng-ai/tty7))
 - **[tunnix-bin](https://aur.archlinux.org/packages/tunnix-bin)** - An encrypted SOCKS5/HTTP proxy tunnel over HTTP/SSE ([主页](https://github.com/aeroxy/tunnix))
 - **[uniclipboard-bin](https://aur.archlinux.org/packages/uniclipboard-bin)** - Real-time clipboard sync across macOS, Windows and Linux — local-first, peer-to-peer, and end-to-end encrypted ([主页](https://www.uniclipboard.app))
