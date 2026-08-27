@@ -4,16 +4,25 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version number (e.g., 0.4.11). Leave empty to auto-detect latest version."
+        description: 'Expected upstream version (for example, 0.8.2)'
         required: false
         type: string
       force:
-        description: "Force update even if version is the same (bump pkgrel)"
+        description: 'Force verification and a packaging-only pkgrel bump'
+        required: false
+        default: false
+        type: boolean
+      allow_downgrade:
+        description: 'Allow an explicitly requested older version'
         required: false
         default: false
         type: boolean
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: '0 */12 * * *'
+
+concurrency:
+  group: aur-herdr-bin
+  cancel-in-progress: false
 
 jobs:
   update-pkgbuild:
@@ -21,82 +30,195 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Get latest version
-        id: get_version
+      - name: Discover and verify release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          if [[ -n "${INPUT_VERSION:-}" ]]; then
+            VERSION=${INPUT_VERSION#v}
+            [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+              echo "Unsupported requested version: $VERSION" >&2
+              exit 1
+            }
+            API_URL="https://api.github.com/repos/herdrdev/herdr/releases/tags/v${VERSION}"
           else
-            VERSION=$(curl -fsSL -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/herdrdev/herdr/releases/latest | jq -er '.tag_name' | sed 's/^v//')
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            API_URL='https://api.github.com/repos/herdrdev/herdr/releases/latest'
           fi
 
-      - name: Get current version
-        id: current_version
-        run: |
-          CURRENT=$(grep '^pkgver=' herdr-bin/PKGBUILD | cut -d'=' -f2)
-          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+          RELEASE_JSON=$(curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 120 \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'Accept: application/vnd.github+json' \
+            "$API_URL")
+          TAG=$(jq -er '.tag_name | select(type == "string" and length > 1)' <<<"$RELEASE_JSON")
+          VERSION=${TAG#v}
+          [[ "$TAG" == "v${VERSION}" && "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+            echo "Unsupported upstream tag: $TAG" >&2
+            exit 1
+          }
+          [[ $(jq -er '.draft' <<<"$RELEASE_JSON") == false ]] || {
+            echo "Refusing draft release: $TAG" >&2
+            exit 1
+          }
+          [[ -z "${INPUT_VERSION:-}" || "${INPUT_VERSION#v}" == "$VERSION" ]] || {
+            echo "Requested version does not match release tag: $TAG" >&2
+            exit 1
+          }
 
-      - name: Compare versions
+          for asset in herdr-linux-x86_64 herdr-linux-aarch64; do
+            count=$(jq -r --arg name "$asset" '[.assets[] | select(.name == $name)] | length' <<<"$RELEASE_JSON")
+            [[ "$count" == 1 ]] || {
+              echo "Expected exactly one $asset release asset, found $count" >&2
+              exit 1
+            }
+            expected_url="https://github.com/herdrdev/herdr/releases/download/v${VERSION}/${asset}"
+            actual_url=$(jq -er --arg name "$asset" '.assets[] | select(.name == $name) | .browser_download_url' <<<"$RELEASE_JSON")
+            [[ "$actual_url" == "$expected_url" ]] || {
+              echo "Unexpected release asset URL for $asset" >&2
+              exit 1
+            }
+            curl --fail --silent --show-error --location --head \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              "$expected_url" >/dev/null
+          done
+
+          AUR_VERSION=$(
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              'https://aur.archlinux.org/rpc/?v=5&type=info&arg=herdr-bin' |
+              jq -er 'if .resultcount == 0 then "" else .results[0].Version end'
+          )
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "aur_version=$AUR_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Decide whether to publish
         id: compare
+        env:
+          ALLOW_DOWNGRADE: ${{ inputs.allow_downgrade }}
+          AUR_VERSION: ${{ steps.release.outputs.aur_version }}
+          FORCE_UPDATE: ${{ inputs.force }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+          MANUAL_VERSION: ${{ inputs.version }}
         run: |
-          if [ "${{ steps.get_version.outputs.version }}" = "${{ steps.current_version.outputs.current }}" ]; then
-            if [ "${{ github.event.inputs.force }}" = "true" ]; then
-              echo "needs_update=true" >> $GITHUB_OUTPUT
-              echo "bump_rel=true" >> $GITHUB_OUTPUT
-              echo "Forcing pkgrel bump for version ${{ steps.get_version.outputs.version }}"
-            else
-              echo "needs_update=false" >> $GITHUB_OUTPUT
-              echo "Version ${{ steps.get_version.outputs.version }} is already up to date"
+          set -euo pipefail
+          current=$(sed -n 's/^pkgver=//p' herdr-bin/PKGBUILD)
+          rel=$(sed -n 's/^pkgrel=//p' herdr-bin/PKGBUILD)
+          [[ "$current" =~ ^[0-9]+([.][0-9]+)+$ && "$rel" =~ ^[0-9]+$ ]]
+
+          if [[ "$LATEST_VERSION" != "$current" ]]; then
+            oldest=$(printf '%s\n%s\n' "$current" "$LATEST_VERSION" | sort -V | head -n1)
+            if [[ "$oldest" != "$current" ]]; then
+              [[ -n "${MANUAL_VERSION:-}" && "${ALLOW_DOWNGRADE:-false}" == true ]] || {
+                echo "Refusing downgrade from $current to $LATEST_VERSION without explicit authorization" >&2
+                exit 1
+              }
             fi
+            echo 'needs_update=true' >> "$GITHUB_OUTPUT"
+            echo 'bump_rel=false' >> "$GITHUB_OUTPUT"
+          elif [[ "$AUR_VERSION" != "$current-$rel" ]]; then
+            echo 'needs_update=true' >> "$GITHUB_OUTPUT"
+            echo 'bump_rel=false' >> "$GITHUB_OUTPUT"
+            echo 'Publishing the current GitHub state to AUR'
+          elif [[ "${FORCE_UPDATE:-false}" == true ]]; then
+            echo 'needs_update=true' >> "$GITHUB_OUTPUT"
+            echo 'bump_rel=true' >> "$GITHUB_OUTPUT"
           else
-            echo "needs_update=true" >> $GITHUB_OUTPUT
-            echo "bump_rel=false" >> $GITHUB_OUTPUT
-            echo "Updating from ${{ steps.current_version.outputs.current }} to ${{ steps.get_version.outputs.version }}"
+            echo 'needs_update=false' >> "$GITHUB_OUTPUT"
+            echo 'bump_rel=false' >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Update PKGBUILD version
+      - name: Stage PKGBUILD
         if: steps.compare.outputs.needs_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
         run: |
+          set -euo pipefail
           cd herdr-bin
-          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
-            # Bump pkgrel for same version fix
-            CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
-            NEW_REL=$((CURRENT_REL + 1))
-            sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
-            echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
+          if [[ "$BUMP_REL" == true ]]; then
+            rel=$(sed -n 's/^pkgrel=//p' PKGBUILD)
+            sed -i "s/^pkgrel=.*/pkgrel=$((rel + 1))/" PKGBUILD
           else
-            # New version - update version and reset pkgrel to 1
-            sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
-            sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
+            sed -i "s/^pkgver=.*/pkgver=$LATEST_VERSION/" PKGBUILD
+            sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
           fi
 
-      - name: Commit changes
+      - name: Generate shell completions
         if: steps.compare.outputs.needs_update == 'true'
+        env:
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add herdr-bin/PKGBUILD
-          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
-            git commit -m "Bump pkgrel for herdr-bin ${{ steps.get_version.outputs.version }}"
-          else
-            git commit -m "Update herdr-bin to version ${{ steps.get_version.outputs.version }}"
-          fi
-          git push
+          set -euo pipefail
+          binary="$RUNNER_TEMP/herdr"
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 1200 \
+            "https://github.com/herdrdev/herdr/releases/download/v${LATEST_VERSION}/herdr-linux-x86_64" \
+            --output "$binary"
+          chmod 755 "$binary"
+          [[ $("$binary" --version) == "herdr $LATEST_VERSION" ]] || {
+            echo 'Downloaded binary version does not match the release' >&2
+            exit 1
+          }
+
+          "$binary" completion bash > herdr-bin/herdr.bash
+          "$binary" completion zsh > herdr-bin/_herdr
+          "$binary" completion fish > herdr-bin/herdr.fish
+          test -s herdr-bin/herdr.bash
+          test -s herdr-bin/_herdr
+          test -s herdr-bin/herdr.fish
+          grep -q '^_herdr()' herdr-bin/herdr.bash
+          grep -q '^#compdef herdr' herdr-bin/_herdr
 
       - name: Publish to AUR
         if: steps.compare.outputs.needs_update == 'true'
-        uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
+        uses: KSXGitHub/github-actions-deploy-aur@084b0d9b15415bf9cdb65d44dad1efe37a354050 # v4.2.0
         with:
           pkgname: herdr-bin
           pkgbuild: ./herdr-bin/PKGBUILD
+          assets: |
+            ./herdr-bin/herdr.bash
+            ./herdr-bin/_herdr
+            ./herdr-bin/herdr.fish
           updpkgsums: true
-          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          post_process: >-
+            bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+            herdr.bash _herdr herdr.fish
+            && test -s herdr.bash
+            && test -s _herdr
+            && test -s herdr.fish
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', steps.get_version.outputs.version) || format('Update to version {0}', steps.get_version.outputs.version) }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for herdr-bin {0}', steps.release.outputs.version) || format('Publish herdr-bin {0}', steps.release.outputs.version) }}
           ssh_keyscan_types: rsa,ecdsa,ed25519
+
+      - name: Record successful publication in GitHub
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add herdr-bin/PKGBUILD herdr-bin/herdr.bash herdr-bin/_herdr herdr-bin/herdr.fish
+          if git diff --cached --quiet; then
+            echo 'AUR publication required no GitHub metadata change.'
+            exit 0
+          fi
+          if [[ "$BUMP_REL" == true ]]; then
+            git commit -m "Bump pkgrel for herdr-bin $LATEST_VERSION"
+          else
+            git commit -m "Update herdr-bin to version $LATEST_VERSION"
+          fi
+          git push
