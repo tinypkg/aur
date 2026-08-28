@@ -44,6 +44,7 @@
 - **[nowledge-mem-bin](https://aur.archlinux.org/packages/nowledge-mem-bin)** - Desktop app for Nowledge Mem - AI memory and context management ([主页](https://mem.nowledge.co))
 - **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/Open-Less/openless))
 - **[pluely-bin](https://aur.archlinux.org/packages/pluely-bin)** - Privacy-first AI assistant for meetings, interviews, and conversations ([官网](https://pluely.com) · [源码](https://github.com/iamsrikanthnani/pluely))
+- **[pinch-tab-bin](https://aur.archlinux.org/packages/pinch-tab-bin)** - Browser control for AI agents ([官网](https://pinchtab.com) · [源码](https://github.com/pinchtab/pinchtab))
 - **[orbien-desktop-bin](https://aur.archlinux.org/packages/orbien-desktop-bin)** - 轻量高性能的内网穿透工具，提供 Rust 原生跨平台桌面客户端，支持 TCP、QUIC、KCP、WebSocket 传输以及 TCP、UDP、HTTP、HTTPS 代理（[主页](https://github.com/orbien-org/orbien)）
 - **[read-aware-bin](https://aur.archlinux.org/packages/read-aware-bin)** - A local-first, AI-native reader that turns books, highlights, notes, and conversations into durable context ([主页](https://github.com/ahpxex/read-aware))
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
