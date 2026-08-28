@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=pinch-tab-bin
 pkgver=0.15.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Browser control for AI agents"
 arch=('x86_64' 'aarch64')
 url="https://pinchtab.com"
