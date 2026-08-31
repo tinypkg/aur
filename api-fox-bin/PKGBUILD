@@ -2,7 +2,7 @@
 # Official downloads: https://apifox.com/download
 
 pkgname=api-fox-bin
-pkgver=2.8.44
+pkgver=2.8.45
 pkgrel=1
 pkgdesc="Apifox API documentation, debugging, mocking, and automated testing tool"
 arch=('x86_64' 'aarch64')
