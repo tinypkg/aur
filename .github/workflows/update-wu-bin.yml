@@ -76,7 +76,7 @@ jobs:
                 and (.digest | type == "string" and test("^sha256:[0-9a-f]{64}$"))
               )]
               | if length == 1 then true else error("missing, duplicate, or invalid release asset") end
-            ' <<<"$RELEASE")
+            ' <<<"$RELEASE"
           done
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
