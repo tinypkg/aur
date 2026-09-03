@@ -40,6 +40,7 @@
 - **[mimo-code-bin](https://aur.archlinux.org/packages/mimo-code-bin)** - 小米面向开发者的新一代 AI 编程助手，支持无限上下文 ([主页](https://mimo.xiaomi.com/mimocode))
 - **[mise-bin](https://aur.archlinux.org/packages/mise-bin)** - dev tools, env vars, task runner ([主页](https://github.com/jdx/mise))
 - **[mise-musl-bin](https://aur.archlinux.org/packages/mise-musl-bin)** - Portable musl build of mise for dev tools, environment variables, and task running ([主页](https://github.com/jdx/mise))
+- **[modbux-bin](https://aur.archlinux.org/packages/modbux-bin)** - Free open-source Modbus client GUI and server simulator for Modbus TCP, RTU and RTU over TCP ([主页](https://github.com/ploxc/modbux))
 - **[nmem-cli](https://aur.archlinux.org/packages/nmem-cli)** - CLI and TUI for Nowledge Mem - AI memory management ([主页](https://mem.nowledge.co))
 - **[nowledge-mem-bin](https://aur.archlinux.org/packages/nowledge-mem-bin)** - Desktop app for Nowledge Mem - AI memory and context management ([主页](https://mem.nowledge.co))
 - **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/Open-Less/openless))
