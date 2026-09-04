@@ -11,6 +11,7 @@
 - **[blink1-tool-bin](https://aur.archlinux.org/packages/blink1-tool-bin)** - Command-line tool for controlling blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[blink1control2](https://aur.archlinux.org/packages/blink1control2-bin)** - Blink1Control GUI 用于控制 blink(1) USB RGB LED 设备 ([主页](https://github.com/todbot/Blink1Control2))
 - **[boo-bin](https://aur.archlinux.org/packages/boo-bin)** - A GNU screen style terminal multiplexer built on libghostty ([主页](https://github.com/coder/boo))
+- **[cc-mesh-bin](https://aur.archlinux.org/packages/cc-mesh-bin)** - Claude Code / Codex 本地 Tauri 桌面代理网关，支持 Anthropic Messages ↔ OpenAI 兼容协议转换、模型映射和多端点轮换/熔断 ([主页](https://github.com/VkRainB/ccMesh))
 - **[cc-switch-bin](https://aur.archlinux.org/packages/cc-switch-bin)** - Claude Code & Codex 供应商配置管理工具 ([主页](https://github.com/farion1231/cc-switch))
 - **[cc-switch-cli](https://aur.archlinux.org/packages/cc-switch-cli)** - Cross-platform CLI assistant for Claude Code, Codex & Gemini CLI ([主页](https://github.com/SaladDay/cc-switch-cli))
 - **[cc-switchy-bin](https://aur.archlinux.org/packages/cc-switchy-bin)** - CLI/TUI for restoring CC Switch cloud snapshots from WebDAV or S3 ([主页](https://github.com/ca-x/cc-switchy))
