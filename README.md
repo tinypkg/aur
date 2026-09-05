@@ -50,6 +50,7 @@
 - **[orbien-desktop-bin](https://aur.archlinux.org/packages/orbien-desktop-bin)** - 轻量高性能的内网穿透工具，提供 Rust 原生跨平台桌面客户端，支持 TCP、QUIC、KCP、WebSocket 传输以及 TCP、UDP、HTTP、HTTPS 代理（[主页](https://github.com/orbien-org/orbien)）
 - **[read-aware-bin](https://aur.archlinux.org/packages/read-aware-bin)** - A local-first, AI-native reader that turns books, highlights, notes, and conversations into durable context ([主页](https://github.com/ahpxex/read-aware))
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
+- **[subnetdesk-bin](https://aur.archlinux.org/packages/subnetdesk-bin)** - LAN-only remote desktop based on RustDesk（[主页](https://github.com/zibo-chen/SubnetDesk)）
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
 - **[tldraw-offline-bin](https://aur.archlinux.org/packages/tldraw-offline-bin)** - A local whiteboard for you and your agents ([主页](https://github.com/tldraw/tldraw-offline))
 - **[thinkrail-bin](https://aur.archlinux.org/packages/thinkrail-bin)** - Vibe code with pi in a lightweight, real IDE - The Vibe You Need ([官网](https://thinkrail.ai) · [源码](https://github.com/JetBrains/thinkrail))
