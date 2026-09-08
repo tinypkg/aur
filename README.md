@@ -52,6 +52,7 @@
 - **[orbien-desktop-bin](https://aur.archlinux.org/packages/orbien-desktop-bin)** - 轻量高性能的内网穿透工具，提供 Rust 原生跨平台桌面客户端，支持 TCP、QUIC、KCP、WebSocket 传输以及 TCP、UDP、HTTP、HTTPS 代理（[主页](https://github.com/orbien-org/orbien)）
 - **[read-aware-bin](https://aur.archlinux.org/packages/read-aware-bin)** - A local-first, AI-native reader that turns books, highlights, notes, and conversations into durable context ([主页](https://github.com/ahpxex/read-aware))
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
+- **[ripwire-bin](https://aur.archlinux.org/packages/ripwire-bin)** - The ripgrep of AI context：为 AI agent 提供排序、确定性的仓库地图、变更影响范围、建议测试和质量差异的 C++23 CLI 与 MCP server（[主页](https://github.com/redhat-et/ripwire) · [说明](ripwire-bin/README.md)）
 - **[subnetdesk-bin](https://aur.archlinux.org/packages/subnetdesk-bin)** - LAN-only remote desktop based on RustDesk（[主页](https://github.com/zibo-chen/SubnetDesk)）
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
 - **[tldraw-offline-bin](https://aur.archlinux.org/packages/tldraw-offline-bin)** - A local whiteboard for you and your agents ([主页](https://github.com/tldraw/tldraw-offline))
