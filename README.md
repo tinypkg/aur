@@ -17,6 +17,8 @@
 - **[cc-switchy-bin](https://aur.archlinux.org/packages/cc-switchy-bin)** - CLI/TUI for restoring CC Switch cloud snapshots from WebDAV or S3 ([主页](https://github.com/ca-x/cc-switchy))
 - **[chatgpt-desktop-app-bin](https://aur.archlinux.org/packages/chatgpt-desktop-app-bin)** - OpenAI 官方 ChatGPT 桌面应用，集成 Codex（[官网](https://chatgpt.com/codex/)）
 - **[cherry-studio-desktop-bin](https://aur.archlinux.org/packages/cherry-studio-desktop-bin)** - AI productivity studio with smart chat, autonomous agents, and 300+ assistants（[官网](https://cherryai.com) · [源码](https://github.com/CherryHQ/cherry-studio)）
+- **[cindy-bin](https://aur.archlinux.org/packages/cindy-bin)** - Cindy 国际版：想到，就能做到。开源、开箱即用的 AI Agent（[主页](https://github.com/makecindy/cindy) · [说明](cindy-bin/README.md)）
+- **[cindy-cn-bin](https://aur.archlinux.org/packages/cindy-cn-bin)** - Cindy 国内版：想到，就能做到。开源、开箱即用的 AI Agent（[主页](https://github.com/makecindy/cindy) · [说明](cindy-cn-bin/README.md)）
 - **[clauge-bin](https://aur.archlinux.org/packages/clauge-bin)** - One window. Every dev tool. ([主页](https://clauge.in))
 - **[codiff-bin](https://aur.archlinux.org/packages/codiff-bin)** - A beautiful, minimal, local diff viewer for reviewing staged and unstaged Git changes before committing ([主页](https://github.com/nkzw-tech/codiff))
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop ([主页](https://confirmo.love))
