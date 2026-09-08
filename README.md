@@ -55,6 +55,7 @@
 - **[ripwire-bin](https://aur.archlinux.org/packages/ripwire-bin)** - The ripgrep of AI context：为 AI agent 提供排序、确定性的仓库地图、变更影响范围、建议测试和质量差异的 C++23 CLI 与 MCP server（[主页](https://github.com/redhat-et/ripwire) · [说明](ripwire-bin/README.md)）
 - **[subnetdesk-bin](https://aur.archlinux.org/packages/subnetdesk-bin)** - LAN-only remote desktop based on RustDesk（[主页](https://github.com/zibo-chen/SubnetDesk)）
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
+- **[tgrep-bin](https://aur.archlinux.org/packages/tgrep-bin)** - Trigram-indexed grep with a client/server architecture for fast regex search in large codebases locally（[主页](https://github.com/microsoft/tgrep) · [说明](tgrep-bin/README.md)）
 - **[tldraw-offline-bin](https://aur.archlinux.org/packages/tldraw-offline-bin)** - A local whiteboard for you and your agents ([主页](https://github.com/tldraw/tldraw-offline))
 - **[thinkrail-bin](https://aur.archlinux.org/packages/thinkrail-bin)** - Vibe code with pi in a lightweight, real IDE - The Vibe You Need ([官网](https://thinkrail.ai) · [源码](https://github.com/JetBrains/thinkrail))
 - **[tty7-bin](https://aur.archlinux.org/packages/tty7-bin)** - A terminal workbench in pure Rust: shells, persistent sessions, SSH, coding agents ([主页](https://github.com/l0ng-ai/tty7))
