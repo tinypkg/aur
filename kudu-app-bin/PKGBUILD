@@ -1,6 +1,5 @@
 # Maintainer: czyt <czytcn@gmail.com>
-# The existing AUR package name is intentionally retained for this binary package.
-pkgname=kudu
+pkgname=kudu-app-bin
 pkgver=2.8.0
 pkgrel=1
 pkgdesc="Free Windows, Mac and Linux cleaner, scanner, and more."
@@ -12,7 +11,9 @@ depends=('alsa-lib' 'at-spi2-core' 'cairo' 'dbus' 'expat' 'gcc-libs'
          'libxcomposite' 'libxdamage' 'libxext' 'libxfixes' 'libxkbcommon'
          'libxrandr' 'libxss' 'mesa' 'nspr' 'nss' 'pango' 'systemd-libs')
 optdepends=('libappindicator-gtk3: system tray integration')
-conflicts=('kudu-bin')
+provides=('kudu-app')
+# Both packages install /usr/bin/kudu.
+conflicts=('kudu' 'kudu-bin')
 options=('!strip' '!debug')
 source=("kudu-${pkgver}-LICENSE::https://raw.githubusercontent.com/AdventDevInc/kudu/v${pkgver}/LICENSE")
 source_x86_64=("Kudu-${pkgver}-amd64.deb::https://github.com/AdventDevInc/kudu/releases/download/v${pkgver}/Kudu-${pkgver}-amd64.deb")

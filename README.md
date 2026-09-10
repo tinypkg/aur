@@ -35,7 +35,7 @@
 - **[herdr-bin](https://aur.archlinux.org/packages/herdr-bin)** - Supervise multiple coding agents in one terminal ([主页](https://github.com/ogulcancelik/herdr))
 - **[iris-screenshot-bin](https://aur.archlinux.org/packages/iris-screenshot-bin)** - Screenshots of live websites. Minimal interface, powerful engine. ([主页](https://github.com/brijr/iris))
 - **[karing-bin](https://aur.archlinux.org/packages/karing-bin)** - Simple & Powerful proxy utility ([主页](https://github.com/KaringX/karing))
-- **[kudu](https://aur.archlinux.org/packages/kudu)** - Free Windows, Mac and Linux cleaner, scanner, and more. ([主页](https://github.com/AdventDevInc/kudu))
+- **[kudu-app-bin](https://aur.archlinux.org/packages/kudu-app-bin)** - Free Windows, Mac and Linux cleaner, scanner, and more. ([主页](https://github.com/AdventDevInc/kudu))
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection ([主页](https://obdev.at/products/littlesnitch))
 - **[llmux-bin](https://aur.archlinux.org/packages/llmux-bin)** - Multi-provider, multi-account Claude proxy with automatic quota-based rotation ([主页](https://github.com/2lab-ai/llmux))
 - **[lucarned-bin](https://aur.archlinux.org/packages/lucarned-bin)** - Stop babysitting local AI agents. Just notifications, approve, and resume your Codex, Pi, or Claude code sessions anywhere. ([主页](https://github.com/tuchg/Lucarne))
