@@ -65,6 +65,7 @@
 - **[velotype-bin](https://aur.archlinux.org/packages/velotype-bin)** - Write at the speed of thought - high-performance native Markdown editor built with Rust and GPUI ([主页](https://github.com/manyougz/velotype))
 - **[veet-bin](https://aur.archlinux.org/packages/veet-bin)** - Universal Linux Application Uninstaller & Deep-Clean Residual Purger，深度清理各类残留的通用 Linux 应用卸载器（[主页](https://github.com/swadhinbiswas/veet)）
 - **[virtualhere-client-bin](https://aur.archlinux.org/packages/virtualhere-client-bin)** - VirtualHere USB Client - share USB devices over the network ([主页](https://www.virtualhere.com/usb_server_software))
+- **[vlaina-bin](https://aur.archlinux.org/packages/vlaina-bin)** - A purest sanctuary,for your deepest thoughts. ([主页](https://github.com/vladelaina/vlaina))
 - **[whatcable-cli-bin](https://aur.archlinux.org/packages/whatcable-cli-bin)** - A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do ([主页](https://github.com/Zetaphor/whatcable-linux))
 - **[wu-bin](https://aur.archlinux.org/packages/wu-bin)** - Fast, native code editor in Rust that feels like VS Code ([主页](https://github.com/farshed/wu))
 - **[z-code-bin](https://aur.archlinux.org/packages/z-code-bin)** - ZCode - AI Agents combined with existing toolchains for planning, coding, review and deployment ([主页](https://zcode.z.ai))
