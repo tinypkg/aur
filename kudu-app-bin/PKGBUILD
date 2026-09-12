@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=kudu-app-bin
-pkgver=2.8.0
+pkgver=2.9.0
 pkgrel=1
 pkgdesc="Free Windows, Mac and Linux cleaner, scanner, and more."
 arch=('x86_64')
