@@ -1,5 +1,5 @@
 # Maintainer: czyt <czytcn@gmail.com>
-pkgname=lody-bin
+pkgname=lody
 pkgver=0.95.0
 pkgrel=2
 pkgdesc="Lody Desktop - run AI coding agents in parallel with isolated Git worktrees, live diff review and GitHub integration"
