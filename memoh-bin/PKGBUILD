@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=memoh-bin
 pkgver=2026.9.16.2
-pkgrel=2
+pkgrel=3
 pkgdesc="Give your agent a cloud computer - cloud-first multi-agent platform where every agent has its own desktop, files and network, running 24/7"
 arch=('x86_64')
 url="https://memoh.ai"
