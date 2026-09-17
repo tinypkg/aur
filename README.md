@@ -39,6 +39,7 @@
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection ([主页](https://obdev.at/products/littlesnitch))
 - **[llmux-bin](https://aur.archlinux.org/packages/llmux-bin)** - Multi-provider, multi-account Claude proxy with automatic quota-based rotation ([主页](https://github.com/2lab-ai/llmux))
 - **[lnav-bin](https://aur.archlinux.org/packages/lnav-bin)** - 终端日志查看与分析工具，支持多文件合并、语法高亮和 SQL 查询；使用上游静态 musl 二进制，支持 x86_64 和 aarch64（[主页](https://github.com/tstack/lnav)）
+- **[lody-bin](https://aur.archlinux.org/packages/lody-bin)** - 并行运行 AI 编程代理的团队工作区，隔离 Git worktrees、实时 diff 审查与 GitHub 集成（[官网](https://lody.ai/home)）
 - **[lucarned-bin](https://aur.archlinux.org/packages/lucarned-bin)** - Stop babysitting local AI agents. Just notifications, approve, and resume your Codex, Pi, or Claude code sessions anywhere. ([主页](https://github.com/tuchg/Lucarne))
 - **[luvus-bin](https://aur.archlinux.org/packages/luvus-bin)** - Mission control for your AI coding agents ([主页](https://github.com/RizRiyz/luvus))
 - **[minke-bin](https://aur.archlinux.org/packages/minke-bin)** - Minke desktop agent powered by DeepSeek Harness（[主页](https://github.com/lencx/Minke)）
