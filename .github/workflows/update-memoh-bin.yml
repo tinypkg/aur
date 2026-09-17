@@ -32,7 +32,8 @@ jobs:
           else
             VERSION=$(curl --fail --silent --show-error --location --retry 3 \
               https://desktopresource.memoh.ai/latest-linux.yml | \
-              jq -er '.version | strings | select(length > 0)')
+              sed -n 's/^version:[[:space:]]*"\([^"]*\)"[[:space:]]*$/\1/p' | head -n1)
+            [[ -n "$VERSION" ]] || { echo "failed to parse version from latest-linux.yml" >&2; exit 1; }
           fi
           PKGVER=$(printf '%s' "$VERSION" | tr '-' '.')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
