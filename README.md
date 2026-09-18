@@ -55,6 +55,7 @@
 - **[pluely-bin](https://aur.archlinux.org/packages/pluely-bin)** - Privacy-first AI assistant for meetings, interviews, and conversations ([官网](https://pluely.com) · [源码](https://github.com/iamsrikanthnani/pluely))
 - **[pinch-tab-bin](https://aur.archlinux.org/packages/pinch-tab-bin)** - Browser control for AI agents ([官网](https://pinchtab.com) · [源码](https://github.com/pinchtab/pinchtab))
 - **[orbien-desktop-bin](https://aur.archlinux.org/packages/orbien-desktop-bin)** - 轻量高性能的内网穿透工具，提供 Rust 原生跨平台桌面客户端，支持 TCP、QUIC、KCP、WebSocket 传输以及 TCP、UDP、HTTP、HTTPS 代理（[主页](https://github.com/orbien-org/orbien)）
+- **[qianji-bin](https://aur.archlinux.org/packages/qianji-bin)** - 钱迹：跨平台个人记账应用，专注账目记录与资产管理（[官网](https://qianjiapp.com) · [发布](https://github.com/litangtech/Qianji-Linux-Release)）
 - **[read-aware-bin](https://aur.archlinux.org/packages/read-aware-bin)** - A local-first, AI-native reader that turns books, highlights, notes, and conversations into durable context ([主页](https://github.com/ahpxex/read-aware))
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
 - **[rexadb-bin](https://aur.archlinux.org/packages/rexadb-bin)** - Multi-database desktop client for PostgreSQL, MySQL, MongoDB, SQLite, ClickHouse, Redis, and SQL Server（[官网](https://www.rexadb.app)）
