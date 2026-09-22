@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version number (e.g., 4.5.2). Leave empty to auto-detect latest release."
+        description: "Version number (e.g., 4.5.2). Suffixes like -2 are stripped. Leave empty to auto-detect latest release."
         required: false
         type: string
       force:
@@ -36,11 +36,17 @@ jobs:
             --header "Authorization: Bearer ${{ github.token }}" \
             https://api.github.com/repos/litangtech/Qianji-Linux-Release/releases/latest)
           if [ -n "${{ github.event.inputs.version }}" ]; then
-            LATEST_VER="${{ github.event.inputs.version }}"
+            LATEST_VER_RAW="${{ github.event.inputs.version }}"
           else
-            LATEST_VER=$(printf '%s' "$RELEASE_JSON" | jq -er '.tag_name | strings | select(length > 0)')
-            LATEST_VER="${LATEST_VER#v}"
+            LATEST_VER_RAW=$(printf '%s' "$RELEASE_JSON" | jq -er '.tag_name | strings | select(length > 0)')
+            LATEST_VER_RAW="${LATEST_VER_RAW#v}"
           fi
+          # Normalize tags like "4.5.2-2" to a hyphen-free pkgver "4.5.2";
+          # the release suffix is expressed via the asset version and pkgrel.
+          LATEST_VER="${LATEST_VER_RAW%-*}"
+          [[ -n "$LATEST_VER" && "$LATEST_VER" != *-* ]] || {
+            echo "failed to normalize version from: $LATEST_VER_RAW" >&2; exit 1;
+          }
           ASSET_NAME=$(printf '%s' "$RELEASE_JSON" | jq -er --arg v "$LATEST_VER" \
             '.assets[] | select(.name | test("_x86_64\\.pkg\\.tar\\.zst$")) | .name')
           ASSET_VER=$(printf '%s' "$ASSET_NAME" | sed -n 's/^qianji_\(.*\)_x86_64\.pkg\.tar\.zst$/\1/p')
