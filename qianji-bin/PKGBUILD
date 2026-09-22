@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=qianji-bin
 pkgver=4.5.2
-pkgrel=3
+pkgrel=2
 pkgdesc="QianJi personal finance desktop application (钱迹个人记账)"
 arch=('x86_64')
 url="https://qianjiapp.com"
@@ -11,8 +11,9 @@ provides=('qianji')
 conflicts=('qianji')
 makedepends=('libarchive')
 _assetver="v4.5.2-2-1560-d36e8f8f"
+_tagver="4.5.2-2"
 _asset="qianji_${_assetver}_x86_64.pkg.tar.zst"
-source=("${_asset}::https://github.com/litangtech/Qianji-Linux-Release/releases/download/v${pkgver}/${_asset}")
+source=("${_asset}::https://github.com/litangtech/Qianji-Linux-Release/releases/download/v${_tagver}/${_asset}")
 sha256sums=('SKIP')
 
 package() {

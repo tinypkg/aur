@@ -54,6 +54,7 @@ jobs:
             echo "failed to parse asset version from: $ASSET_NAME" >&2; exit 1;
           }
           echo "version=$LATEST_VER" >> $GITHUB_OUTPUT
+          echo "tagver=$LATEST_VER_RAW" >> $GITHUB_OUTPUT
           echo "assetver=$ASSET_VER" >> $GITHUB_OUTPUT
 
       - name: Get current version
@@ -93,10 +94,12 @@ jobs:
             NEW_REL=$((CURRENT_REL + 1))
             sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
             sed -i "s/^_assetver=.*/_assetver=\"${{ steps.get_version.outputs.assetver }}\"/" PKGBUILD
+            sed -i "s/^_tagver=.*/_tagver=\"${{ steps.get_version.outputs.tagver }}\"/" PKGBUILD
             echo "Bumped pkgrel to $NEW_REL for asset ${{ steps.get_version.outputs.assetver }}"
           else
             sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
             sed -i "s/^_assetver=.*/_assetver=\"${{ steps.get_version.outputs.assetver }}\"/" PKGBUILD
+            sed -i "s/^_tagver=.*/_tagver=\"${{ steps.get_version.outputs.tagver }}\"/" PKGBUILD
             sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
             echo "Updated to version ${{ steps.get_version.outputs.version }}"
           fi
