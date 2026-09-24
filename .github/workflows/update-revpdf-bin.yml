@@ -15,6 +15,10 @@ on:
   schedule:
     - cron: "7 */12 * * *"
 
+concurrency:
+  group: aur-revpdf-bin
+  cancel-in-progress: false
+
 jobs:
   update-pkgbuild:
     runs-on: ubuntu-latest
@@ -27,63 +31,90 @@ jobs:
       - name: Get latest version
         id: get_version
         run: |
+          set -euo pipefail
           if [ -n "${{ github.event.inputs.version }}" ]; then
-            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+            VERSION="${{ github.event.inputs.version }}"
           else
             VERSION=$(curl -fsSL -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/Pawandeep-prog/revpdf-release/releases/latest | jq -er '.tag_name' | sed 's/^v//')
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
+          [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)*$ ]] || {
+            echo "Unsupported upstream version: $VERSION" >&2
+            exit 1
+          }
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Get current version
         id: current_version
         run: |
           CURRENT=$(grep '^pkgver=' revpdf-bin/PKGBUILD | cut -d'=' -f2)
+          CURRENT_REL=$(grep '^pkgrel=' revpdf-bin/PKGBUILD | cut -d'=' -f2)
           echo "current=$CURRENT" >> $GITHUB_OUTPUT
+          echo "current_rel=$CURRENT_REL" >> $GITHUB_OUTPUT
+
+      - name: Get AUR state
+        id: aur_state
+        run: |
+          set -euo pipefail
+          AUR_VERSION=$(curl -fsSL \
+            "https://aur.archlinux.org/rpc/?v=5&type=info&arg=revpdf-bin" |
+            jq -er 'if .resultcount == 0 then "" else .results[0].Version end')
+          echo "aur_version=$AUR_VERSION" >> $GITHUB_OUTPUT
 
       - name: Compare versions
         id: compare
+        env:
+          LATEST: ${{ steps.get_version.outputs.version }}
+          CURRENT: ${{ steps.current_version.outputs.current }}
+          CURRENT_REL: ${{ steps.current_version.outputs.current_rel }}
+          AUR_VERSION: ${{ steps.aur_state.outputs.aur_version }}
+          FORCE: ${{ github.event.inputs.force }}
         run: |
-          if [ "${{ steps.get_version.outputs.version }}" = "${{ steps.current_version.outputs.current }}" ]; then
-            if [ "${{ github.event.inputs.force }}" = "true" ]; then
-              echo "needs_update=true" >> $GITHUB_OUTPUT
-              echo "bump_rel=true" >> $GITHUB_OUTPUT
-              echo "Forcing pkgrel bump for version ${{ steps.get_version.outputs.version }}"
-            else
-              echo "needs_update=false" >> $GITHUB_OUTPUT
-              echo "Version ${{ steps.get_version.outputs.version }} is already up to date"
+          set -euo pipefail
+
+          if [ -n "$AUR_VERSION" ] && dpkg --compare-versions "$AUR_VERSION" gt "$LATEST-$CURRENT_REL"; then
+            echo "AUR is ahead of the GitHub state; reconcile before publishing" >&2
+            exit 1
+          fi
+
+          if [ "$LATEST" != "$CURRENT" ]; then
+            OLDEST=$(printf '%s\n%s\n' "$CURRENT" "$LATEST" | sort -V | head -n1)
+            if [ "$OLDEST" != "$CURRENT" ]; then
+              echo "Refusing downgrade from $CURRENT to $LATEST" >&2
+              exit 1
             fi
-          else
             echo "needs_update=true" >> $GITHUB_OUTPUT
             echo "bump_rel=false" >> $GITHUB_OUTPUT
-            echo "Updating from ${{ steps.current_version.outputs.current }} to ${{ steps.get_version.outputs.version }}"
+            echo "Updating from $CURRENT to $LATEST"
+          elif [ "$AUR_VERSION" != "$CURRENT-$CURRENT_REL" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "bump_rel=false" >> $GITHUB_OUTPUT
+            echo "AUR is missing the current package state $CURRENT-$CURRENT_REL; publishing it"
+          elif [ "$FORCE" = "true" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "bump_rel=true" >> $GITHUB_OUTPUT
+            echo "Forcing pkgrel bump for version $LATEST"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "Version $LATEST is already up to date"
           fi
 
       - name: Update PKGBUILD version
         if: steps.compare.outputs.needs_update == 'true'
+        env:
+          LATEST: ${{ steps.get_version.outputs.version }}
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
         run: |
+          set -euo pipefail
           cd revpdf-bin
-          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
+          if [ "$BUMP_REL" = "true" ]; then
             CURRENT_REL=$(grep '^pkgrel=' PKGBUILD | cut -d'=' -f2)
             NEW_REL=$((CURRENT_REL + 1))
             sed -i "s/^pkgrel=.*/pkgrel=$NEW_REL/" PKGBUILD
             echo "Bumped pkgrel from $CURRENT_REL to $NEW_REL"
-          else
-            sed -i "s/^pkgver=.*/pkgver=${{ steps.get_version.outputs.version }}/" PKGBUILD
+          elif [ "$(grep '^pkgver=' PKGBUILD | cut -d'=' -f2)" != "$LATEST" ]; then
+            sed -i "s/^pkgver=.*/pkgver=$LATEST/" PKGBUILD
             sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
           fi
-
-      - name: Commit changes
-        if: steps.compare.outputs.needs_update == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add revpdf-bin/PKGBUILD
-          if [ "${{ steps.compare.outputs.bump_rel }}" = "true" ]; then
-            git commit -m "Bump pkgrel for revpdf-bin ${{ steps.get_version.outputs.version }}"
-          else
-            git commit -m "Update revpdf-bin to version ${{ steps.get_version.outputs.version }}"
-          fi
-          git push
 
       - name: Publish to AUR
         if: steps.compare.outputs.needs_update == 'true'
@@ -98,3 +129,25 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', steps.get_version.outputs.version) || format('Update to version {0}', steps.get_version.outputs.version) }}
           ssh_keyscan_types: rsa,ecdsa,ed25519
+
+      - name: Commit changes
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST: ${{ steps.get_version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add revpdf-bin/PKGBUILD
+          if git diff --cached --quiet; then
+            echo "AUR publication required no GitHub metadata change."
+            exit 0
+          fi
+          if [ "$BUMP_REL" = "true" ]; then
+            git commit -m "Bump pkgrel for revpdf-bin $LATEST"
+          else
+            git commit -m "Update revpdf-bin to version $LATEST"
+          fi
+          git pull --rebase origin main
+          git push
