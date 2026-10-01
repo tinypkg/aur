@@ -5,6 +5,7 @@
 ## 包含的软件包
 
 - **[api-fox-bin](https://aur.archlinux.org/packages/api-fox-bin)** - Apifox API 文档、调试、Mock 与自动化测试工具（[官网](https://apifox.com)）
+- **[astrlink-bin](https://aur.archlinux.org/packages/astrlink-bin)** - 给 AI Agent 用的本地隐私网关：请求发出前在本机检测敏感内容，支持 Codex、Claude、Grok 等订阅与主流厂商 API（[官网](https://astrlink.com) · [源码](https://github.com/Calcium-Ion/AstrLink)）
 - **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites ([主页](https://github.com/nashsu/AutoCLI))
 - **[bast-bin](https://aur.archlinux.org/packages/bast-bin)** - 终端中的 SSH 主机浏览器与密钥管理工具，可快速查找主机、管理密钥并发起连接（[官网](https://bast.sh) · [源码](https://github.com/ellipse-software/bast)）
 - **[blink1-tiny-server-bin](https://aur.archlinux.org/packages/blink1-tiny-server-bin)** - Simple HTTP JSON API server to control blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
