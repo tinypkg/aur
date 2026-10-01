@@ -44,6 +44,7 @@
 - **[lucarned-bin](https://aur.archlinux.org/packages/lucarned-bin)** - Stop babysitting local AI agents. Just notifications, approve, and resume your Codex, Pi, or Claude code sessions anywhere. ([主页](https://github.com/tuchg/Lucarne))
 - **[luvus-bin](https://aur.archlinux.org/packages/luvus-bin)** - Mission control for your AI coding agents ([主页](https://github.com/RizRiyz/luvus))
 - **[magpie-bin](https://aur.archlinux.org/packages/magpie-bin)** - 一个地方管理所有 AI 编程 agent 的模型：为 Codex、Claude Code、Gemini CLI 等统一切换供应商与模型，支持 x86_64 和 aarch64（[官网](https://usemagpie.ai) · [源码](https://github.com/yetone/magpie)）
+- **[magpie-cli-bin](https://aur.archlinux.org/packages/magpie-cli-bin)** - magpie 的纯终端构建：静态二进制、不依赖 WebKitGTK/GTK3；命令同为 `magpie`，与 magpie-bin 互斥（[官网](https://usemagpie.ai)）
 - **[memoh-bin](https://aur.archlinux.org/packages/memoh-bin)** - Give your agent a cloud computer：云端优先的多智能体平台，每个 agent 拥有自己的桌面、文件与网络，24/7 运行（[官网](https://memoh.ai)）
 - **[minke-bin](https://aur.archlinux.org/packages/minke-bin)** - Minke desktop agent powered by DeepSeek Harness（[主页](https://github.com/lencx/Minke)）
 - **[mimo-code-bin](https://aur.archlinux.org/packages/mimo-code-bin)** - 小米面向开发者的新一代 AI 编程助手，支持无限上下文 ([主页](https://mimo.xiaomi.com/mimocode))

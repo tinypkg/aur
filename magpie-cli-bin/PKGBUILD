@@ -1,0 +1,32 @@
+# Maintainer: czyt <czytcn@gmail.com>
+pkgname=magpie-cli-bin
+pkgver=0.1.550
+pkgrel=1
+pkgdesc="Terminal build of magpie: pick every AI coding agent's model without GUI dependencies"
+arch=('x86_64' 'aarch64')
+url="https://usemagpie.ai"
+license=('MIT')
+# Static build: no webkit2gtk/gtk3 needed. It ships the same `magpie` command
+# as the desktop package, so the two packages are mutually exclusive.
+provides=('magpie')
+conflicts=('magpie' 'magpie-bin')
+options=('!strip' '!debug')
+
+source=("magpie-${pkgver}-LICENSE::https://raw.githubusercontent.com/yetone/magpie/v${pkgver}/LICENSE")
+source_x86_64=("magpie-cli-${pkgver}-amd64::https://github.com/yetone/magpie-releases/releases/download/v${pkgver}/magpie-cli-linux-amd64")
+source_aarch64=("magpie-cli-${pkgver}-arm64::https://github.com/yetone/magpie-releases/releases/download/v${pkgver}/magpie-cli-linux-arm64")
+sha256sums=('SKIP')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+
+package() {
+    local _suffix
+    case "$CARCH" in
+        x86_64)  _suffix=amd64 ;;
+        aarch64) _suffix=arm64 ;;
+    esac
+
+    install -Dm755 "${srcdir}/magpie-cli-${pkgver}-${_suffix}" "${pkgdir}/usr/bin/magpie"
+    install -Dm644 "${srcdir}/magpie-${pkgver}-LICENSE" \
+        "${pkgdir}/usr/share/licenses/magpie-cli-bin/LICENSE"
+}
