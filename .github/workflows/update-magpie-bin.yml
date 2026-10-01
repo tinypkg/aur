@@ -47,7 +47,7 @@ jobs:
           ' release.json >/dev/null
           VERSION=$(jq -er '.version' release.json)
 
-          for asset in magpie-linux-amd64 magpie-linux-arm64 magpie-cli-linux-amd64 magpie-cli-linux-arm64; do
+          for asset in magpie-linux-amd64 magpie-linux-arm64; do
             jq -e --arg asset "$asset" '
               .assets[$asset]
               | (.url | type == "string" and startswith("https://"))
@@ -138,12 +138,7 @@ jobs:
           done <<'EOF'
           x86_64:magpie-linux-amd64:Advanced Micro Devices X86-64
           aarch64:magpie-linux-arm64:AArch64
-          x86_64:magpie-cli-linux-amd64:Advanced Micro Devices X86-64
-          aarch64:magpie-cli-linux-arm64:AArch64
           EOF
-
-          chmod +x "$RUNNER_TEMP/magpie-cli-linux-amd64"
-          [[ "$("$RUNNER_TEMP/magpie-cli-linux-amd64" --version)" == "magpie $VERSION" ]]
 
           # Auxiliary sources consumed by updpkgsums must exist for this version.
           for url in \
