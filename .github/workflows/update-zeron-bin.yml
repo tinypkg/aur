@@ -138,8 +138,15 @@ jobs:
           curl --fail --silent --show-error --location \
             --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
             "$BASE/manifest.json" --output "$RUNNER_TEMP/manifest.json"
+          [[ "$(jq -er '.version' "$RUNNER_TEMP/manifest.json")" == "$VERSION" ]] || {
+            echo "manifest version does not match release $VERSION" >&2
+            exit 1
+          }
 
-          for arch in x86_64 aarch64; do
+          # Check the payloads by hash and ELF machine type. Do not execute the
+          # binary here: it links against GUI runtime libraries the runner does
+          # not ship.
+          while IFS=: read -r arch machine; do
             asset="zeron-${VERSION}-linux-${arch}.tar.gz"
             sum=$(jq -er --arg asset "$asset" '.files[$asset].sha256' "$RUNNER_TEMP/manifest.json")
             [[ "$sum" =~ ^[a-f0-9]{64}$ ]] || {
@@ -150,13 +157,13 @@ jobs:
               --retry 3 --retry-all-errors --connect-timeout 15 --max-time 1200 \
               "$BASE/$asset" --output "$RUNNER_TEMP/$asset"
             printf '%s  %s\n' "$sum" "$RUNNER_TEMP/$asset" | sha256sum --check
+            tar -xzf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP" "zeron-${VERSION}-linux-${arch}/zeron"
+            readelf -h "$RUNNER_TEMP/zeron-${VERSION}-linux-${arch}/zeron" | grep -F "$machine" >/dev/null
             echo "verified $asset"
-          done
-
-          tar -xzf "$RUNNER_TEMP/zeron-${VERSION}-linux-x86_64.tar.gz" \
-            -C "$RUNNER_TEMP" "zeron-${VERSION}-linux-x86_64/zeron"
-          chmod +x "$RUNNER_TEMP/zeron-${VERSION}-linux-x86_64/zeron"
-          [[ "$("$RUNNER_TEMP/zeron-${VERSION}-linux-x86_64/zeron" --version)" == "zeron $VERSION" ]]
+          done <<'EOF'
+          x86_64:Advanced Micro Devices X86-64
+          aarch64:AArch64
+          EOF
 
       - name: Stage PKGBUILD
         if: steps.compare.outputs.package_update == 'true'
