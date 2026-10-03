@@ -81,6 +81,7 @@
 - **[whatcable-cli-bin](https://aur.archlinux.org/packages/whatcable-cli-bin)** - A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do ([主页](https://github.com/Zetaphor/whatcable-linux))
 - **[wu-bin](https://aur.archlinux.org/packages/wu-bin)** - Fast, native code editor in Rust that feels like VS Code ([主页](https://github.com/farshed/wu))
 - **[z-code-bin](https://aur.archlinux.org/packages/z-code-bin)** - ZCode - AI Agents combined with existing toolchains for planning, coding, review and deployment ([主页](https://zcode.z.ai))
+- **[zeron-bin](https://aur.archlinux.org/packages/zeron-bin)** - 面向 Claude Code、Codex、Cursor、Devin 等编程 agent 的原生控制平面（Rust + GPUI），支持 x86_64 和 aarch64（[官网](https://zeron.sh) · [源码](https://github.com/zeronsh/zeron)）
 
 ## 自动化
 
