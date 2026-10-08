@@ -66,6 +66,7 @@
 - **[rexadb-bin](https://aur.archlinux.org/packages/rexadb-bin)** - Multi-database desktop client for PostgreSQL, MySQL, MongoDB, SQLite, ClickHouse, Redis, and SQL Server（[官网](https://www.rexadb.app)）
 - **[ripwire-bin](https://aur.archlinux.org/packages/ripwire-bin)** - The ripgrep of AI context：为 AI agent 提供排序、确定性的仓库地图、变更影响范围、建议测试和质量差异的 C++23 CLI 与 MCP server（[主页](https://github.com/redhat-et/ripwire) · [说明](ripwire-bin/README.md)）
 - **[subnetdesk-bin](https://aur.archlinux.org/packages/subnetdesk-bin)** - LAN-only remote desktop based on RustDesk（[主页](https://github.com/zibo-chen/SubnetDesk)）
+- **[superfile-bin](https://aur.archlinux.org/packages/superfile-bin)** - 现代化终端文件管理器（Go 静态二进制，命令为 `spf`），支持 x86_64 和 aarch64（[官网](https://superfile.dev) · [源码](https://github.com/yorukot/superfile)）
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
 - **[teahouse-bin](https://aur.archlinux.org/packages/teahouse-bin)** - 茶话间：纯内网、基于 IP 的局域网即时通讯与文件传输工具，支持 x86_64 和 aarch64；安装后运行 `teahouse` 或从应用菜单启动（[主页](https://github.com/skyjt/teahouse)）
 - **[tgrep-bin](https://aur.archlinux.org/packages/tgrep-bin)** - Trigram-indexed grep with a client/server architecture for fast regex search in large codebases locally（[主页](https://github.com/microsoft/tgrep) · [说明](tgrep-bin/README.md)）
