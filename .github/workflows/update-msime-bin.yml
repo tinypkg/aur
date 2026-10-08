@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Expected upstream version, e.g. 0.9.1. Leave empty to detect the latest non-draft GitHub release."
+        description: "Expected upstream version, e.g. 0.11.0. Leave empty to detect the latest linux-v* GitHub release."
         required: false
         type: string
       force:
@@ -37,7 +37,8 @@ jobs:
           set -euo pipefail
 
           if [ -n "${INPUT_VERSION:-}" ]; then
-            VERSION="${INPUT_VERSION#v}"
+            VERSION="${INPUT_VERSION#linux-v}"
+            VERSION="${VERSION#v}"
             [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
               echo "Unsupported upstream version: $VERSION" >&2
               exit 1
@@ -46,25 +47,28 @@ jobs:
               --retry 3 --retry-all-errors --retry-delay 2 \
               --connect-timeout 15 --max-time 120 \
               -H "Authorization: Bearer ${{ github.token }}" \
-              "https://api.github.com/repos/metasequoiaime/MSIME-Linux/releases/tags/v${VERSION}" \
+              "https://api.github.com/repos/metasequoiaime/msime/releases/tags/linux-v${VERSION}" \
               --output release-raw.json
             jq -e '.draft == false' release-raw.json >/dev/null
             jq '.' release-raw.json > release.json
           else
-            # The project publishes 0.x versions as pre-releases, so pick the
-            # newest non-draft entry instead of /releases/latest.
+            # The repository mixes several tag series (linux-v*, web-engine-v*,
+            # android-v*); only linux-v* carries the Linux desktop packages.
             curl --fail --silent --show-error --location \
               --retry 3 --retry-all-errors --retry-delay 2 \
               --connect-timeout 15 --max-time 120 \
               -H "Authorization: Bearer ${{ github.token }}" \
-              "https://api.github.com/repos/metasequoiaime/MSIME-Linux/releases?per_page=20" \
+              "https://api.github.com/repos/metasequoiaime/msime/releases?per_page=30" \
               --output releases-raw.json
-            jq -e 'type == "array" and ([.[] | select(.draft == false)] | length > 0)' releases-raw.json >/dev/null
-            jq '[.[] | select(.draft == false)][0]' releases-raw.json > release.json
+            jq -e 'type == "array" and ([.[] | select(.draft == false and (.tag_name | startswith("linux-v")))] | length > 0)' \
+              releases-raw.json >/dev/null
+            jq '[.[] | select(.draft == false and (.tag_name | startswith("linux-v")))]
+                | sort_by(.published_at) | reverse | .[0]' \
+              releases-raw.json > release.json
           fi
 
           TAG=$(jq -er '.tag_name | select(type == "string" and length > 0)' release.json)
-          DISCOVERED_VERSION=${TAG#v}
+          DISCOVERED_VERSION=${TAG#linux-v}
           [[ -z "${INPUT_VERSION:-}" || "$DISCOVERED_VERSION" == "$VERSION" ]] || {
             echo "Release tag $TAG does not match requested version $VERSION" >&2
             exit 1
@@ -76,10 +80,9 @@ jobs:
           }
 
           for asset in \
-            "metasequoia-ime-linux_${VERSION}_amd64.deb" \
-            "metasequoia-ime-linux_${VERSION}_amd64.deb.sha256" \
-            "metasequoia-ime-linux_${VERSION}_arm64.deb" \
-            "metasequoia-ime-linux_${VERSION}_arm64.deb.sha256"; do
+            "msime-linux_${VERSION}_amd64.deb" \
+            "msime-linux_${VERSION}_arm64.deb" \
+            "SHA256SUMS"; do
             jq -e --arg asset "$asset" \
               '.assets | any(.name == $asset and .state == "uploaded" and .size > 0)' \
               release.json >/dev/null || {
@@ -146,17 +149,17 @@ jobs:
         run: |
           set -euo pipefail
 
-          BASE="https://github.com/metasequoiaime/MSIME-Linux/releases/download/v${VERSION}"
+          BASE="https://github.com/metasequoiaime/msime/releases/download/linux-v${VERSION}"
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+            "$BASE/SHA256SUMS" --output "$RUNNER_TEMP/SHA256SUMS"
+
           for arch in amd64 arm64; do
-            deb="metasequoia-ime-linux_${VERSION}_${arch}.deb"
+            deb="msime-linux_${VERSION}_${arch}.deb"
             curl --fail --silent --show-error --location \
               --retry 3 --retry-all-errors --connect-timeout 15 --max-time 1200 \
               "$BASE/$deb" --output "$RUNNER_TEMP/$deb"
-            curl --fail --silent --show-error --location \
-              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
-              "$BASE/$deb.sha256" --output "$RUNNER_TEMP/$deb.sha256"
-            (cd "$RUNNER_TEMP" && sha256sum --check --ignore-missing "$deb.sha256")
-
+            (cd "$RUNNER_TEMP" && grep " $deb\$" SHA256SUMS | sha256sum --check)
             deb_version=$(dpkg-deb --field "$RUNNER_TEMP/$deb" Version)
             deb_arch=$(dpkg-deb --field "$RUNNER_TEMP/$deb" Architecture)
             [[ "$deb_version" == "$VERSION" ]] || {
