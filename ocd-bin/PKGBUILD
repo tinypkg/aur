@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=ocd-bin
 pkgver=0.2.4
-pkgrel=1
+pkgrel=2
 pkgdesc="CLI for open-compute - self-hosted Cloudflare Workers-compatible platform"
 arch=('x86_64' 'aarch64')
 url="https://open-compute.dev"
