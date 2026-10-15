@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=openless-bin
 pkgver=1.3.18
-pkgrel=2
+pkgrel=3
 pkgdesc="Hold a key, speak, release — AI-polished text appears at your cursor in any app."
 arch=('x86_64')
 url="https://github.com/Open-Less/openless"
