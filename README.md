@@ -74,6 +74,7 @@
 - **[thinkrail-bin](https://aur.archlinux.org/packages/thinkrail-bin)** - Vibe code with pi in a lightweight, real IDE - The Vibe You Need ([官网](https://thinkrail.ai) · [源码](https://github.com/JetBrains/thinkrail))
 - **[tty7-bin](https://aur.archlinux.org/packages/tty7-bin)** - A terminal workbench in pure Rust: shells, persistent sessions, SSH, coding agents ([主页](https://github.com/l0ng-ai/tty7))
 - **[tunnix-bin](https://aur.archlinux.org/packages/tunnix-bin)** - An encrypted SOCKS5/HTTP proxy tunnel over HTTP/SSE ([主页](https://github.com/aeroxy/tunnix))
+- **[uu-remote-bin](https://aur.archlinux.org/packages/uu-remote-bin)** - 非官方 UU 远程 Linux 被控端：扫码登录后用官方 Mac/Windows/手机客户端远程控制 Linux 桌面，支持 H.264 远控、文件传输、终端与剪贴板（[主页](https://github.com/VallierDev/uu-remote-linux)）
 - **[uniclipboard-bin](https://aur.archlinux.org/packages/uniclipboard-bin)** - Real-time clipboard sync across macOS, Windows and Linux — local-first, peer-to-peer, and end-to-end encrypted ([主页](https://www.uniclipboard.app))
 - **[velotype-bin](https://aur.archlinux.org/packages/velotype-bin)** - Write at the speed of thought - high-performance native Markdown editor built with Rust and GPUI ([主页](https://github.com/manyougz/velotype))
 - **[veet-bin](https://aur.archlinux.org/packages/veet-bin)** - Universal Linux Application Uninstaller & Deep-Clean Residual Purger，深度清理各类残留的通用 Linux 应用卸载器（[主页](https://github.com/swadhinbiswas/veet)）
