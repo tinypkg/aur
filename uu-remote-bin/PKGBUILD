@@ -15,7 +15,9 @@ optdepends=(
 )
 provides=('uu-remote')
 conflicts=('uu-remote')
+source=("uu-remote-native.service")
 source_x86_64=("uu-remote-linux-v${pkgver}-x86_64-linux.tar.gz::https://github.com/VallierDev/uu-remote-linux/releases/download/v${pkgver}/uu-remote-linux-v${pkgver}-x86_64-linux.tar.gz")
+sha256sums=('SKIP')
 sha256sums_x86_64=('SKIP')
 
 package() {
@@ -23,4 +25,8 @@ package() {
 
     install -Dm755 "${srcdir}/${_dir}/uuremote-server" "${pkgdir}/usr/bin/uuremote-server"
     install -Dm644 "${srcdir}/${_dir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+    # systemd user service for unattended autostart
+    install -Dm644 "${srcdir}/uu-remote-native.service" \
+        "${pkgdir}/usr/lib/systemd/user/uu-remote-native.service"
 }
