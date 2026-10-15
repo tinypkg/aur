@@ -8,6 +8,7 @@ url="https://github.com/t8y2/dbx"
 license=('MIT')
 provides=('dbx')
 conflicts=('dbx')
+options=('!strip' '!debug')
 depends=('webkit2gtk-4.1' 'gtk3')
 source_x86_64=("dbx_${pkgver}_amd64.deb::https://github.com/t8y2/dbx/releases/download/v${pkgver}/dbx_${pkgver}_amd64.deb")
 sha256sums_x86_64=('SKIP')

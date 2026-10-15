@@ -17,6 +17,7 @@ optdepends=(
 )
 provides=('uu-remote')
 conflicts=('uu-remote')
+options=('!strip' '!debug')
 source=(
     "uu-remote-native.service"
     "uu-virtual-desktop.service"
