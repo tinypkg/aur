@@ -5,7 +5,7 @@
 #   3. extend the CARCH switch in package() below
 pkgname=lzc-client-bin
 pkgver=2.0.30
-pkgrel=2
+pkgrel=3
 pkgdesc='懒猫微服桌面客户端（LCMD），扫码登录后管理微服应用、文件与远程访问'
 arch=('x86_64')
 url='https://lazycat.cloud/'
