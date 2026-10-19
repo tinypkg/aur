@@ -32,6 +32,7 @@
 - **[druk-bin](https://aur.archlinux.org/packages/druk-bin)** - 终端代码编辑器，支持文件树、标签页、搜索、Git 状态和 30 多种语言的语法高亮（[源码](https://github.com/letstri/druk)）
 - **[ediary-bin](https://aur.archlinux.org/packages/ediary-bin)** - eDiary 是一款免费的、久经考验的日记软件（[官网](https://www.haoxg.net)）
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
+- **[elyterminal-bin](https://aur.archlinux.org/packages/elyterminal-bin)** - 基于 GPUI 的 GPU 加速终端模拟器（[源码](https://git.zacharyzhang.com/ZacharyZhang-NY/ELYTerminal)）
 - **[fizzy-cli-bin](https://aur.archlinux.org/packages/fizzy-cli-bin)** - Fizzy 命令行客户端，可从终端或 AI Agent 管理看板、卡片、评论和任务（[官网](https://fizzy.do) · [源码](https://github.com/basecamp/fizzy-cli)）
 - **[hclient-cli-bin](https://aur.archlinux.org/packages/hclient-cli-bin)** - 懒猫微服命令行客户端 (Lazycat Microserver CLI client) ([主页](https://lazycat.cloud/download))
 - **[herdr-bin](https://aur.archlinux.org/packages/herdr-bin)** - Supervise multiple coding agents in one terminal ([主页](https://github.com/ogulcancelik/herdr))
