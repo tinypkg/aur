@@ -68,6 +68,7 @@
 - **[octoscode-bin](https://aur.archlinux.org/packages/octoscode-bin)** - Octoscode - Octos's Coding Agent ([主页](https://github.com/octos-org/octoscode))
 - **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/Open-Less/openless))
 - **[pluely-bin](https://aur.archlinux.org/packages/pluely-bin)** - Privacy-first AI assistant for meetings, interviews, and conversations ([官网](https://pluely.com) · [源码](https://github.com/iamsrikanthnani/pluely))
+- **[pig-bin](https://aur.archlinux.org/packages/pig-bin)** - PiG (Pi in Go)：Pi 编程 agent 的 Go 移植版，静态双架构二进制（[官网](https://pi-in-go.dev) · [源码](https://github.com/MichaelKinsy/PiG)）
 - **[pinch-tab-bin](https://aur.archlinux.org/packages/pinch-tab-bin)** - Browser control for AI agents ([官网](https://pinchtab.com) · [源码](https://github.com/pinchtab/pinchtab))
 - **[orbien-desktop-bin](https://aur.archlinux.org/packages/orbien-desktop-bin)** - 轻量高性能的内网穿透工具，提供 Rust 原生跨平台桌面客户端，支持 TCP、QUIC、KCP、WebSocket 传输以及 TCP、UDP、HTTP、HTTPS 代理（[主页](https://github.com/orbien-org/orbien)）
 - **[qianji-bin](https://aur.archlinux.org/packages/qianji-bin)** - 钱迹：跨平台个人记账应用，专注账目记录与资产管理（[官网](https://qianjiapp.com) · [发布](https://github.com/litangtech/Qianji-Linux-Release)）
