@@ -32,7 +32,13 @@
 - **[druk-bin](https://aur.archlinux.org/packages/druk-bin)** - 终端代码编辑器，支持文件树、标签页、搜索、Git 状态和 30 多种语言的语法高亮（[源码](https://github.com/letstri/druk)）
 - **[ediary-bin](https://aur.archlinux.org/packages/ediary-bin)** - eDiary 是一款免费的、久经考验的日记软件（[官网](https://www.haoxg.net)）
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
-- **[elyterminal-bin](https://aur.archlinux.org/packages/elyterminal-bin)** - 基于 GPUI 的 GPU 加速终端模拟器（[源码](https://git.zacharyzhang.com/ZacharyZhang-NY/ELYTerminal)）
+- **[elyterminal-bin](https://aur.archlinux.org/packages/elyterminal-bin)** - 基于 GPUI 的 GPU 加速终端模拟器（[源码](https://github.com/ELY-Open-Source/ELYTerminal)）
+- **[ely-doc-app-bin](https://aur.archlinux.org/packages/ely-doc-app-bin)** - Ely Office 文档套件：ElyDoc 文字处理（[官网](https://office.elygpui.com) · [发布](https://github.com/ELY-Open-Source/ElyOffice)）
+- **[ely-mark-app-bin](https://aur.archlinux.org/packages/ely-mark-app-bin)** - Ely Office 文档套件：ElyMark Markdown 编辑器（[官网](https://office.elygpui.com) · [发布](https://github.com/ELY-Open-Source/ElyOffice)）
+- **[ely-pdf-app-bin](https://aur.archlinux.org/packages/ely-pdf-app-bin)** - Ely Office 文档套件：ElyPDF 阅读器（[官网](https://office.elygpui.com) · [发布](https://github.com/ELY-Open-Source/ElyOffice)）
+- **[ely-show-app-bin](https://aur.archlinux.org/packages/ely-show-app-bin)** - Ely Office 文档套件：ElyShow 演示文稿（[官网](https://office.elygpui.com) · [发布](https://github.com/ELY-Open-Source/ElyOffice)）
+- **[ely-table-app-bin](https://aur.archlinux.org/packages/ely-table-app-bin)** - Ely Office 文档套件：ElyTable 电子表格（[官网](https://office.elygpui.com) · [发布](https://github.com/ELY-Open-Source/ElyOffice)）
+- **[ely-tree-app-bin](https://aur.archlinux.org/packages/ely-tree-app-bin)** - Ely Office 文档套件：ElyTree 文件树与文档管理（[官网](https://office.elygpui.com) · [发布](https://github.com/ELY-Open-Source/ElyOffice)）
 - **[fizzy-cli-bin](https://aur.archlinux.org/packages/fizzy-cli-bin)** - Fizzy 命令行客户端，可从终端或 AI Agent 管理看板、卡片、评论和任务（[官网](https://fizzy.do) · [源码](https://github.com/basecamp/fizzy-cli)）
 - **[hatoba-bin](https://aur.archlinux.org/packages/hatoba-bin)** - 开源桌面 SSH 客户端，内置 AI 助手，通过自建 Cloudflare Worker 实现端到端加密同步（[官网](https://hatoba.fog.moe) · [源码](https://github.com/scarletkc/Hatoba)）
 - **[hclient-cli-bin](https://aur.archlinux.org/packages/hclient-cli-bin)** - 懒猫微服命令行客户端 (Lazycat Microserver CLI client) ([主页](https://lazycat.cloud/download))
