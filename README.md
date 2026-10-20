@@ -67,6 +67,7 @@
 - **[ocd-bin](https://aur.archlinux.org/packages/ocd-bin)** - Self-hosted Cloudflare Workers 兼容平台 open-compute 的 CLI，单 Rust 二进制集成 Workers/KV/D1/R2/DO/Queues 等（[官网](https://open-compute.dev) · [源码](https://github.com/elliothux/open-compute)）
 - **[octoscode-bin](https://aur.archlinux.org/packages/octoscode-bin)** - Octoscode - Octos's Coding Agent ([主页](https://github.com/octos-org/octoscode))
 - **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/Open-Less/openless))
+- **[pdf-math-reader-bin](https://aur.archlinux.org/packages/pdf-math-reader-bin)** - 实时翻译阅读科学文献，支持 PDF 公式与图表（[源码](https://github.com/PDFMathTranslate/PDFMathReader)）
 - **[pluely-bin](https://aur.archlinux.org/packages/pluely-bin)** - Privacy-first AI assistant for meetings, interviews, and conversations ([官网](https://pluely.com) · [源码](https://github.com/iamsrikanthnani/pluely))
 - **[pig-bin](https://aur.archlinux.org/packages/pig-bin)** - PiG (Pi in Go)：Pi 编程 agent 的 Go 移植版，静态双架构二进制（[官网](https://pi-in-go.dev) · [源码](https://github.com/MichaelKinsy/PiG)）
 - **[pinch-tab-bin](https://aur.archlinux.org/packages/pinch-tab-bin)** - Browser control for AI agents ([官网](https://pinchtab.com) · [源码](https://github.com/pinchtab/pinchtab))
