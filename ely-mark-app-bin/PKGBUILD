@@ -2,8 +2,8 @@
 # Ely Office desktop apps. Named *-app-bin because the standard ely-*-bin
 # names are already taken on AUR by another maintainer.
 pkgname=ely-mark-app-bin
-pkgver=0.1.8
-pkgrel=2
+pkgver=0.1.9
+pkgrel=1
 pkgdesc="ElyMark - Markdown editor from the Ely Office suite"
 arch=('x86_64')
 url="https://office.elygpui.com"
