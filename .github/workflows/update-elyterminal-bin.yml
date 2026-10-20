@@ -35,7 +35,8 @@ jobs:
             VERSION="${{ github.event.inputs.version }}"
           else
             VERSION=$(curl --fail --silent --show-error --location --retry 3 \
-              https://git.zacharyzhang.com/api/v1/repos/ZacharyZhang-NY/ELYTerminal/releases/latest | \
+              --header "Authorization: Bearer ${{ github.token }}" \
+              https://api.github.com/repos/ELY-Open-Source/ELYTerminal/releases/latest | \
               jq -er '.tag_name | strings | select(length > 0)')
           fi
           VERSION="${VERSION#v}"
@@ -46,7 +47,7 @@ jobs:
         run: |
           set -euo pipefail
           STATUS=$(curl --fail --silent --show-error --location --retry 3 -r 0-1023 -o /dev/null -w '%{http_code}' \
-            "https://git.zacharyzhang.com/ZacharyZhang-NY/ELYTerminal/releases/download/v${{ steps.get_version.outputs.version }}/ELYTerminal-${{ steps.get_version.outputs.version }}-linux-x86_64.tar.gz")
+            "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v${{ steps.get_version.outputs.version }}/ELYTerminal-${{ steps.get_version.outputs.version }}-linux-x86_64.tar.gz")
           [ "$STATUS" = "206" ] || [ "$STATUS" = "200" ] || { echo "asset not found (HTTP $STATUS)" >&2; exit 1; }
 
       - name: Get current version
