@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=pig-bin
-pkgver=0.5.1
-pkgrel=2
+pkgver=0.5.2
+pkgrel=1
 pkgdesc="PiG (Pi in Go) - a Go port of the Pi coding agent"
 arch=('x86_64' 'aarch64')
 url="https://pi-in-go.dev"
