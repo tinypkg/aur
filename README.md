@@ -94,6 +94,7 @@
 - **[vlaina-bin](https://aur.archlinux.org/packages/vlaina-bin)** - A purest sanctuary,for your deepest thoughts. ([主页](https://github.com/vladelaina/vlaina))
 - **[whatcable-cli-bin](https://aur.archlinux.org/packages/whatcable-cli-bin)** - A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do ([主页](https://github.com/Zetaphor/whatcable-linux))
 - **[wu-bin](https://aur.archlinux.org/packages/wu-bin)** - Fast, native code editor in Rust that feels like VS Code ([主页](https://github.com/farshed/wu))
+- **[xerj-bin](https://aur.archlinux.org/packages/xerj-bin)** - 面向 AI agent 的本地优先搜索引擎与 MCP server，支持 BM25/向量/混合检索代码、文档、日志与 PDF（[官网](https://xerj.org) · [源码](https://github.com/xerj-org/xerj)）
 - **[z-code-bin](https://aur.archlinux.org/packages/z-code-bin)** - ZCode - AI Agents combined with existing toolchains for planning, coding, review and deployment ([主页](https://zcode.z.ai))
 - **[zeron-bin](https://aur.archlinux.org/packages/zeron-bin)** - 面向 Claude Code、Codex、Cursor、Devin 等编程 agent 的原生控制平面（Rust + GPUI），支持 x86_64 和 aarch64（[官网](https://zeron.sh) · [源码](https://github.com/zeronsh/zeron)）
 
