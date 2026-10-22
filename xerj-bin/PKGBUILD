@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=xerj-bin
 pkgver=1.0.0rc.98
-pkgrel=1
+pkgrel=2
 pkgdesc="Local-first search engine and MCP server for AI agents: BM25, vector and hybrid search over code, docs, logs and PDFs"
 arch=('x86_64' 'aarch64')
 url="https://xerj.org"
