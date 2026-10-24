@@ -188,7 +188,7 @@ jobs:
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: ${{ steps.compare.outputs.bump_rel == "true" && format("Bump pkgrel for yetease-music-bin {0}", steps.release.outputs.version) || format("Update yetease-music-bin to version {0}", steps.release.outputs.version) }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for yetease-music-bin {0}', steps.release.outputs.version) || format('Update yetease-music-bin to version {0}', steps.release.outputs.version) }}
           ssh_keyscan_types: rsa,ecdsa,ed25519
 
       - name: Commit package state
