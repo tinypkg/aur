@@ -1,4 +1,4 @@
-name: Update floral-notepaper-bin Version
+name: Update floral-notepaper-app Version
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ on:
     - cron: "50 */12 * * *"
 
 concurrency:
-  group: aur-floral-notepaper-bin
+  group: aur-floral-notepaper-app
   cancel-in-progress: false
 
 jobs:
@@ -82,13 +82,13 @@ jobs:
             }
           done
 
-          CURRENT_VERSION=$(sed -n "s/^pkgver=//p" floral-notepaper-bin/PKGBUILD)
-          CURRENT_REL=$(sed -n "s/^pkgrel=//p" floral-notepaper-bin/PKGBUILD)
+          CURRENT_VERSION=$(sed -n "s/^pkgver=//p" floral-notepaper-app/PKGBUILD)
+          CURRENT_REL=$(sed -n "s/^pkgrel=//p" floral-notepaper-app/PKGBUILD)
           AUR_VERSION=$(
             curl --fail --silent --show-error --location \
               --retry 3 --retry-all-errors --retry-delay 2 \
               --connect-timeout 15 --max-time 120 \
-              "https://aur.archlinux.org/rpc/?v=5&type=info&arg=floral-notepaper-bin" |
+              "https://aur.archlinux.org/rpc/?v=5&type=info&arg=floral-notepaper-app" |
               jq -er "if .resultcount == 0 then \"\" else .results[0].Version end"
           )
 
@@ -170,7 +170,7 @@ jobs:
           LATEST_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
-          cd floral-notepaper-bin
+          cd floral-notepaper-app
           if [ "$BUMP_REL" = "true" ]; then
             CURRENT_REL=$(sed -n "s/^pkgrel=//p" PKGBUILD)
             sed -i "s/^pkgrel=.*/pkgrel=$((CURRENT_REL + 1))/" PKGBUILD
@@ -183,14 +183,14 @@ jobs:
         if: steps.compare.outputs.package_update == "true"
         uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
         with:
-          pkgname: floral-notepaper-bin
-          pkgbuild: ./floral-notepaper-bin/PKGBUILD
+          pkgname: floral-notepaper-app
+          pkgbuild: ./floral-notepaper-app/PKGBUILD
           updpkgsums: true
           post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for floral-notepaper-bin {0}', steps.release.outputs.version) || format('Update floral-notepaper-bin to version {0}', steps.release.outputs.version) }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for floral-notepaper-app {0}', steps.release.outputs.version) || format('Update floral-notepaper-app to version {0}', steps.release.outputs.version) }}
           ssh_keyscan_types: rsa,ecdsa,ed25519
 
       - name: Commit package state
@@ -202,15 +202,15 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add floral-notepaper-bin/PKGBUILD
+          git add floral-notepaper-app/PKGBUILD
           if git diff --cached --quiet; then
             echo "AUR publication required no GitHub metadata change."
             exit 0
           fi
           if [ "$BUMP_REL" = "true" ]; then
-            git commit -m "Bump pkgrel for floral-notepaper-bin $VERSION"
+            git commit -m "Bump pkgrel for floral-notepaper-app $VERSION"
           else
-            git commit -m "Update floral-notepaper-bin to version $VERSION"
+            git commit -m "Update floral-notepaper-app to version $VERSION"
           fi
           git pull --rebase origin main
           git push
