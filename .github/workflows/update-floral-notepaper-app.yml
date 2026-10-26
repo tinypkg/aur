@@ -155,8 +155,21 @@ jobs:
           # the binary instead of trusting dpkg-deb --field Version.
           extracted="$RUNNER_TEMP/verify-root"
           mkdir -p "$extracted"
-          bsdtar -xOf "$RUNNER_TEMP/$deb" "data.tar.*" |
-            bsdtar --no-same-owner -xf - -C "$extracted" "usr/bin/*"
+          # ubuntu-latest has no bsdtar; locate the data member dynamically
+          # and pick a decompressor by suffix instead of assuming a format.
+          data_member=$(ar t "$RUNNER_TEMP/$deb" | grep "^data.tar\.")
+          [[ -n "$data_member" ]] || { echo "no data.tar.* member in deb" >&2; exit 1; }
+          case "$data_member" in
+            *.gz) decompress="gzip -cd" ;;
+            *.xz) decompress="xz -cd" ;;
+            *.zst) decompress="zstd -cd" ;;
+            *.bz2) decompress="bzip2 -cd" ;;
+            *.lz4) decompress="lz4 -cd" ;;
+            *) decompress="cat" ;;
+          esac
+          ar p "$RUNNER_TEMP/$deb" "$data_member" |
+            $decompress |
+            tar -x -C "$extracted" --wildcards "usr/bin/*"
           grep -aqF "floral-notepaper ${VERSION}" "$extracted/usr/bin/floral-notepaper" || {
             echo "binary does not advertise version $VERSION; upstream packaging metadata may be stale" >&2
             exit 1
