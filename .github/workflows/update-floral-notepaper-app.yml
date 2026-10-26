@@ -134,7 +134,7 @@ jobs:
           echo "bump_rel=$BUMP_REL" >> "$GITHUB_OUTPUT"
 
       - name: Verify deb payload
-        if: steps.compare.outputs.package_update == "true"
+        if: steps.compare.outputs.package_update == 'true'
         env:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
@@ -164,7 +164,7 @@ jobs:
           echo "verified $deb (binary version string matches v${VERSION})"
 
       - name: Stage PKGBUILD
-        if: steps.compare.outputs.package_update == "true"
+        if: steps.compare.outputs.package_update == 'true'
         env:
           BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
           LATEST_VERSION: ${{ steps.release.outputs.version }}
@@ -180,7 +180,7 @@ jobs:
           fi
 
       - name: Publish to AUR
-        if: steps.compare.outputs.package_update == "true"
+        if: steps.compare.outputs.package_update == 'true'
         uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
         with:
           pkgname: floral-notepaper-app
@@ -194,7 +194,7 @@ jobs:
           ssh_keyscan_types: rsa,ecdsa,ed25519
 
       - name: Commit package state
-        if: steps.compare.outputs.package_update == "true"
+        if: steps.compare.outputs.package_update == 'true'
         env:
           BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
           VERSION: ${{ steps.release.outputs.version }}
