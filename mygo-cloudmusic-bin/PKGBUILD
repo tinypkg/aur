@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=mygo-cloudmusic-bin
 pkgver=0.1.12
-pkgrel=1
+pkgrel=2
 pkgdesc="MyGo 云音乐 - 第三方网易云音乐原生客户端"
 arch=('x86_64' 'aarch64')
 url="https://music.egoist.dev"
