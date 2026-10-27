@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=uniclipboard-bin
 pkgver=1.5.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Real-time clipboard sync across macOS, Windows and Linux — local-first, peer-to-peer, and end-to-end encrypted"
 arch=('x86_64' 'aarch64')
 url="https://www.uniclipboard.app"
