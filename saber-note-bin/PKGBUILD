@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=saber-note-bin
-pkgver=1.37.0
-pkgrel=2
+pkgver=1.37.1
+pkgrel=1
 pkgdesc="The cross-platform open-source notes app built for handwriting"
 arch=('x86_64' 'aarch64')
 url="https://saber.adil.hanney.org/"
