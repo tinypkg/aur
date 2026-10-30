@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=delta-app-bin
 pkgver=0.23.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Delta - AI-native code editor"
 arch=('x86_64' 'aarch64')
 url="https://delta.dev"
