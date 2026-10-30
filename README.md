@@ -44,6 +44,7 @@
 - **[hatoba-bin](https://aur.archlinux.org/packages/hatoba-bin)** - 开源桌面 SSH 客户端，内置 AI 助手，通过自建 Cloudflare Worker 实现端到端加密同步（[官网](https://hatoba.fog.moe) · [源码](https://github.com/scarletkc/Hatoba)）
 - **[hc-bin](https://aur.archlinux.org/packages/hc-bin)** - herdr-core（hc）：保持 Herdr 终端与编码代理持续运行的后台服务，静态链接、开箱即用（[官网](https://herdr.dev/core/) · [源码](https://github.com/herdrdev/herdr-core) · [说明](hc-bin/README.md)）
 - **[hclient-cli-bin](https://aur.archlinux.org/packages/hclient-cli-bin)** - 懒猫微服命令行客户端 (Lazycat Microserver CLI client) ([主页](https://lazycat.cloud/download))
+- **[herdr-app](https://aur.archlinux.org/packages/herdr-app)** - Herdr 桌面应用：让终端与编码代理持续运行的本地工作台（[官网](https://herdr.dev) · [源码](https://github.com/herdrdev/herdr-app) · [说明](herdr-app/README.md)）
 - **[herdr-bin](https://aur.archlinux.org/packages/herdr-bin)** - Supervise multiple coding agents in one terminal ([主页](https://github.com/ogulcancelik/herdr))
 - **[iris-screenshot-bin](https://aur.archlinux.org/packages/iris-screenshot-bin)** - Screenshots of live websites. Minimal interface, powerful engine. ([主页](https://github.com/brijr/iris))
 - **[karing-bin](https://aur.archlinux.org/packages/karing-bin)** - Simple & Powerful proxy utility ([主页](https://github.com/KaringX/karing))
