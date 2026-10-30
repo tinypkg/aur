@@ -1,5 +1,5 @@
 # Maintainer: czyt <czytcn@gmail.com>
-pkgname=herdr-app
+pkgname=herdr-app-desktop-bin
 pkgver=0.1.8
 pkgrel=1
 pkgdesc="Native desktop workspace for terminals and coding agents that keep running (prebuilt)"
@@ -10,7 +10,7 @@ depends=('gcc-libs' 'glibc' 'hicolor-icon-theme' 'libglvnd' 'libxcb' 'libxkbcomm
 optdepends=('hc-bin: herdr-core background server (the app offers to fetch it on first run)')
 provides=("herdr-app=${pkgver}")
 # Installs the same files as herdr-app-bin, so the two must not coexist.
-conflicts=('herdr-app-bin')
+conflicts=('herdr-app-bin' 'herdr-app')
 options=('!strip' '!debug')
 
 # Upstream publishes no GitHub Releases: versions live in the
