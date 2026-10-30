@@ -42,6 +42,7 @@
 - **[ely-tree-app-bin](https://aur.archlinux.org/packages/ely-tree-app-bin)** - Ely Office 文档套件：ElyTree 文件树与文档管理（[官网](https://office.elygpui.com) · [发布](https://github.com/ELY-Open-Source/ElyOffice)）
 - **[fizzy-cli-bin](https://aur.archlinux.org/packages/fizzy-cli-bin)** - Fizzy 命令行客户端，可从终端或 AI Agent 管理看板、卡片、评论和任务（[官网](https://fizzy.do) · [源码](https://github.com/basecamp/fizzy-cli)）
 - **[hatoba-bin](https://aur.archlinux.org/packages/hatoba-bin)** - 开源桌面 SSH 客户端，内置 AI 助手，通过自建 Cloudflare Worker 实现端到端加密同步（[官网](https://hatoba.fog.moe) · [源码](https://github.com/scarletkc/Hatoba)）
+- **[hc-bin](https://aur.archlinux.org/packages/hc-bin)** - herdr-core（hc）：保持 Herdr 终端与编码代理持续运行的后台服务，静态链接、开箱即用（[官网](https://herdr.dev/core/) · [源码](https://github.com/herdrdev/herdr-core) · [说明](hc-bin/README.md)）
 - **[hclient-cli-bin](https://aur.archlinux.org/packages/hclient-cli-bin)** - 懒猫微服命令行客户端 (Lazycat Microserver CLI client) ([主页](https://lazycat.cloud/download))
 - **[herdr-bin](https://aur.archlinux.org/packages/herdr-bin)** - Supervise multiple coding agents in one terminal ([主页](https://github.com/ogulcancelik/herdr))
 - **[iris-screenshot-bin](https://aur.archlinux.org/packages/iris-screenshot-bin)** - Screenshots of live websites. Minimal interface, powerful engine. ([主页](https://github.com/brijr/iris))

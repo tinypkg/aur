@@ -36,32 +36,35 @@ jobs:
         run: |
           set -euo pipefail
 
-          MANIFEST="https://releases.herdr.dev/core/latest.json"
-          if [ -n "${INPUT_VERSION:-}" ]; then
-            VERSION="${INPUT_VERSION#v}"
-            [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
-              echo "Unsupported upstream version: $VERSION" >&2
+          REQ="${INPUT_VERSION:-}"
+          REQ="${REQ#v}"
+
+          if [ -n "$REQ" ]; then
+            [[ "$REQ" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+              echo "Unsupported upstream version: $REQ" >&2
               exit 1
             }
-            MANIFEST="https://releases.herdr.dev/core/${VERSION}/manifest.json"
+            MANIFEST="https://releases.herdr.dev/core/$REQ/manifest.json"
+          else
+            MANIFEST="https://releases.herdr.dev/core/latest.json"
           fi
 
-          curl --fail --silent --show-error --location \\
-            --retry 3 --retry-all-errors --retry-delay 2 \\
-            --connect-timeout 15 --max-time 120 \\
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 120 \
             "$MANIFEST" --output manifest-raw.json
           jq . manifest-raw.json > manifest.json
 
           DISCOVERED_VERSION=$(jq -er '.version | select(type == "string" and length > 0)' manifest.json)
-          [[ -z "${INPUT_VERSION:-}" || "$DISCOVERED_VERSION" == "$VERSION" ]] || {
-            echo "Manifest version $DISCOVERED_VERSION does not match requested $VERSION" >&2
+          [[ "$DISCOVERED_VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+            echo "Manifest carries an unusable version: $DISCOVERED_VERSION" >&2
             exit 1
           }
+          if [ -n "$REQ" ] && [ "$DISCOVERED_VERSION" != "$REQ" ]; then
+            echo "Manifest version $DISCOVERED_VERSION does not match requested $REQ" >&2
+            exit 1
+          fi
           VERSION=$DISCOVERED_VERSION
-          [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
-            echo "Unsupported upstream version: $VERSION" >&2
-            exit 1
-          }
 
           # Both Linux architectures must be present with a usable sha256.
           for target in linux-x86_64 linux-aarch64; do
@@ -80,13 +83,14 @@ jobs:
 
           CURRENT_VERSION=$(sed -n 's/^pkgver=//p' hc-bin/PKGBUILD)
           CURRENT_REL=$(sed -n 's/^pkgrel=//p' hc-bin/PKGBUILD)
-          AUR_INFO=$(
-            curl --fail --silent --show-error --location \\
-              --retry 3 --retry-all-errors --retry-delay 2 \\
-              --connect-timeout 15 --max-time 120 \\
-              "https://aur.archlinux.org/rpc/?v=5&type=info&arg=hc-bin"
+
+          AUR_VERSION=$(
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              "https://aur.archlinux.org/rpc/?v=5&type=info&arg=hc-bin" |
+              jq -er 'if .resultcount == 0 then "" else .results[0].Version end'
           )
-          AUR_VERSION=$(jq -er 'if .resultcount == 0 then "" else .results[0].Version end' <<<"$AUR_INFO")
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
@@ -112,7 +116,7 @@ jobs:
           PACKAGE_UPDATE=false
           BUMP_REL=false
           if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
-            OLDEST_VERSION=$(printf '%s\\n%s\\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
+            OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
             if [ "$OLDEST_VERSION" != "$CURRENT_VERSION" ]; then
               echo "Refusing downgrade from $CURRENT_VERSION to $LATEST_VERSION" >&2
               exit 1
@@ -136,18 +140,18 @@ jobs:
         run: |
           set -euo pipefail
 
-          MANIFEST="https://releases.herdr.dev/core/${VERSION}/manifest.json"
-          curl --fail --silent --show-error --location \\
-            --retry 3 --retry-all-errors --retry-delay 2 \\
-            --connect-timeout 15 --max-time 120 \\
+          MANIFEST="https://releases.herdr.dev/core/$VERSION/manifest.json"
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 120 \
             "$MANIFEST" --output manifest.json
 
           for target in linux-x86_64 linux-aarch64; do
             url=$(jq -er --arg t "$target" '.targets[$t].url' manifest.json)
             want=$(jq -er --arg t "$target" '.targets[$t].sha256' manifest.json)
             out="$RUNNER_TEMP/hc-$target.tar.gz"
-            curl --fail --silent --show-error --location \\
-              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 1200 \\
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 1200 \
               "$url" --output "$out"
             got=$(sha256sum "$out" | cut -d' ' -f1)
             [ "$got" = "$want" ] || {
