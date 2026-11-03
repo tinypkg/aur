@@ -85,6 +85,7 @@
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
 - **[rexadb-bin](https://aur.archlinux.org/packages/rexadb-bin)** - Multi-database desktop client for PostgreSQL, MySQL, MongoDB, SQLite, ClickHouse, Redis, and SQL Server（[官网](https://www.rexadb.app)）
 - **[ripwire-bin](https://aur.archlinux.org/packages/ripwire-bin)** - The ripgrep of AI context：为 AI agent 提供排序、确定性的仓库地图、变更影响范围、建议测试和质量差异的 C++23 CLI 与 MCP server（[主页](https://github.com/redhat-et/ripwire) · [说明](ripwire-bin/README.md)）
+- **[rustgrid-bin](https://aur.archlinux.org/packages/rustgrid-bin)** - RustGrid：用 Rust 编写、不依赖 WebView 的原生数据库 GUI，支持 SQL 与 Redis（[源码](https://github.com/yisier/rustgrid)）
 - **[saber-note-bin](https://aur.archlinux.org/packages/saber-note-bin)** - Saber：为手写而生的跨平台开源笔记应用，支持 x86_64 与 aarch64（[官网](https://saber.adil.hanney.org/) · [源码](https://github.com/saber-notes/saber)）
 - **[subnetdesk-bin](https://aur.archlinux.org/packages/subnetdesk-bin)** - LAN-only remote desktop based on RustDesk（[主页](https://github.com/zibo-chen/SubnetDesk)）
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
