@@ -153,7 +153,8 @@ jobs:
             echo "deb Architecture is $DEB_ARCH, expected amd64" >&2
             exit 1
           }
-          dpkg-deb --contents "$OUT" | grep -q '\./usr/bin/doop-desktop$' || {
+          dpkg-deb --contents "$OUT" > "$RUNNER_TEMP/doop-contents.txt"
+          grep -q '\./usr/bin/doop-desktop$' "$RUNNER_TEMP/doop-contents.txt" || {
             echo "deb does not ship /usr/bin/doop-desktop" >&2
             exit 1
           }
