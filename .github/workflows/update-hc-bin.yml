@@ -158,7 +158,10 @@ jobs:
               echo "checksum mismatch for $target: got $got want $want" >&2
               exit 1
             }
-            tar -tzf "$out" | grep -qx "herdr-core" || {
+            # List into a variable: piping tar into "grep -q" would make tar die
+            # with SIGPIPE, and pipefail would turn that into a false failure.
+            listing=$(tar -tzf "$out")
+            grep -x "herdr-core" <<<"$listing" >/dev/null || {
               echo "$target tarball does not contain herdr-core at its root" >&2
               exit 1
             }
