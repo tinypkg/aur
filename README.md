@@ -31,6 +31,7 @@
 - **[dim-agent-bin](https://aur.archlinux.org/packages/dim-agent-bin)** - 一个可在桌面、终端、脚本和编辑器中运行的本地 agent 运行时，模型任你选择、随项目成长（[官网](https://dimagent.com)）
 - **[docker-sbx-bin](https://aur.archlinux.org/packages/docker-sbx-bin)** - Docker Sandboxes：在隔离的 microVM 沙箱中运行 AI 编程代理（[官网](https://www.docker.com/products/docker-sandboxes/) · [发布](https://github.com/docker/sbx-releases)）
 - **[docking-bin](https://aur.archlinux.org/packages/docking-bin)** - A lightweight, feature-rich dock for Linux written in Python with GTK 3 and Cairo ([主页](https://github.com/edumucelli/docking))
+- **[doop-bin](https://aur.archlinux.org/packages/doop-bin)** - 开源的多人在线设计画布，人类与 AI Agent 可同时在同一画布上实时协作，内置 MCP server（[官网](https://doop.design) · [源码](https://github.com/kgoedecke/doop)）
 - **[druk-bin](https://aur.archlinux.org/packages/druk-bin)** - 终端代码编辑器，支持文件树、标签页、搜索、Git 状态和 30 多种语言的语法高亮（[源码](https://github.com/letstri/druk)）
 - **[ediary-bin](https://aur.archlinux.org/packages/ediary-bin)** - eDiary 是一款免费的、久经考验的日记软件（[官网](https://www.haoxg.net)）
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
