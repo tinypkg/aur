@@ -154,8 +154,9 @@ jobs:
             exit 1
           }
           dpkg-deb --contents "$OUT" > "$RUNNER_TEMP/doop-contents.txt"
-          grep -q '\./usr/bin/doop-desktop$' "$RUNNER_TEMP/doop-contents.txt" || {
-            echo "deb does not ship /usr/bin/doop-desktop" >&2
+          grep -qE '(^|/)usr/bin/doop-desktop$' "$RUNNER_TEMP/doop-contents.txt" || {
+            echo "deb does not ship /usr/bin/doop-desktop; listing follows:" >&2
+            cat "$RUNNER_TEMP/doop-contents.txt" >&2
             exit 1
           }
           echo "verified deb $DEB_VERSION ($DEB_ARCH)"
