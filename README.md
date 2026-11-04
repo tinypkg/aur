@@ -69,6 +69,7 @@
 - **[mise-bin](https://aur.archlinux.org/packages/mise-bin)** - dev tools, env vars, task runner ([主页](https://github.com/jdx/mise))
 - **[mise-musl-bin](https://aur.archlinux.org/packages/mise-musl-bin)** - Portable musl build of mise for dev tools, environment variables, and task running ([主页](https://github.com/jdx/mise))
 - **[modbux-bin](https://aur.archlinux.org/packages/modbux-bin)** - Free open-source Modbus client GUI and server simulator for Modbus TCP, RTU and RTU over TCP ([主页](https://github.com/ploxc/modbux))
+- **[mole-cli-bin](https://aur.archlinux.org/packages/mole-cli-bin)** - 开源 Linux 桌面清理与优化 CLI，支持 apt/Snap/Flatpak/容器缓存与开发工具残留清理，命令为 `mo`（[主页](https://github.com/tw93/Mole)）
 - **[msime-bin](https://aur.archlinux.org/packages/msime-bin)** - 水杉输入法 Linux 版：IBus 宿主、Fcitx5 插件与桌面工具齐备，支持全拼、双拼、五笔、粤拼、注音、日文、韩文、藏文等方案；x86_64 与 aarch64 均可用（[官网](https://msime.app) · [源码](https://github.com/metasequoiaime/msime)）
 - **[nmem-cli](https://aur.archlinux.org/packages/nmem-cli)** - CLI and TUI for Nowledge Mem - AI memory management ([主页](https://mem.nowledge.co))
 - **[nowledge-mem-bin](https://aur.archlinux.org/packages/nowledge-mem-bin)** - Desktop app for Nowledge Mem - AI memory and context management ([主页](https://mem.nowledge.co))
