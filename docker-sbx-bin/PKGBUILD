@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=docker-sbx-bin
 pkgver=0.51.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Run AI coding agents in isolated Docker microVM sandboxes"
 arch=('x86_64' 'aarch64')
 url="https://www.docker.com/products/docker-sandboxes/"
