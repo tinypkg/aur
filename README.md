@@ -91,6 +91,7 @@
 - **[rustgrid-bin](https://aur.archlinux.org/packages/rustgrid-bin)** - RustGrid：用 Rust 编写、不依赖 WebView 的原生数据库 GUI，支持 SQL 与 Redis（[源码](https://github.com/yisier/rustgrid)）
 - **[saber-note-bin](https://aur.archlinux.org/packages/saber-note-bin)** - Saber：为手写而生的跨平台开源笔记应用，支持 x86_64 与 aarch64（[官网](https://saber.adil.hanney.org/) · [源码](https://github.com/saber-notes/saber)）
 - **[subnetdesk-bin](https://aur.archlinux.org/packages/subnetdesk-bin)** - LAN-only remote desktop based on RustDesk（[主页](https://github.com/zibo-chen/SubnetDesk)）
+- **[t3-code-bin](https://aur.archlinux.org/packages/t3-code-bin)** - T3 Code：面向编码 agent 的开源桌面应用，接入已有订阅、审阅代码改动并在项目里运行命令；支持 x86_64 与 aarch64，安装后运行 `t3code`（[官网](https://t3.codes) · [源码](https://github.com/pingdotgg/t3code)）
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
 - **[teahouse-bin](https://aur.archlinux.org/packages/teahouse-bin)** - 茶话间：纯内网、基于 IP 的局域网即时通讯与文件传输工具，支持 x86_64 和 aarch64；安装后运行 `teahouse` 或从应用菜单启动（[主页](https://github.com/skyjt/teahouse)）
 - **[tgrep-bin](https://aur.archlinux.org/packages/tgrep-bin)** - Trigram-indexed grep with a client/server architecture for fast regex search in large codebases locally（[主页](https://github.com/microsoft/tgrep) · [说明](tgrep-bin/README.md)）
