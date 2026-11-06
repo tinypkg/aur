@@ -1,0 +1,188 @@
+name: Update opendj-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Expected upstream version. Leave empty to detect the latest GitHub release."
+        required: false
+        type: string
+      force:
+        description: "Force verification and a packaging-only pkgrel bump"
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: "0 */12 * * *"
+
+concurrency:
+  group: aur-opendj-bin
+  cancel-in-progress: false
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Discover and verify release
+        id: release
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          PKGDIR=opendj-bin
+
+          if [[ -n "${INPUT_VERSION:-}" ]]; then
+            VERSION="${INPUT_VERSION#v}"
+            [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+              echo "Unsupported version: $VERSION" >&2
+              exit 1
+            }
+            RELEASE_API="https://api.github.com/repos/sebastian-beca/opendj/releases/tags/v${VERSION}"
+          else
+            RELEASE_API="https://api.github.com/repos/sebastian-beca/opendj/releases/latest"
+          fi
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 120 \
+            "$RELEASE_API" --output release.json
+
+          DISCOVERED_VERSION=$(jq -er '.tag_name | select(type == "string" and length > 0) | sub("^v"; "")' release.json)
+          [[ -z "${INPUT_VERSION:-}" || "$DISCOVERED_VERSION" == "$VERSION" ]] || {
+            echo "Release tag v$DISCOVERED_VERSION does not match requested version $VERSION" >&2
+            exit 1
+          }
+          VERSION=$DISCOVERED_VERSION
+          [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+            echo "Unsupported upstream version: $VERSION" >&2
+            exit 1
+          }
+
+          asset="opendj_${VERSION}_amd64.deb"
+          jq -e --arg asset "$asset" \
+            '.assets | any(.name == $asset and .state == "uploaded" and .size > 0)' \
+            release.json >/dev/null || {
+            echo "Missing or incomplete release asset: $asset" >&2
+            exit 1
+          }
+
+          CURRENT_VERSION=$(sed -n 's/^pkgver=//p' "$PKGDIR/PKGBUILD")
+          CURRENT_REL=$(sed -n 's/^pkgrel=//p' "$PKGDIR/PKGBUILD")
+          RESULT_COUNT=$(curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 120 \
+            'https://aur.archlinux.org/rpc/?v=5&type=info&arg=opendj-bin' |
+            jq -er '.resultcount')
+          [[ "$RESULT_COUNT" =~ ^[0-9]+$ ]] || {
+            echo "Unexpected AUR RPC response" >&2
+            exit 1
+          }
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "current_rel=$CURRENT_REL" >> "$GITHUB_OUTPUT"
+          echo "aur_exists=$([[ "$RESULT_COUNT" -gt 0 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Decide update
+        id: compare
+        env:
+          AUR_EXISTS: ${{ steps.release.outputs.aur_exists }}
+          CURRENT_VERSION: ${{ steps.release.outputs.current_version }}
+          FORCE_UPDATE: ${{ inputs.force }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$LATEST_VERSION" != "$CURRENT_VERSION" ]]; then
+            OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
+            if [[ "$OLDEST_VERSION" != "$CURRENT_VERSION" ]]; then
+              echo "Refusing downgrade from $CURRENT_VERSION to $LATEST_VERSION" >&2
+              exit 1
+            fi
+          fi
+
+          PACKAGE_UPDATE=false
+          BUMP_REL=false
+          if [[ "$AUR_EXISTS" != "true" ]]; then
+            PACKAGE_UPDATE=true
+          elif [[ "$LATEST_VERSION" != "$CURRENT_VERSION" ]]; then
+            PACKAGE_UPDATE=true
+          elif [[ "${FORCE_UPDATE:-false}" == true ]]; then
+            PACKAGE_UPDATE=true
+            BUMP_REL=true
+          fi
+
+          echo "package_update=$PACKAGE_UPDATE" >> "$GITHUB_OUTPUT"
+          echo "bump_rel=$BUMP_REL" >> "$GITHUB_OUTPUT"
+
+      - name: Validate Debian payload
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          asset="opendj_${VERSION}_amd64.deb"
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 600 \
+            "https://github.com/sebastian-beca/opendj/releases/download/v${VERSION}/${asset}" \
+            --output "$RUNNER_TEMP/$asset"
+          [[ $(dpkg-deb --field "$RUNNER_TEMP/$asset" Package) == opendj ]]
+          [[ $(dpkg-deb --field "$RUNNER_TEMP/$asset" Version) == "$VERSION" ]]
+          [[ $(dpkg-deb --field "$RUNNER_TEMP/$asset" Architecture) == amd64 ]]
+
+      - name: Stage PKGBUILD
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd opendj-bin
+          if [[ "$BUMP_REL" == true ]]; then
+            CURRENT_REL=$(sed -n 's/^pkgrel=//p' PKGBUILD)
+            sed -i "s/^pkgrel=.*/pkgrel=$((CURRENT_REL + 1))/" PKGBUILD
+          elif [[ "$(sed -n 's/^pkgver=//p' PKGBUILD)" != "$LATEST_VERSION" ]]; then
+            sed -i "s/^pkgver=.*/pkgver=$LATEST_VERSION/" PKGBUILD
+            sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
+          fi
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.package_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@084b0d9b15415bf9cdb65d44dad1efe37a354050 # v4.2.0
+        with:
+          pkgname: opendj-bin
+          pkgbuild: ./opendj-bin/PKGBUILD
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for opendj-bin {0}', steps.release.outputs.version) || format('Update opendj-bin to version {0}', steps.release.outputs.version) }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519
+
+      - name: Commit package state
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add opendj-bin/PKGBUILD
+          if git diff --cached --quiet; then
+            echo 'AUR publication required no GitHub metadata change.'
+            exit 0
+          fi
+          if [[ "$BUMP_REL" == true ]]; then
+            git commit -m "Bump pkgrel for opendj-bin $VERSION"
+          else
+            git commit -m "Update opendj-bin to version $VERSION"
+          fi
+          git pull --rebase origin main
+          git push
