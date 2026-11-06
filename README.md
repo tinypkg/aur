@@ -23,6 +23,7 @@
 - **[clauge-bin](https://aur.archlinux.org/packages/clauge-bin)** - One window. Every dev tool. ([主页](https://clauge.in))
 - **[codiff-bin](https://aur.archlinux.org/packages/codiff-bin)** - A beautiful, minimal, local diff viewer for reviewing staged and unstaged Git changes before committing ([主页](https://github.com/nkzw-tech/codiff))
 - **[confirmo-bin](https://aur.archlinux.org/packages/confirmo-bin)** - Your AI coding companion that lives on your desktop ([主页](https://confirmo.love))
+- **[crossbow-bin](https://aur.archlinux.org/packages/crossbow-bin)** - Crossbow：基于 mihomo 内核的代理客户端，Tauri 桌面界面，支持显式代理与 TUN 模式，安装后运行 `crossbow`（[源码](https://github.com/Richard-Zhang1019/Crossbow)）
 - **[cumora-bin](https://aur.archlinux.org/packages/cumora-bin)** - A workspace where AI teammates live, not visit. ([主页](https://cumora.ai))
 - **[dbx-bin](https://aur.archlinux.org/packages/dbx-bin)** - Open-source, lightweight, cross-platform database client (Tauri 2) ([主页](https://github.com/t8y2/dbx))
 - **[dbine-bin](https://aur.archlinux.org/packages/dbine-bin)** - DBine：支持 130+ SQL/NoSQL 数据库与云服务的桌面管理器，含笔记本、schema 对比、本地 AI 助手与 MCP server（[官网](https://dbine.com) · [源码](https://github.com/addlayer-io/dbine)）
