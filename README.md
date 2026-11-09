@@ -99,6 +99,7 @@
 - **[tcut-bin](https://aur.archlinux.org/packages/tcut-bin)** - Script terminal sessions in TypeScript, render reproducible MP4/GIF/SVG/HTML with Bun ([主页](https://github.com/AmanVarshney01/tcut))
 - **[teahouse-bin](https://aur.archlinux.org/packages/teahouse-bin)** - 茶话间：纯内网、基于 IP 的局域网即时通讯与文件传输工具，支持 x86_64 和 aarch64；安装后运行 `teahouse` 或从应用菜单启动（[主页](https://github.com/skyjt/teahouse)）
 - **[tgrep-bin](https://aur.archlinux.org/packages/tgrep-bin)** - Trigram-indexed grep with a client/server architecture for fast regex search in large codebases locally（[主页](https://github.com/microsoft/tgrep) · [说明](tgrep-bin/README.md)）
+- **[thesio-bin](https://aur.archlinux.org/packages/thesio-bin)** - Thesio：本地优先的学术研究与写作工作台，把笔记、文献、引用与专业排版放在一起，支持 x86_64 与 aarch64，安装后运行 `thesio` 或从应用菜单启动（[源码](https://github.com/cheetahbyte/thesio)）
 - **[tldraw-offline-bin](https://aur.archlinux.org/packages/tldraw-offline-bin)** - A local whiteboard for you and your agents ([主页](https://github.com/tldraw/tldraw-offline))
 - **[thinkrail-bin](https://aur.archlinux.org/packages/thinkrail-bin)** - Vibe code with pi in a lightweight, real IDE - The Vibe You Need ([官网](https://thinkrail.ai) · [源码](https://github.com/JetBrains/thinkrail))
 - **[tty7-bin](https://aur.archlinux.org/packages/tty7-bin)** - A terminal workbench in pure Rust: shells, persistent sessions, SSH, coding agents ([主页](https://github.com/l0ng-ai/tty7))
