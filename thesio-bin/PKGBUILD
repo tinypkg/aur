@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=thesio-bin
-pkgver=0.1.1
+pkgver=0.1.5
 pkgrel=1
 pkgdesc="A local-first workspace for academic research and writing"
 arch=('x86_64' 'aarch64')
