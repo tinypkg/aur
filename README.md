@@ -90,6 +90,7 @@
 - **[orbien-desktop-bin](https://aur.archlinux.org/packages/orbien-desktop-bin)** - 轻量高性能的内网穿透工具，提供 Rust 原生跨平台桌面客户端，支持 TCP、QUIC、KCP、WebSocket 传输以及 TCP、UDP、HTTP、HTTPS 代理（[主页](https://github.com/orbien-org/orbien)）
 - **[qianji-bin](https://aur.archlinux.org/packages/qianji-bin)** - 钱迹：跨平台个人记账应用，专注账目记录与资产管理（[官网](https://qianjiapp.com) · [发布](https://github.com/litangtech/Qianji-Linux-Release)）
 - **[read-aware-bin](https://aur.archlinux.org/packages/read-aware-bin)** - A local-first, AI-native reader that turns books, highlights, notes, and conversations into durable context ([主页](https://github.com/ahpxex/read-aware))
+- **[reason-network-bin](https://aur.archlinux.org/packages/reason-network-bin)** - Reason Network：让不同机器上的编码 agent 互相通信的团队目录与消息总线，端到端加密、点对点，支持 Claude Code、Codex、Cursor、Gemini CLI 等（[官网](https://reasonmachines.com) · [源码](https://github.com/reason-machines/reason-network)）
 - **[revpdf-bin](https://aur.archlinux.org/packages/revpdf-bin)** - The Best Free Offline PDF Editor ([主页](https://github.com/Pawandeep-prog/revpdf-release))
 - **[rexadb-bin](https://aur.archlinux.org/packages/rexadb-bin)** - Multi-database desktop client for PostgreSQL, MySQL, MongoDB, SQLite, ClickHouse, Redis, and SQL Server（[官网](https://www.rexadb.app)）
 - **[ripwire-bin](https://aur.archlinux.org/packages/ripwire-bin)** - The ripgrep of AI context：为 AI agent 提供排序、确定性的仓库地图、变更影响范围、建议测试和质量差异的 C++23 CLI 与 MCP server（[主页](https://github.com/redhat-et/ripwire) · [说明](ripwire-bin/README.md)）

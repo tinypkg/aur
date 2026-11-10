@@ -1,0 +1,50 @@
+# Maintainer: czyt <czytcn@gmail.com>
+
+pkgname=reason-network-bin
+pkgver=0.12.17
+pkgrel=1
+pkgdesc="Team directory and message bus that lets coding agents on different machines message each other"
+arch=('x86_64' 'aarch64')
+url="https://reasonmachines.com"
+license=('Apache-2.0' 'MIT')
+# Upstream ships statically linked musl builds, so nothing is linked at
+# runtime. The rest are helpers it shells out to when present.
+optdepends=(
+    'ca-certificates: TLS connections to the Reason service'
+    'libnotify: desktop notification for messages waiting approval'
+    'systemd: background service and busctl integration'
+    'xdg-utils: opening the browser for sign-in'
+)
+provides=('reason-network')
+conflicts=('reason-network')
+options=('!strip' '!debug')
+
+_repo="https://github.com/reason-machines/reason-network"
+_tarball="reason-network"
+source_x86_64=(
+    "${_tarball}-${pkgver}-x86_64.tar.gz::${_repo}/releases/download/v${pkgver}/${_tarball}-x86_64-unknown-linux-musl.tar.gz"
+    "LICENSE-APACHE::${_repo}/raw/v${pkgver}/LICENSE-APACHE"
+    "LICENSE-MIT::${_repo}/raw/v${pkgver}/LICENSE-MIT"
+    "NOTICE::${_repo}/raw/v${pkgver}/NOTICE"
+)
+source_aarch64=(
+    "${_tarball}-${pkgver}-aarch64.tar.gz::${_repo}/releases/download/v${pkgver}/${_tarball}-aarch64-unknown-linux-musl.tar.gz"
+    "LICENSE-APACHE::${_repo}/raw/v${pkgver}/LICENSE-APACHE"
+    "LICENSE-MIT::${_repo}/raw/v${pkgver}/LICENSE-MIT"
+    "NOTICE::${_repo}/raw/v${pkgver}/NOTICE"
+)
+sha256sums_x86_64=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums_aarch64=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+package() {
+    # Both archives contain a single top-level "reason-network", and makepkg
+    # only fetches the sources for $CARCH, so there is no clash here.
+    install -Dm755 "${srcdir}/${_tarball}" "${pkgdir}/usr/bin/${_tarball}"
+
+    install -Dm644 "${srcdir}/LICENSE-APACHE" \
+        "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE-APACHE"
+    install -Dm644 "${srcdir}/LICENSE-MIT" \
+        "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE-MIT"
+    install -Dm644 "${srcdir}/NOTICE" \
+        "${pkgdir}/usr/share/licenses/${pkgname}/NOTICE"
+}
