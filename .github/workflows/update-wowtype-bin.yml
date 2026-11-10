@@ -159,13 +159,13 @@ jobs:
           # Keep the listing in a file: letting grep exit early closes the pipe
           # under pipefail and trips tar with a bogus write error.
           dpkg-deb --fsys-tarfile "$RUNNER_TEMP/$ASSET" |
-            tar -tf - > "$RUNNER_TEMP/listing.txt"
+            tar -tf - | sed 's|^\./||' > "$RUNNER_TEMP/listing.txt"
           for entry in \
-            ./usr/lib/x86_64-linux-gnu/fcitx5/libwowtype.so \
-            ./usr/share/fcitx5/addon/wowtype.conf \
-            ./usr/share/fcitx5/inputmethod/wowtype.conf \
-            ./usr/share/wowtype/lexicon.tsv \
-            ./usr/share/wowtype/words.lm; do
+            usr/lib/x86_64-linux-gnu/fcitx5/libwowtype.so \
+            usr/share/fcitx5/addon/wowtype.conf \
+            usr/share/fcitx5/inputmethod/wowtype.conf \
+            usr/share/wowtype/lexicon.tsv \
+            usr/share/wowtype/words.lm; do
             grep -qx "$entry" "$RUNNER_TEMP/listing.txt" || {
               echo "Unexpected archive layout: missing $entry" >&2
               exit 1

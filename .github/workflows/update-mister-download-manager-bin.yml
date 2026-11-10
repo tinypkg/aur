@@ -142,11 +142,11 @@ jobs:
           # Keep the listing in a file: letting grep exit early closes the pipe
           # under pipefail and trips tar with a bogus write error.
           dpkg-deb --fsys-tarfile "$RUNNER_TEMP/$asset" |
-            tar -tf - > "$RUNNER_TEMP/listing.txt"
+            tar -tf - | sed 's|^\./||' > "$RUNNER_TEMP/listing.txt"
           for entry in \
-            ./usr/bin/misterdownloadmanager \
-            ./usr/bin/misterdownloadmanager-nmhost \
-            ./usr/lib/mozilla/native-messaging-hosts/com.misterdownloadmanager.host.json; do
+            usr/bin/misterdownloadmanager \
+            usr/bin/misterdownloadmanager-nmhost \
+            usr/lib/mozilla/native-messaging-hosts/com.misterdownloadmanager.host.json; do
             grep -qx "$entry" "$RUNNER_TEMP/listing.txt" || {
               echo "Unexpected archive layout: missing $entry" >&2
               exit 1

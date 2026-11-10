@@ -150,16 +150,17 @@ jobs:
           [[ $(dpkg-deb --field "$RUNNER_TEMP/$asset" Version) == "$VERSION" ]]
           [[ $(dpkg-deb --field "$RUNNER_TEMP/$asset" Architecture) == amd64 ]]
           # Keep the listing in a file: letting grep exit early closes the pipe
-          # under pipefail and trips tar with a bogus write error.
+          # under pipefail and trips tar with a bogus write error. The leading
+          # "./" depends on the tool that built the .deb, so strip it.
           dpkg-deb --fsys-tarfile "$RUNNER_TEMP/$asset" |
-            tar -tf - > "$RUNNER_TEMP/listing.txt"
+            tar -tf - | sed 's|^\./||' > "$RUNNER_TEMP/listing.txt"
           # The app resolves its browser extension relative to itself, so the
           # .deb layout under /usr/lib/SwiftDL is load-bearing.
           for entry in \
-            ./usr/bin/swiftdl-app \
-            ./usr/lib/SwiftDL/extension/manifest.json \
-            ./usr/lib/SwiftDL/extension-firefox/manifest.json \
-            ./usr/share/applications/SwiftDL.desktop; do
+            usr/bin/swiftdl-app \
+            usr/lib/SwiftDL/extension/manifest.json \
+            usr/lib/SwiftDL/extension-firefox/manifest.json \
+            usr/share/applications/SwiftDL.desktop; do
             grep -qx "$entry" "$RUNNER_TEMP/listing.txt" || {
               echo "Unexpected archive layout: missing $entry" >&2
               exit 1

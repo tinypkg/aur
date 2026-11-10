@@ -143,8 +143,8 @@ jobs:
             # Keep the listing in a file: letting grep exit early closes the
             # pipe under pipefail and trips tar with a bogus write error.
             dpkg-deb --fsys-tarfile "$RUNNER_TEMP/$asset" |
-              tar -tf - > "$RUNNER_TEMP/listing-$arch.txt"
-            grep -qx ./opt/thesio/thesio "$RUNNER_TEMP/listing-$arch.txt" || {
+              tar -tf - | sed 's|^\./||' > "$RUNNER_TEMP/listing-$arch.txt"
+            grep -qx opt/thesio/thesio "$RUNNER_TEMP/listing-$arch.txt" || {
               echo "Unexpected archive layout in $asset" >&2
               exit 1
             }
