@@ -34,6 +34,7 @@
 - **[docking-bin](https://aur.archlinux.org/packages/docking-bin)** - A lightweight, feature-rich dock for Linux written in Python with GTK 3 and Cairo ([主页](https://github.com/edumucelli/docking))
 - **[doop-bin](https://aur.archlinux.org/packages/doop-bin)** - 开源的多人在线设计画布，人类与 AI Agent 可同时在同一画布上实时协作，内置 MCP server（[官网](https://doop.design) · [源码](https://github.com/kgoedecke/doop)）
 - **[druk-bin](https://aur.archlinux.org/packages/druk-bin)** - 终端代码编辑器，支持文件树、标签页、搜索、Git 状态和 30 多种语言的语法高亮（[源码](https://github.com/letstri/druk)）
+- **[ducter-bin](https://aur.archlinux.org/packages/ducter-bin)** - Ducter：自己运行的个人 AI，把活派给你自己机器上的 Claude Code、Codex 等编码 agent，做完带证据回报；Linux 下作为服务器运行，用 `ducter doctor` 自检、`ducter service install` 装成用户服务（[官网](https://ducter.ai) · [源码](https://github.com/wey-gu/ducter)）
 - **[ediary-bin](https://aur.archlinux.org/packages/ediary-bin)** - eDiary 是一款免费的、久经考验的日记软件（[官网](https://www.haoxg.net)）
 - **[emdash-app](https://aur.archlinux.org/packages/emdash-app)** - Run multiple coding agents in parallel ([主页](https://github.com/generalaction/emdash))
 - **[elyterminal-bin](https://aur.archlinux.org/packages/elyterminal-bin)** - 基于 GPUI 的 GPU 加速终端模拟器（[源码](https://github.com/ELY-Open-Source/ELYTerminal)）
