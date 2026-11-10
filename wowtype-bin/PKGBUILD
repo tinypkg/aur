@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=wowtype-bin
-pkgver=0.3.6
+pkgver=0.3.10
 pkgrel=1
 pkgdesc="WeType-style pinyin input method for fcitx5, with the bundled dictionary and language model"
 arch=('x86_64')
