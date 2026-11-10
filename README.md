@@ -112,6 +112,7 @@
 - **[virtualhere-client-bin](https://aur.archlinux.org/packages/virtualhere-client-bin)** - VirtualHere USB Client - share USB devices over the network ([主页](https://www.virtualhere.com/usb_server_software))
 - **[vlaina-bin](https://aur.archlinux.org/packages/vlaina-bin)** - A purest sanctuary,for your deepest thoughts. ([主页](https://github.com/vladelaina/vlaina))
 - **[whatcable-cli-bin](https://aur.archlinux.org/packages/whatcable-cli-bin)** - A linux/KDE port of whatcable, a tool to tell you what each USB connected cable can do ([主页](https://github.com/Zetaphor/whatcable-linux))
+- **[wowtype-bin](https://aur.archlinux.org/packages/wowtype-bin)** - WowType：WeType 风格的 fcitx5 拼音输入法，长句、半成品输入、纠错与习惯学习，自带雾凇拼音词库和词级语言模型；装完在 fcitx5 里添加「WowType」（[源码](https://github.com/Gloridust/WowType)）
 - **[wu-bin](https://aur.archlinux.org/packages/wu-bin)** - Fast, native code editor in Rust that feels like VS Code ([主页](https://github.com/farshed/wu))
 - **[xerj-bin](https://aur.archlinux.org/packages/xerj-bin)** - 面向 AI agent 的本地优先搜索引擎与 MCP server，支持 BM25/向量/混合检索代码、文档、日志与 PDF（[官网](https://xerj.org) · [源码](https://github.com/xerj-org/xerj)）
 - **[z-code-bin](https://aur.archlinux.org/packages/z-code-bin)** - ZCode - AI Agents combined with existing toolchains for planning, coding, review and deployment ([主页](https://zcode.z.ai))
