@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=mole-cli-bin
-pkgver=0.5.0
+pkgver=0.6.0
 pkgrel=1
 pkgdesc="Deep clean and optimize your Linux desktop (CLI)"
 arch=('x86_64' 'aarch64')
