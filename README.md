@@ -70,6 +70,7 @@
 - **[mimo-code-bin](https://aur.archlinux.org/packages/mimo-code-bin)** - 小米面向开发者的新一代 AI 编程助手，支持无限上下文 ([主页](https://mimo.xiaomi.com/mimocode))
 - **[mise-bin](https://aur.archlinux.org/packages/mise-bin)** - dev tools, env vars, task runner ([主页](https://github.com/jdx/mise))
 - **[mise-musl-bin](https://aur.archlinux.org/packages/mise-musl-bin)** - Portable musl build of mise for dev tools, environment variables, and task running ([主页](https://github.com/jdx/mise))
+- **[mister-download-manager-bin](https://aur.archlinux.org/packages/mister-download-manager-bin)** - Mister Download Manager：用 Rust 从零编写的开源下载管理器，多连接加速、断点续传、浏览器接管、视频与种子下载，附带命令行与 MCP 接口（[官网](https://misterdownloadmanager.com) · [源码](https://github.com/anefzaoui/misterdownloadmanager)）
 - **[modbux-bin](https://aur.archlinux.org/packages/modbux-bin)** - Free open-source Modbus client GUI and server simulator for Modbus TCP, RTU and RTU over TCP ([主页](https://github.com/ploxc/modbux))
 - **[mole-cli-bin](https://aur.archlinux.org/packages/mole-cli-bin)** - 开源 Linux 桌面清理与优化 CLI，支持 apt/Snap/Flatpak/容器缓存与开发工具残留清理，命令为 `mo`（[主页](https://github.com/tw93/Mole)）
 - **[msime-bin](https://aur.archlinux.org/packages/msime-bin)** - 水杉输入法 Linux 版：IBus 宿主、Fcitx5 插件与桌面工具齐备，支持全拼、双拼、五笔、粤拼、注音、日文、韩文、藏文等方案；x86_64 与 aarch64 均可用（[官网](https://msime.app) · [源码](https://github.com/metasequoiaime/msime)）
