@@ -56,8 +56,12 @@ jobs:
             ' release.json >/dev/null
           done
 
-          # The feed must point at an immutable, versioned release.
-          jq -e --arg needle "/releases/download/v${VERSION}/" \
+          # The feed must point at an immutable, versioned release. Upstream
+          # has served assets from GitHub releases
+          # (.../releases/download/vX/...) and its own versioned host
+          # (https://usemagpie.ai/files/vX/...); accept both, but require the
+          # exact version segment in every URL.
+          jq -e --arg needle "/v${VERSION}/" \
             '[.assets[] | .url] | all(contains($needle))' release.json >/dev/null
 
           if [[ -n "${INPUT_VERSION:-}" ]]; then
