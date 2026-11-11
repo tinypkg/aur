@@ -8,6 +8,7 @@
 - **[astrlink-bin](https://aur.archlinux.org/packages/astrlink-bin)** - 给 AI Agent 用的本地隐私网关：请求发出前在本机检测敏感内容，支持 Codex、Claude、Grok 等订阅与主流厂商 API（[官网](https://astrlink.com) · [源码](https://github.com/Calcium-Ion/AstrLink)）
 - **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites ([主页](https://github.com/nashsu/AutoCLI))
 - **[bast-bin](https://aur.archlinux.org/packages/bast-bin)** - 终端中的 SSH 主机浏览器与密钥管理工具，可快速查找主机、管理密钥并发起连接（[官网](https://bast.sh) · [源码](https://github.com/ellipse-software/bast)）
+- **[better-vault-bin](https://aur.archlinux.org/packages/better-vault-bin)** - 开源 NotebookLM 替代：自带模型密钥（OpenAI/Anthropic/Gemini/本地 Ollama）的来源笔记本，支持问答引用、报告、闪卡与测验（[官网](https://better-vault.dev) · [源码](https://github.com/better-vault/better-vault)）
 - **[blink1-tiny-server-bin](https://aur.archlinux.org/packages/blink1-tiny-server-bin)** - Simple HTTP JSON API server to control blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[blink1-tool-bin](https://aur.archlinux.org/packages/blink1-tool-bin)** - Command-line tool for controlling blink(1) USB RGB LED ([主页](https://github.com/todbot/blink1-tool))
 - **[blink1control2](https://aur.archlinux.org/packages/blink1control2-bin)** - Blink1Control GUI 用于控制 blink(1) USB RGB LED 设备 ([主页](https://github.com/todbot/Blink1Control2))
@@ -54,6 +55,8 @@
 - **[iris-screenshot-bin](https://aur.archlinux.org/packages/iris-screenshot-bin)** - Screenshots of live websites. Minimal interface, powerful engine. ([主页](https://github.com/brijr/iris))
 - **[karing-bin](https://aur.archlinux.org/packages/karing-bin)** - Simple & Powerful proxy utility ([主页](https://github.com/KaringX/karing))
 - **[kero-bin](https://aur.archlinux.org/packages/kero-bin)** - 为 agent 优化的跨平台原生终端应用，支持 x86_64 与 aarch64（[官网](https://kero.sh) · [源码](https://github.com/egoist/kero)）
+- **[kiri-desktop-bin](https://aur.archlinux.org/packages/kiri-desktop-bin)** - Kiri 容器运行时完整版：无需 VM、直接用宿主内核跑容器并提供 Docker API（含 GUI 与自带 docker CLI/Compose/buildx，支持 x86_64 与 aarch64）（[官网](https://runkiri.com) · [源码](https://github.com/libracoder/kiri)）
+- **[kiri-desktop-lite-bin](https://aur.archlinux.org/packages/kiri-desktop-lite-bin)** - Kiri 容器运行时纯引擎版：Docker API on `/run/kiri/docker.sock`，无 GUI 无自带 CLI（[官网](https://runkiri.com) · [源码](https://github.com/libracoder/kiri)）
 - **[kudu-app-bin](https://aur.archlinux.org/packages/kudu-app-bin)** - Free Windows, Mac and Linux cleaner, scanner, and more. ([主页](https://github.com/AdventDevInc/kudu))
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection ([主页](https://obdev.at/products/littlesnitch))
 - **[llmux-bin](https://aur.archlinux.org/packages/llmux-bin)** - Multi-provider, multi-account Claude proxy with automatic quota-based rotation ([主页](https://github.com/2lab-ai/llmux))
