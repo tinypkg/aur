@@ -100,7 +100,7 @@ jobs:
                         'opt/better-vault/resources/app\.asar$' \
                         'usr/share/applications/better-vault-desktop\.desktop$' \
                         'usr/share/icons/.*/apps/better-vault-desktop.*\.(png|svg)$'; do
-              grep -q "$path" "$RUNNER_TEMP/contents-$arch.txt" || {
+              grep -qE "$path" "$RUNNER_TEMP/contents-$arch.txt" || {
                 echo "$name is missing an expected payload path ($path); listing follows:" >&2
                 cat "$RUNNER_TEMP/contents-$arch.txt" >&2
                 exit 1
