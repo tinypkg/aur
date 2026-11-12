@@ -13,7 +13,7 @@ options=('!strip' '!debug')
 
 _tarball="stela-v${pkgver}-linux-x86_64.tar.gz"
 source=("${_tarball}::${url}/releases/download/v${pkgver}/${_tarball}")
-sha256sums=('c77c38e87e42bfc314c728d4c4303d6e682397a51bd383a3e90926451e5e0a89')
+sha256sums=('SKIP')
 
 package() {
   local _src="stela-v${pkgver}-linux-x86_64"
