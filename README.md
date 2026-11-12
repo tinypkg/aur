@@ -79,6 +79,7 @@
 - **[modbux-bin](https://aur.archlinux.org/packages/modbux-bin)** - Free open-source Modbus client GUI and server simulator for Modbus TCP, RTU and RTU over TCP ([主页](https://github.com/ploxc/modbux))
 - **[mole-cli-bin](https://aur.archlinux.org/packages/mole-cli-bin)** - 开源 Linux 桌面清理与优化 CLI，支持 apt/Snap/Flatpak/容器缓存与开发工具残留清理，命令为 `mo`（[主页](https://github.com/tw93/Mole)）
 - **[msime-bin](https://aur.archlinux.org/packages/msime-bin)** - 水杉输入法 Linux 版：IBus 宿主、Fcitx5 插件与桌面工具齐备，支持全拼、双拼、五笔、粤拼、注音、日文、韩文、藏文等方案；x86_64 与 aarch64 均可用（[官网](https://msime.app) · [源码](https://github.com/metasequoiaime/msime)）
+- **[neoko-terminal-desktop-bin](https://aur.archlinux.org/packages/neoko-terminal-desktop-bin)** - 小橘终端桌面客户端：本地终端 + Relay 配对远程连接，GTK 4，凭据存系统钥匙环（[主页](https://github.com/lazycat-contrib/lazycat-neko-webshell)）
 - **[nmem-cli](https://aur.archlinux.org/packages/nmem-cli)** - CLI and TUI for Nowledge Mem - AI memory management ([主页](https://mem.nowledge.co))
 - **[nowledge-mem-bin](https://aur.archlinux.org/packages/nowledge-mem-bin)** - Desktop app for Nowledge Mem - AI memory and context management ([主页](https://mem.nowledge.co))
 - **[ocd-bin](https://aur.archlinux.org/packages/ocd-bin)** - Self-hosted Cloudflare Workers 兼容平台 open-compute 的 CLI，单 Rust 二进制集成 Workers/KV/D1/R2/DO/Queues 等（[官网](https://open-compute.dev) · [源码](https://github.com/elliothux/open-compute)）
