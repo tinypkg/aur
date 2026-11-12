@@ -58,14 +58,22 @@ jobs:
             [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || fail "Unsupported version: $VERSION"
             TAG="neoko-terminal-desktop-v$VERSION"
           else
+            echo "desktop releases: $(jq -r '[.[]
+                    | select(.tag_name | startswith("neoko-terminal-desktop-v"))
+                    | "\(.tag_name)(draft=\(.draft|tostring) pre=\(.prerelease|tostring) type=\(.draft|type))"] | join(" ")' <<< "$releases")"
+            # Compare the flags as strings: the runner's jq dropped every
+            # release when `.draft == false` was evaluated directly, while
+            # string forms of the same filter work there.
             TAG=$(jq -r '.[]
-                    | select(.draft == false and .prerelease == false)
-                    | .tag_name
-                    | select(startswith("neoko-terminal-desktop-v"))'
-                 <<< "$releases" | sort -V | tail -n1)
+                    | .tag_name as $t
+                    | select($t | startswith("neoko-terminal-desktop-v"))
+                    | select((.draft | tostring) == "false" and (.prerelease | tostring) == "false")
+                    | $t' <<< "$releases" | sort -V | tail -n1)
             [[ -n "$TAG" ]] || {
-              echo "desktop tags seen: $(jq -r '[.[] | .tag_name | select(startswith("neoko-terminal-desktop-v"))] | join(" ")' <<< "$releases")" >&2
-              fail "No neoko-terminal-desktop-v* release found"
+              echo "desktop tags seen: $(jq -r '[.[]
+                    | select(.tag_name | startswith("neoko-terminal-desktop-v"))
+                    | "\(.tag_name)(draft=\(.draft) pre=\(.prerelease))"] | join(" ")' <<< "$releases")" >&2
+              fail "No stable neoko-terminal-desktop-v* release found"
             }
             VERSION="${TAG#neoko-terminal-desktop-v}"
           fi
