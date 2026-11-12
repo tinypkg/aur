@@ -58,6 +58,8 @@ jobs:
             [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || fail "Unsupported version: $VERSION"
             TAG="neoko-terminal-desktop-v$VERSION"
           else
+            echo "fetched $(jq 'length' <<< "$releases") releases; desktop tags: $(
+              jq -r '[.[] | .tag_name | select(startswith("neoko-terminal-desktop-"))] | join(" ")' <<< "$releases")"
             TAG=$(jq -r '.[]
                     | select((.draft // false) == false and (.prerelease // false) == false)
                     | .tag_name
