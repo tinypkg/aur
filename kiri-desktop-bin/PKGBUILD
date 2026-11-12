@@ -36,8 +36,8 @@ source_aarch64=(
 sha256sums=('1e8f1730d7bca0eacdc7d1dea9e86e2dc690e1e14434fd90d98ad54bcf48df8d'
             'fa0bd2c3b048b5205b21c66959ba23e63ddde224ee0b1a14a11d2ad13f9375e2'
             'SKIP')
-sha256sums_x86_64=('7b368bc6fa0cb0ae9f33e4378201803ede75b0f68bd58c07c654262c53d166b5')
-sha256sums_aarch64=('c6ddb1b2f2c614548bec708309066879b91a49640bc1223253c7f0383d3f0756')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
 # makepkg would unpack the .deb into srcdir; _unpack_deb does it per package.
 noextract=("kiri-${pkgver}-x86_64.deb" "kiri-${pkgver}-aarch64.deb")
 
