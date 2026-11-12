@@ -58,14 +58,15 @@ jobs:
             [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || fail "Unsupported version: $VERSION"
             TAG="neoko-terminal-desktop-v$VERSION"
           else
-            echo "fetched $(jq 'length' <<< "$releases") releases; desktop tags: $(
-              jq -r '[.[] | .tag_name | select(startswith("neoko-terminal-desktop-"))] | join(" ")' <<< "$releases")"
             TAG=$(jq -r '.[]
-                    | select((.draft // false) == false and (.prerelease // false) == false)
+                    | select(.draft == false and .prerelease == false)
                     | .tag_name
-                    | select(test("^neoko-terminal-desktop-v[0-9]+([.][0-9]+)+$"))'
+                    | select(startswith("neoko-terminal-desktop-v"))'
                  <<< "$releases" | sort -V | tail -n1)
-            [[ -n "$TAG" ]] || fail "No neoko-terminal-desktop-v* release found"
+            [[ -n "$TAG" ]] || {
+              echo "desktop tags seen: $(jq -r '[.[] | .tag_name | select(startswith("neoko-terminal-desktop-v"))] | join(" ")' <<< "$releases")" >&2
+              fail "No neoko-terminal-desktop-v* release found"
+            }
             VERSION="${TAG#neoko-terminal-desktop-v}"
           fi
           [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || fail "Unsupported version: $VERSION"
@@ -77,6 +78,10 @@ jobs:
             --header "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/lazycat-contrib/lazycat-neko-webshell/releases/tags/$TAG") ||
             fail "Release $TAG does not exist"
+          # releases/tags can return a draft sharing the tag name (this repo has
+          # done that), so verify the release actually published and is no draft.
+          jq -e '.draft == false' <<< "$release" > /dev/null ||
+            fail "Release $TAG is a draft"
           jq -e '.prerelease == false' <<< "$release" > /dev/null ||
             fail "Release $TAG is a prerelease"
           jq -e --arg t "$TAG" '.tag_name == $t' <<< "$release" > /dev/null ||
