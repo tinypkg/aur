@@ -2,7 +2,7 @@
 
 pkgname=wowtype-bin
 pkgver=0.3.12
-pkgrel=1
+pkgrel=2
 pkgdesc="WeType-style pinyin input method for fcitx5, with bundled dictionaries and language model"
 arch=('x86_64')
 url="https://github.com/Gloridust/WowType"
