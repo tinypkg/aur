@@ -37,7 +37,6 @@ jobs:
         run: |
           set -euo pipefail
           PKGDIR=wowtype-bin
-          SUFFIX="_ubuntu24.04_amd64.deb"
 
           if [[ -n "${INPUT_VERSION:-}" ]]; then
             VERSION="${INPUT_VERSION#v}"
@@ -52,17 +51,10 @@ jobs:
               -H "Authorization: Bearer ${GH_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
               "$RELEASE_API" --output release.json
-            jq -e --arg suffix "$SUFFIX" \
-              'any(.assets[]; (.name | endswith($suffix)) and .state == "uploaded" and .size > 0)' \
-              release.json >/dev/null || {
-              echo "Release v${VERSION} has no ${SUFFIX} asset" >&2
-              exit 1
-            }
           else
-            # Upstream also publishes dictionary/language-model releases whose tags
-            # are not versions (e.g. lm-2026.11.09) and that carry no .deb. Listing
-            # releases and keeping only version-tagged ones that actually ship the
-            # asset avoids latching onto those.
+            # Upstream also publishes dictionary/language-model releases whose
+            # tags are not versions (e.g. lm-2026.11.09). Listing releases and
+            # keeping only version-tagged ones avoids latching onto those.
             RELEASE_API="https://api.github.com/repos/Gloridust/WowType/releases?per_page=30"
             curl --fail --silent --show-error --location \
               --retry 3 --retry-all-errors --retry-delay 2 \
@@ -70,22 +62,23 @@ jobs:
               -H "Authorization: Bearer ${GH_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
               "$RELEASE_API" --output release.json
-            VERSION=$(jq -r --arg suffix "$SUFFIX" '
-              [ .[]
-                | select(.tag_name | test("^v[0-9]+(\\.[0-9]+)+$"))
-                | select(any(.assets[]; (.name | endswith($suffix)) and .state == "uploaded" and .size > 0))
-                | .tag_name | sub("^v"; "")
-              ] | .[]' release.json | sort -V | tail -n1)
-            [[ -n "$VERSION" ]] || {
-              echo "No release carries a ${SUFFIX} asset" >&2
-              exit 1
-            }
+            VERSION=$(jq -r '
+              [ .[] | select(.tag_name | test("^v[0-9]+(\\.[0-9]+)+$")) | .tag_name | sub("^v"; "") ]
+              | .[]' release.json | sort -V | tail -n1)
           fi
           [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
             echo "Unsupported upstream version: $VERSION" >&2
             exit 1
           }
-          echo "asset=wowtype_${VERSION}${SUFFIX}" >> "$GITHUB_OUTPUT"
+
+          # The Ubuntu 24.04 build is the one with the lowest requirements.
+          DEB="wowtype_${VERSION}_ubuntu24.04_amd64.deb"
+          ASSETS=$(jq -r '.assets[] | select(.state == "uploaded" and .size > 0) | .name' release.json)
+          grep -qx "$DEB" <<<"$ASSETS" || {
+            echo "Release v${VERSION} has no ${DEB}" >&2
+            exit 1
+          }
+          echo "asset=$DEB" >> "$GITHUB_OUTPUT"
 
           CURRENT_VERSION=$(sed -n 's/^pkgver=//p' "$PKGDIR/PKGBUILD")
           CURRENT_REL=$(sed -n 's/^pkgrel=//p' "$PKGDIR/PKGBUILD")
@@ -143,21 +136,28 @@ jobs:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
+          BASE="https://github.com/Gloridust/WowType/releases/download/v${VERSION}"
           curl --fail --silent --show-error --location \
             --retry 3 --retry-all-errors --connect-timeout 15 --max-time 600 \
-            "https://github.com/Gloridust/WowType/releases/download/v${VERSION}/${ASSET}" \
-            --output "$RUNNER_TEMP/$ASSET"
-          [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Package) == wowtype ]]
-          [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Architecture) == amd64 ]]
-          # The deb version carries the distribution suffix, so compare its
-          # numeric prefix rather than the whole field.
-          DEB_VERSION=$(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Version)
-          [[ "${DEB_VERSION%%-*}" == "$VERSION" ]] || {
-            echo "Debian version ${DEB_VERSION} does not start with ${VERSION}" >&2
+            "${BASE}/${ASSET}" --output "$RUNNER_TEMP/$ASSET"
+          # Upstream publishes one checksum file covering every asset.
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+            "${BASE}/SHA256SUMS" --output "$RUNNER_TEMP/SHA256SUMS"
+          EXPECTED=$(awk -v a="$ASSET" '$2 == a { print $1 }' "$RUNNER_TEMP/SHA256SUMS")
+          ACTUAL=$(sha256sum "$RUNNER_TEMP/$ASSET" | cut -d' ' -f1)
+          [[ -n "$EXPECTED" && "$EXPECTED" == "$ACTUAL" ]] || {
+            echo "Checksum mismatch for $ASSET" >&2
             exit 1
           }
+
+          [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Package) == wowtype ]]
+          [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Architecture) == amd64 ]]
+          [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Version) == "$VERSION" ]]
+
           # Keep the listing in a file: letting grep exit early closes the pipe
-          # under pipefail and trips tar with a bogus write error.
+          # under pipefail and trips tar with a bogus write error. The leading
+          # "./" depends on the tool that built the .deb, so strip it.
           dpkg-deb --fsys-tarfile "$RUNNER_TEMP/$ASSET" |
             tar -tf - | sed 's|^\./||' > "$RUNNER_TEMP/listing.txt"
           for entry in \
@@ -194,8 +194,15 @@ jobs:
         with:
           pkgname: wowtype-bin
           pkgbuild: ./wowtype-bin/PKGBUILD
+          assets: |-
+            ./wowtype-bin/wowtype-bin.install
+            ./wowtype-bin/Unicode-3.0.txt
           updpkgsums: true
-          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          post_process: >-
+            bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+            wowtype-bin.install Unicode-3.0.txt
+            && test -f wowtype-bin.install
+            && test -f Unicode-3.0.txt
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
