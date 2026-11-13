@@ -124,6 +124,7 @@
 - **[wowtype-bin](https://aur.archlinux.org/packages/wowtype-bin)** - WowType：WeType 风格的 fcitx5 拼音输入法，长句、半成品输入、纠错与习惯学习，自带雾凇拼音词库和词级语言模型；装完在 fcitx5 里添加「WowType」（[源码](https://github.com/Gloridust/WowType)）
 - **[wu-bin](https://aur.archlinux.org/packages/wu-bin)** - Fast, native code editor in Rust that feels like VS Code ([主页](https://github.com/farshed/wu))
 - **[xerj-bin](https://aur.archlinux.org/packages/xerj-bin)** - 面向 AI agent 的本地优先搜索引擎与 MCP server，支持 BM25/向量/混合检索代码、文档、日志与 PDF（[官网](https://xerj.org) · [源码](https://github.com/xerj-org/xerj)）
+- **[yank-bin](https://aur.archlinux.org/packages/yank-bin)** - Yank：原生剪贴板历史管理器，支持自建中继做多设备同步，GTK4 界面；提供 `yank-client`（桌面端）与 `yank-server`（自托管服务端）（[源码](https://github.com/ca-x/yank)）
 - **[z-code-bin](https://aur.archlinux.org/packages/z-code-bin)** - ZCode - AI Agents combined with existing toolchains for planning, coding, review and deployment ([主页](https://zcode.z.ai))
 - **[zeron-bin](https://aur.archlinux.org/packages/zeron-bin)** - 面向 Claude Code、Codex、Cursor、Devin 等编程 agent 的原生控制平面（Rust + GPUI），支持 x86_64 和 aarch64（[官网](https://zeron.sh) · [源码](https://github.com/zeronsh/zeron)）
 
