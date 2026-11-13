@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=modbux-bin
-pkgver=2.3.0
+pkgver=2.3.1
 pkgrel=1
 pkgdesc="Free open-source Modbus client GUI and server simulator for TCP, RTU, and RTU over TCP"
 arch=('x86_64' 'aarch64')
