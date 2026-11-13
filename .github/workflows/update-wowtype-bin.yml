@@ -153,7 +153,13 @@ jobs:
 
           [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Package) == wowtype ]]
           [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Architecture) == amd64 ]]
-          [[ $(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Version) == "$VERSION" ]]
+          # The deb version carries the distribution suffix
+          # (e.g. 0.3.12-1~ubuntu24.04), so compare its numeric prefix.
+          DEB_VERSION=$(dpkg-deb --field "$RUNNER_TEMP/$ASSET" Version)
+          [[ "${DEB_VERSION%%-*}" == "$VERSION" ]] || {
+            echo "Debian version ${DEB_VERSION} does not start with ${VERSION}" >&2
+            exit 1
+          }
 
           # Keep the listing in a file: letting grep exit early closes the pipe
           # under pipefail and trips tar with a bogus write error. The leading
