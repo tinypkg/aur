@@ -11,6 +11,8 @@ depends=('gtk3' 'ffmpeg' 'libpulse' 'pam' 'systemd')
 optdepends=(
     'wl-clipboard: Wayland clipboard sync'
     'libpipewire: Wayland portal screen capture'
+    'libei: GNOME/KDE Wayland portal input injection'
+    'sdl2: experimental native remote viewer (uuremote-viewer)'
     'xorg-server-xvfb: virtual desktop for monitorless servers (uu-virtual-desktop)'
     'xfce4: default desktop session for the virtual desktop'
     'nvidia-utils: NVENC hardware encoding on NVIDIA GPUs'
@@ -31,7 +33,18 @@ package() {
     local _dir="uu-remote-linux-v${pkgver}-x86_64-linux"
 
     install -Dm755 "${srcdir}/${_dir}/uuremote-server" "${pkgdir}/usr/bin/uuremote-server"
+    install -Dm755 "${srcdir}/${_dir}/uuremote-viewer" "${pkgdir}/usr/bin/uuremote-viewer"
+    install -Dm644 "${srcdir}/${_dir}/libuu-wayland.so" "${pkgdir}/usr/lib/uu-remote-linux/libuu-wayland.so"
+    install -Dm644 "${srcdir}/${_dir}/libuu-portal.so" "${pkgdir}/usr/lib/uu-remote-linux/libuu-portal.so"
     install -Dm644 "${srcdir}/${_dir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+    # Desktop entries and icon
+    install -Dm644 "${srcdir}/${_dir}/contrib/desktop/uu-remote-linux.svg" \
+        "${pkgdir}/usr/share/icons/hicolor/scalable/apps/uu-remote-linux.svg"
+    install -Dm644 "${srcdir}/${_dir}/contrib/desktop/uu-remote-linux.desktop" \
+        "${pkgdir}/usr/share/applications/uu-remote-linux.desktop"
+    install -Dm644 "${srcdir}/${_dir}/contrib/desktop/uu-remote-linux-viewer.desktop" \
+        "${pkgdir}/usr/share/applications/uu-remote-linux-viewer.desktop"
 
     # systemd user services: main host + optional virtual desktop (Xvfb)
     install -Dm644 "${srcdir}/uu-remote-native.service" \
