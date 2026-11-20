@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=dffy-render-markdown-bin
-pkgver=0.2.1
+pkgver=0.3.0
 pkgrel=1
 pkgdesc="dffy renderer plugin that draws Markdown as rendered text for the diff view: headings, lists, quotes, tables and links, with Mermaid fences drawn as diagrams"
 arch=('x86_64' 'aarch64')
