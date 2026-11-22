@@ -97,6 +97,7 @@
 - **[nowledge-mem-bin](https://aur.archlinux.org/packages/nowledge-mem-bin)** - Desktop app for Nowledge Mem - AI memory and context management ([主页](https://mem.nowledge.co))
 - **[ocd-bin](https://aur.archlinux.org/packages/ocd-bin)** - Self-hosted Cloudflare Workers 兼容平台 open-compute 的 CLI，单 Rust 二进制集成 Workers/KV/D1/R2/DO/Queues 等（[官网](https://open-compute.dev) · [源码](https://github.com/elliothux/open-compute)）
 - **[octoscode-bin](https://aur.archlinux.org/packages/octoscode-bin)** - Octoscode - Octos's Coding Agent ([主页](https://github.com/octos-org/octoscode))
+- **[owl-dictionary-bin](https://aur.archlinux.org/packages/owl-dictionary-bin)** - Owl 词典：支持 MDX/MDD 词典文件的 Web 词典应用，GTK4 桌面端；x86_64 与 aarch64 均可用（[源码](https://github.com/ca-x/owl)）
 - **[openless-bin](https://aur.archlinux.org/packages/openless-bin)** - Hold a key, speak, release — AI-polished text appears at your cursor in any app ([主页](https://github.com/Open-Less/openless))
 - **[open-idea-bin](https://aur.archlinux.org/packages/open-idea-bin)** - OpenIDEA：受 IntelliJ IDEA 启发、用 Rust 重写的开源 IDE，内置编辑器、调试器、Git、终端与数据库客户端（[源码](https://github.com/l0ng-ai/openidea)）
 - **[open-idea-server-bin](https://aur.archlinux.org/packages/open-idea-server-bin)** - OpenIDEA 服务端：OpenIDEA IDE 的无头 ACP agent 后端（[源码](https://github.com/l0ng-ai/openidea)）
