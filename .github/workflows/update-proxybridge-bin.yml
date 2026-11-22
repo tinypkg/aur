@@ -1,0 +1,234 @@
+name: Update proxybridge-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Expected upstream version, e.g. 4.1.0. Leave empty to detect the latest v*_Linux GitHub release."
+        required: false
+        type: string
+      force:
+        description: "Force verification and a packaging-only pkgrel bump"
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: "10 */12 * * *"
+
+concurrency:
+  group: aur-proxybridge-bin
+  cancel-in-progress: false
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Discover and verify release
+        id: release
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${INPUT_VERSION:-}" ]; then
+            VERSION="${INPUT_VERSION#v}"
+            VERSION="${VERSION%_Linux}"
+            [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+              echo "Unsupported upstream version: $VERSION" >&2
+              exit 1
+            }
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              "https://api.github.com/repos/InterceptSuite/ProxyBridge/releases/tags/v${VERSION}_Linux" \
+              --output release-raw.json
+            jq -e '.draft == false' release-raw.json >/dev/null
+            jq '.' release-raw.json > release.json
+          else
+            # The repository mixes per-platform release series (v*_Linux,
+            # v*_Windows, v*_Android); only v*_Linux carries these tarballs.
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              "https://api.github.com/repos/InterceptSuite/ProxyBridge/releases?per_page=30" \
+              --output releases-raw.json
+            jq -e 'type == "array" and ([.[] | select(.draft == false and (.tag_name | test("^v[0-9.]+_Linux$")))] | length > 0)' \
+              releases-raw.json >/dev/null
+            jq '[.[] | select(.draft == false and (.tag_name | test("^v[0-9.]+_Linux$")))]
+                | sort_by(.published_at) | reverse | .[0]' \
+              releases-raw.json > release.json
+          fi
+
+          TAG=$(jq -er '.tag_name | select(type == "string" and length > 0)' release.json)
+          DISCOVERED_VERSION=${TAG#v}
+          DISCOVERED_VERSION=${DISCOVERED_VERSION%_Linux}
+          [[ -z "${INPUT_VERSION:-}" || "$DISCOVERED_VERSION" == "$VERSION" ]] || {
+            echo "Release tag $TAG does not match requested version $VERSION" >&2
+            exit 1
+          }
+          VERSION=$DISCOVERED_VERSION
+          [[ "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] || {
+            echo "Unsupported upstream version: $VERSION" >&2
+            exit 1
+          }
+
+          for asset in \
+            "ProxyBridge-Linux-x64-v${VERSION}_Linux.tar.gz" \
+            "ProxyBridge-Linux-arm64-v${VERSION}_Linux.tar.gz"; do
+            jq -e --arg asset "$asset" \
+              '.assets | any(.name == $asset and .state == "uploaded" and .size > 0)' \
+              release.json >/dev/null || {
+              echo "Release $TAG has no usable $asset" >&2
+              exit 1
+            }
+          done
+
+          CURRENT_VERSION=$(sed -n 's/^pkgver=//p' proxybridge-bin/PKGBUILD)
+          CURRENT_REL=$(sed -n 's/^pkgrel=//p' proxybridge-bin/PKGBUILD)
+          AUR_VERSION=$(
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              'https://aur.archlinux.org/rpc/?v=5&type=info&arg=proxybridge-bin' |
+              jq -er 'if .resultcount == 0 then "" else .results[0].Version end'
+          )
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "current_rel=$CURRENT_REL" >> "$GITHUB_OUTPUT"
+          echo "aur_version=$AUR_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Decide update
+        id: compare
+        env:
+          AUR_VERSION: ${{ steps.release.outputs.aur_version }}
+          CURRENT_VERSION: ${{ steps.release.outputs.current_version }}
+          CURRENT_REL: ${{ steps.release.outputs.current_rel }}
+          FORCE_UPDATE: ${{ inputs.force }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$AUR_VERSION" ] && dpkg --compare-versions "$AUR_VERSION" gt "$LATEST_VERSION-$CURRENT_REL"; then
+            echo "AUR is ahead of the GitHub state; reconcile before publishing" >&2
+            exit 1
+          fi
+
+          PACKAGE_UPDATE=false
+          BUMP_REL=false
+          if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
+            OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
+            if [ "$OLDEST_VERSION" != "$CURRENT_VERSION" ]; then
+              echo "Refusing downgrade from $CURRENT_VERSION to $LATEST_VERSION" >&2
+              exit 1
+            fi
+            PACKAGE_UPDATE=true
+          elif [ "$AUR_VERSION" != "$CURRENT_VERSION-$CURRENT_REL" ]; then
+            PACKAGE_UPDATE=true
+            echo "Publishing the existing package state to AUR"
+          elif [ "${FORCE_UPDATE:-false}" = "true" ]; then
+            PACKAGE_UPDATE=true
+            BUMP_REL=true
+          fi
+
+          echo "package_update=$PACKAGE_UPDATE" >> "$GITHUB_OUTPUT"
+          echo "bump_rel=$BUMP_REL" >> "$GITHUB_OUTPUT"
+
+      - name: Verify tarball payloads
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          BASE="https://github.com/InterceptSuite/ProxyBridge/releases/download/v${VERSION}_Linux"
+
+          # Check the payloads by hash and ELF machine type. Do not execute the
+          # GUI here: it links against GTK the runner does not ship. The heredoc
+          # must be unquoted so ${VERSION} expands in the asset names.
+          while IFS=: read -r arch asset machine; do
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 600 \
+              "$BASE/$asset" --output "$RUNNER_TEMP/$asset"
+            tar -xzf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP"
+            readelf -h "$RUNNER_TEMP/ProxyBridge" | grep -F "$machine" >/dev/null
+            test -x "$RUNNER_TEMP/ProxyBridgeGUI"
+            test -f "$RUNNER_TEMP/libproxybridge.so"
+            test -f "$RUNNER_TEMP/proxybridge.desktop"
+            rm -rf "$RUNNER_TEMP/ProxyBridge" "$RUNNER_TEMP/ProxyBridgeGUI" \
+              "$RUNNER_TEMP/libproxybridge.so" "$RUNNER_TEMP/proxybridge.desktop" \
+              "$RUNNER_TEMP/proxybridge-128.png" "$RUNNER_TEMP/proxybridge-256.png" \
+              "$RUNNER_TEMP/setup.sh"
+            echo "verified $asset"
+          done <<EOF
+          x86_64:ProxyBridge-Linux-x64-v${VERSION}_Linux.tar.gz:Advanced Micro Devices X86-64
+          aarch64:ProxyBridge-Linux-arm64-v${VERSION}_Linux.tar.gz:AArch64
+          EOF
+
+          curl --fail --silent --show-error --location --head \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+            "https://raw.githubusercontent.com/InterceptSuite/ProxyBridge/v${VERSION}_Linux/LICENSE" \
+            --output /dev/null
+
+      - name: Stage PKGBUILD
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd proxybridge-bin
+          if [ "$BUMP_REL" = "true" ]; then
+            CURRENT_REL=$(sed -n 's/^pkgrel=//p' PKGBUILD)
+            sed -i "s/^pkgrel=.*/pkgrel=$((CURRENT_REL + 1))/" PKGBUILD
+          elif [ "$(sed -n 's/^pkgver=//p' PKGBUILD)" != "$LATEST_VERSION" ]; then
+            sed -i "s/^pkgver=.*/pkgver=$LATEST_VERSION/" PKGBUILD
+            sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
+          fi
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.package_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
+        with:
+          pkgname: proxybridge-bin
+          pkgbuild: ./proxybridge-bin/PKGBUILD
+          assets: ./proxybridge-bin/proxybridge-bin.install
+          updpkgsums: true
+          post_process: >-
+            bash /github/workspace/.github/scripts/prune-aur-workdir.sh . proxybridge-bin.install
+            && test -f proxybridge-bin.install
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for proxybridge-bin {0}', steps.release.outputs.version) || format('Update proxybridge-bin to version {0}', steps.release.outputs.version) }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519
+
+      - name: Commit package state
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add proxybridge-bin/PKGBUILD
+          if git diff --cached --quiet; then
+            echo "AUR publication required no GitHub metadata change."
+            exit 0
+          fi
+          if [ "$BUMP_REL" = "true" ]; then
+            git commit -m "Bump pkgrel for proxybridge-bin $VERSION"
+          else
+            git commit -m "Update proxybridge-bin to version $VERSION"
+          fi
+          git pull --rebase origin main
+          git push
