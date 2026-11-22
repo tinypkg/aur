@@ -148,9 +148,20 @@ jobs:
           set -euo pipefail
 
           BASE="https://github.com/iebb/mithka/releases/download/v${VERSION}"
-          curl --fail --silent --show-error --location \
-            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
-            "$BASE/release-manifest.json" --output "$RUNNER_TEMP/release-manifest.json"
+          # GitHub's release download endpoint intermittently answers 500 to
+          # runner IPs; retry a few times with a backoff before giving up.
+          for attempt in 1 2 3 4 5; do
+            if curl --fail --silent --show-error --location \
+              --connect-timeout 15 --max-time 120 \
+              "$BASE/release-manifest.json" --output "$RUNNER_TEMP/release-manifest.json"; then
+              break
+            fi
+            [[ "$attempt" == 5 ]] && {
+              echo "release-manifest.json stayed unreachable after $attempt attempts" >&2
+              exit 1
+            }
+            sleep $((attempt * 5))
+          done
           [[ "$(jq -er '.version' "$RUNNER_TEMP/release-manifest.json")" == "$VERSION" ]] || {
             echo "manifest version does not match release $VERSION" >&2
             exit 1
@@ -161,9 +172,18 @@ jobs:
           # does not ship.
           while IFS=: read -r arch asset machine; do
             sum=$(jq -er --arg asset "$asset" '.files[$asset].sha256' "$RUNNER_TEMP/release-manifest.json")
-            curl --fail --silent --show-error --location \
-              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 1200 \
-              "$BASE/$asset" --output "$RUNNER_TEMP/$asset"
+            for attempt in 1 2 3 4 5; do
+              if curl --fail --silent --show-error --location \
+                --connect-timeout 15 --max-time 1200 \
+                "$BASE/$asset" --output "$RUNNER_TEMP/$asset"; then
+                break
+              fi
+              [[ "$attempt" == 5 ]] && {
+                echo "$asset stayed unreachable after $attempt attempts" >&2
+                exit 1
+              }
+              sleep $((attempt * 5))
+            done
             printf '%s  %s\n' "$sum" "$RUNNER_TEMP/$asset" | sha256sum --check
             tar -xzf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP"
             readelf -h "$RUNNER_TEMP/Mithka/mithka" | grep -F "$machine" >/dev/null
@@ -183,9 +203,16 @@ jobs:
           for url in \
             "https://raw.githubusercontent.com/iebb/mithka/v${VERSION}/LICENSE" \
             "https://raw.githubusercontent.com/iebb/mithka/v${VERSION}/assets/app_icon.png"; do
-            curl --fail --silent --show-error --location --head \
-              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
-              "$url" --output /dev/null
+            # A 404 must fail; transient CDN 5xx only warn, updpkgsums will
+            # fail loudly anyway if the files are really gone.
+            code=$(curl --silent --show-error --location --head \
+              --connect-timeout 15 --max-time 120 \
+              -o /dev/null -w '%{http_code}' "$url") || code=000
+            if [[ "$code" == 404 ]]; then
+              echo "raw file is gone (404): $url" >&2
+              exit 1
+            fi
+            [[ "$code" =~ ^2 ]] || echo "warn: $url answered $code; continuing" >&2
           done
 
       - name: Stage PKGBUILD
