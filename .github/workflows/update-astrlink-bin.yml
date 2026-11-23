@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Discover and verify release
         id: release
@@ -64,7 +64,15 @@ jobs:
             exit 1
           }
 
-          DEB="AstrLink_${VERSION}_amd64.deb"
+          # The Debian package has been published under two capitalisations
+          # (AstrLink_ up to v0.2.30, astrlink_ from v0.3.0), so the file name
+          # is taken from the release instead of being fixed here.
+          DEB=$(jq -r '[.assets[] | select(.name | test("(?i)^astrlink_[0-9].*_amd64\\.deb$"))]
+                      | if length == 1 then .[0].name else "" end' release.json)
+          [[ -n "$DEB" ]] || {
+            echo "Release v$VERSION has no single Debian package for amd64" >&2
+            exit 1
+          }
           for asset in "$DEB" SHA256SUMS; do
             jq -e --arg asset "$asset" \
               '.assets | any(.name == $asset and .state == "uploaded" and .size > 0)' \
@@ -85,6 +93,7 @@ jobs:
           )
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "deb_name=$DEB" >> "$GITHUB_OUTPUT"
           echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
           echo "current_rel=$CURRENT_REL" >> "$GITHUB_OUTPUT"
           echo "aur_version=$AUR_VERSION" >> "$GITHUB_OUTPUT"
@@ -108,7 +117,7 @@ jobs:
           PACKAGE_UPDATE=false
           BUMP_REL=false
           if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
-            OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
+            OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | sed -n '1p')
             if [ "$OLDEST_VERSION" != "$CURRENT_VERSION" ]; then
               echo "Refusing downgrade from $CURRENT_VERSION to $LATEST_VERSION" >&2
               exit 1
@@ -128,11 +137,11 @@ jobs:
       - name: Verify deb payload
         if: steps.compare.outputs.package_update == 'true'
         env:
+          DEB: ${{ steps.release.outputs.deb_name }}
           VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
 
-          DEB="AstrLink_${VERSION}_amd64.deb"
           BASE="https://github.com/Calcium-Ion/AstrLink/releases/download/v${VERSION}"
 
           curl --fail --silent --show-error --location \
@@ -146,6 +155,11 @@ jobs:
 
           deb_version=$(dpkg-deb --field "$RUNNER_TEMP/$DEB" Version)
           deb_arch=$(dpkg-deb --field "$RUNNER_TEMP/$DEB" Architecture)
+          deb_package=$(dpkg-deb --field "$RUNNER_TEMP/$DEB" Package)
+          [[ "$deb_package" == "astrlink" ]] || {
+            echo "deb package $deb_package is not astrlink" >&2
+            exit 1
+          }
           [[ "$deb_version" == "$VERSION" ]] || {
             echo "deb version $deb_version does not match release $VERSION" >&2
             exit 1
@@ -155,10 +169,79 @@ jobs:
             exit 1
           }
 
+      - name: Run the packaged program
+        if: steps.compare.outputs.package_update == 'true'
+        env:
+          DEB: ${{ steps.release.outputs.deb_name }}
+        run: |
+          set -euo pipefail
+
+          ROOT="$RUNNER_TEMP/root"
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT"
+          dpkg-deb --fsys-tarfile "$RUNNER_TEMP/$DEB" | tar -x -C "$ROOT"
+
+          # The package() function of the PKGBUILD moves the program into
+          # /usr/lib and leaves a launcher in /usr/bin. The same layout is
+          # built here, so that the program is tested the way it is installed.
+          APP="$ROOT/usr/lib/astrlink"
+          mkdir -p "$ROOT/usr/lib" "$ROOT/usr/bin"
+          mv "$ROOT/opt/astrlink" "$APP"
+          ln -s /usr/lib/astrlink/astrlink "$ROOT/usr/bin/astrlink"
+
+          for file in astrlink bin/astrlink-core bin/astrlink-cli \
+                      bin/astrlink-privacy-worker bin/astrlink-classifier-worker; do
+            if [ ! -x "$APP/$file" ]; then
+              echo "The package does not contain $file" >&2
+              exit 1
+            fi
+          done
+
+          # The program looks for the ONNX Runtime next to itself. The name of
+          # the file is read out of the program itself, so that a newer
+          # upstream release does not break this check.
+          RUNTIME=$(strings "$APP/astrlink" "$APP/bin/astrlink-core" 2>/dev/null |
+                    grep -oE 'onnxruntime/libonnxruntime\.so\.[0-9.]+' | sed -n '1p' || true)
+          if [ -z "$RUNTIME" ]; then
+            echo "Could not find the name of the ONNX Runtime in the program" >&2
+            exit 1
+          fi
+          if [ ! -f "$APP/$RUNTIME" ]; then
+            echo "The package does not contain $RUNTIME" >&2
+            exit 1
+          fi
+
+          # The runtime is a library of its own and has to be loadable.
+          python3 -c 'import ctypes, sys; library = ctypes.CDLL(sys.argv[1]);
+          library.OrtGetApiBase.restype = ctypes.c_void_p
+          sys.exit(0 if library.OrtGetApiBase() else 1)' "$APP/$RUNTIME"
+
+          # The command line program starts and tells how it is used.
+          "$APP/bin/astrlink-cli" --help | grep -q "Usage: astrlink" || {
+            echo "The packaged command line program does not start" >&2
+            exit 1
+          }
+
+          # The workers load the ONNX Runtime when they start. They have to
+          # get far enough to complain about their arguments; a missing
+          # library would be reported before that.
+          set +e
+          ASTRLINK_CI_NO_REMOTE_MODELS=1 ASTRLINK_CI_SYNTHETIC_MODELS_ONLY=1 \
+          ASTRLINK_ONNX_RUNTIME_PATH="$APP/$RUNTIME" \
+            "$APP/bin/astrlink-privacy-worker" \
+            >"$RUNNER_TEMP/worker.out" 2>"$RUNNER_TEMP/worker.err"
+          set -e
+          if grep -qi "cannot open shared object file" "$RUNNER_TEMP/worker.err"; then
+            echo "The worker could not load the ONNX Runtime" >&2
+            cat "$RUNNER_TEMP/worker.err" >&2
+            exit 1
+          fi
+
       - name: Stage PKGBUILD
         if: steps.compare.outputs.package_update == 'true'
         env:
           BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          DEB: ${{ steps.release.outputs.deb_name }}
           LATEST_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
@@ -171,9 +254,20 @@ jobs:
             sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
           fi
 
+          # The local file name of the source follows whatever capitalisation
+          # the release uses, so a future rename needs no hand-editing here.
+          # Only the part before the version number is written down; the
+          # version itself stays in the PKGBUILD.
+          PREFIX="$(printf '%s' "$DEB" | sed "s/${LATEST_VERSION}.*//")"
+          sed -i "s|^_deb_prefix=.*|_deb_prefix=\"$PREFIX\"|" PKGBUILD
+          grep -qxF "_deb_prefix=\"$PREFIX\"" PKGBUILD || {
+            echo "Failed to write _deb_prefix=$PREFIX" >&2
+            exit 1
+          }
+
       - name: Publish to AUR
         if: steps.compare.outputs.package_update == 'true'
-        uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
+        uses: KSXGitHub/github-actions-deploy-aur@084b0d9b15415bf9cdb65d44dad1efe37a354050 # v4.2.0
         with:
           pkgname: astrlink-bin
           pkgbuild: ./astrlink-bin/PKGBUILD
