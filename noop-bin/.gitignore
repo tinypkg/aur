@@ -5,3 +5,4 @@
 *.tar.xz
 src/
 pkg/
+LICENSE-*
