@@ -177,6 +177,21 @@ jobs:
             exit 1
           }
 
+          # The program links against GTK 4 and GStreamer, which the runner
+          # does not carry by itself.
+          libs=$(ldconfig -p)
+          missing=0
+          for lib in libgtk-4.so.1 libgraphene-1.0.so.0 libgstapp-1.0.so.0 \
+                     libgstaudio-1.0.so.0; do
+            grep -q "$lib" <<<"$libs" || missing=1
+          done
+          if [[ "$missing" == 1 ]]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends \
+              libgtk-4-1 libgstreamer1.0-0 libgstreamer-plugins-base1.0-0 \
+              libvulkan1
+          fi
+
           # Every library the program needs must be there; a missing one shows
           # up as "not found".
           missing=$(ldd "$RUNNER_TEMP/payload/Noop/Noop" | grep "not found" || true)
