@@ -2,7 +2,7 @@
 pkgname=noop-bin
 pkgver=1.0.7
 pkgrel=1
-pkgdesc="Your own AI team: runs Claude Code and Codex agents on your own machines and only asks when something really needs you"
+pkgdesc="Desktop client for Noop: your own team of Claude Code and Codex agents runs on your own machines and only asks when it really needs you"
 arch=('x86_64')
 url="https://huacnlee.github.io/noop/"
 license=('MIT')
