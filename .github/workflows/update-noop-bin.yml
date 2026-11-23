@@ -218,18 +218,32 @@ jobs:
         run: |
           set -euo pipefail
 
-          # The program is a graphical application and cannot show a window
-          # on the runner. It must still load all its libraries.
+          # The program is a graphical application and needs a display to start
+          # up. The upstream project runs it on a virtual one for the same
+          # check, so the runner gets one too.
+          if ! command -v xvfb-run >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends xvfb xauth
+          fi
+
           ROOT="$RUNNER_TEMP/root"
           rm -rf "$ROOT"
           mkdir -p "$ROOT"
           tar -xzf "$RUNNER_TEMP/$TARBALL" -C "$ROOT"
 
+          # The program must load all its libraries and open its window. A
+          # program that dies from a signal never got that far.
           set +e
-          timeout 30 "$ROOT/Noop/Noop" >"$RUNNER_TEMP/app.out" 2>"$RUNNER_TEMP/app.err"
+          timeout 30 xvfb-run -a "$ROOT/Noop/Noop" >"$RUNNER_TEMP/app.out" 2>"$RUNNER_TEMP/app.err"
+          code=$?
           set -e
           if grep -qi "cannot open shared object file" "$RUNNER_TEMP/app.err"; then
             echo "The packaged program could not load a library" >&2
+            cat "$RUNNER_TEMP/app.err" >&2
+            exit 1
+          fi
+          if [ "$code" -ge 128 ]; then
+            echo "The packaged program died from signal $((code - 128))" >&2
             cat "$RUNNER_TEMP/app.err" >&2
             exit 1
           fi
