@@ -155,17 +155,10 @@ jobs:
             sleep $((attempt * 5))
           done
 
-          # Do not assume a fixed control/data member or compression format.
-          control_member=$(bsdtar -tf "$RUNNER_TEMP/crommacode.deb" | awk '/^control[.]tar[.]/ { print; exit }')
-          data_member=$(bsdtar -tf "$RUNNER_TEMP/crommacode.deb" | awk '/^data[.]tar[.]/ { print; exit }')
-          [[ -n "$control_member" && -n "$data_member" ]] || {
-            echo "unexpected deb layout" >&2
-            exit 1
-          }
-          deb_version=$(bsdtar -xOf "$RUNNER_TEMP/crommacode.deb" "$control_member" |
-            bsdtar -xOjf - ./control | grep "^Version: " | cut -d" " -f2)
-          deb_arch=$(bsdtar -xOf "$RUNNER_TEMP/crommacode.deb" "$control_member" |
-            bsdtar -xOjf - ./control | grep "^Architecture: " | cut -d" " -f2)
+          # dpkg-deb ships on ubuntu-latest runners and handles any internal
+          # compression format, so avoid hard-coding control/data members.
+          deb_version=$(dpkg-deb --field "$RUNNER_TEMP/crommacode.deb" Version)
+          deb_arch=$(dpkg-deb --field "$RUNNER_TEMP/crommacode.deb" Architecture)
           [[ "$deb_version" == "$VERSION" ]] || {
             echo "deb version $deb_version does not match feed version $VERSION" >&2
             exit 1
@@ -175,8 +168,8 @@ jobs:
             exit 1
           }
 
-          bsdtar -xOf "$RUNNER_TEMP/crommacode.deb" "$data_member" |
-            bsdtar -xJf - -C "$RUNNER_TEMP" ./opt/crommacode/bees
+          dpkg-deb --fsys-tarfile "$RUNNER_TEMP/crommacode.deb" |
+            tar -xf - -C "$RUNNER_TEMP" ./opt/crommacode/bees
           chmod +x "$RUNNER_TEMP/opt/crommacode/bees"
           [[ "$("$RUNNER_TEMP/opt/crommacode/bees" providers 2>/dev/null | head -n1)" != "" ]]
 
