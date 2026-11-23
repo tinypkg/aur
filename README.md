@@ -31,6 +31,7 @@
 - **[creabim-bin](https://aur.archlinux.org/packages/creabim-bin)** - CreaBIM：免费开源的 BIM 建模软件，一个模型同时出三维视图、平面、剖面、立面、图纸、明细表、工程量和 IFC，另带 `creabim-cli` 命令行导出工具；离线可用，仅 x86_64（[源码](https://github.com/chopinregis/CreaBIM)）
 - **[crossbow-bin](https://aur.archlinux.org/packages/crossbow-bin)** - Crossbow：基于 mihomo 内核的代理客户端，Tauri 桌面界面，支持显式代理与 TUN 模式，安装后运行 `crossbow`（[源码](https://github.com/Richard-Zhang1019/Crossbow)）
 - **[cumora-bin](https://aur.archlinux.org/packages/cumora-bin)** - A workspace where AI teammates live, not visit. ([主页](https://cumora.ai))
+- **[cromma-code-bin](https://aur.archlinux.org/packages/cromma-code-bin)** - 给 Claude Code 和 Codex 用的“游戏化”桌面终端：实时观看 agent 工作、派遣 worker bees 并行任务（[官网](https://cromma.ai/code)）
 - **[dbx-bin](https://aur.archlinux.org/packages/dbx-bin)** - Open-source, lightweight, cross-platform database client (Tauri 2) ([主页](https://github.com/t8y2/dbx))
 - **[dbine-bin](https://aur.archlinux.org/packages/dbine-bin)** - DBine：支持 130+ SQL/NoSQL 数据库与云服务的桌面管理器，含笔记本、schema 对比、本地 AI 助手与 MCP server（[官网](https://dbine.com) · [源码](https://github.com/addlayer-io/dbine)）
 - **[deepseek-harness-desktop-bin](https://aur.archlinux.org/packages/deepseek-harness-desktop-bin)** - DeepSeek Harness 的 Electron 桌面外壳，内置 dsh 运行时（[主页](https://deepseek-harness.github.io/deepseek-harness/) · [发布](https://github.com/ZacharyZhang-NY/deepseek-harness)）
