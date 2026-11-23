@@ -217,10 +217,12 @@ jobs:
           sys.exit(0 if library.OrtGetApiBase() else 1)' "$APP/$RUNTIME"
 
           # The command line program starts and tells how it is used.
-          "$APP/bin/astrlink-cli" --help | grep -q "Usage: astrlink" || {
+          "$APP/bin/astrlink-cli" --help >"$RUNNER_TEMP/cli.out" 2>&1 || true
+          if ! grep -q "Usage: astrlink" "$RUNNER_TEMP/cli.out"; then
             echo "The packaged command line program does not start" >&2
+            cat "$RUNNER_TEMP/cli.out" >&2
             exit 1
-          }
+          fi
 
           # The workers load the ONNX Runtime when they start. They have to
           # get far enough to complain about their arguments; a missing
