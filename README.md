@@ -6,6 +6,7 @@
 
 - **[agent-access-bin](https://aur.archlinux.org/packages/agent-access-bin)** - Bitwarden Agent Access：在远端 agent 或脚本与密码库之间建一条端到端加密的隧道，按需取单条凭据，用 `aac run` 直接注入环境变量，不必把整个密码库交出去；命令名 `aac`，仅 x86_64（[源码](https://github.com/bitwarden/agent-access)）
 - **[agentero-desktop-bin](https://aur.archlinux.org/packages/agentero-desktop-bin)** - 人与 AI 共用的科研工作台：对 PDF 提问并给出引用出处，收藏研究资料，附带写作工具；桌面程序，命令名 `agentero`，x86_64 与 aarch64（[源码](https://github.com/poco-ai/Agentero)）
+- **[anser-client-bin](https://aur.archlinux.org/packages/anser-client-bin)** - 雁字（Anser）的原生客户端：自托管通知服务的收件箱、发送与投递记录；桌面程序，命令名 `anser-client`，仅 x86_64（[源码](https://github.com/ca-x/anser)）
 - **[api-fox-bin](https://aur.archlinux.org/packages/api-fox-bin)** - Apifox API 文档、调试、Mock 与自动化测试工具（[官网](https://apifox.com)）
 - **[astrlink-bin](https://aur.archlinux.org/packages/astrlink-bin)** - 给 AI Agent 用的本地隐私网关：请求发出前在本机检测敏感内容，支持 Codex、Claude、Grok 等订阅与主流厂商 API（[官网](https://astrlink.com) · [源码](https://github.com/Calcium-Ion/AstrLink)）
 - **[autocli-bin](https://aur.archlinux.org/packages/autocli-bin)** - Blazing fast, memory-safe CLI tool for fetching information from websites ([主页](https://github.com/nashsu/AutoCLI))
