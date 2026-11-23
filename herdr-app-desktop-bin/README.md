@@ -55,14 +55,15 @@ conflicts=('herdr-app-bin' 'herdr-app')
 应用首次启动时会提示获取 herdr-core。也可以用包管理器先装好，避免它自行下载到用户目录：
 
 ```sh
-yay -S hc-bin   # herdr-core（hc）
+yay -S herdr-core-bin   # 预编译版
+yay -S herdr-core       # 源码构建版
 ```
 
 ## 版本来源
 
 上游没有 GitHub Release，版本契约来自 `https://releases.herdr.dev/app/latest.json` 的 `version` 字段；下载 URL 是版本化的（`/app/<version>/herdr-app-linux-<arch>.tar.gz`），不是 mutable latest。
 
-manifest 里还有 `core_min`（本 app 要求的最低 herdr-core 版本），本包未把它写成硬依赖，以免在 hc-bin 暂时落后时阻塞安装。
+manifest 里还有 `core_min`（本 app 要求的最低 herdr-core 版本），本包未把它写成硬依赖，以免在 herdr-core 暂时落后时阻塞安装。
 
 `.github/workflows/update-herdr-app-desktop-bin.yml` 每 12 小时检查一次，并同时校验：
 

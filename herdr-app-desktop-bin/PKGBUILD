@@ -7,7 +7,8 @@ arch=('x86_64' 'aarch64')
 url="https://herdr.dev"
 license=('Apache-2.0')
 depends=('gcc-libs' 'glibc' 'hicolor-icon-theme' 'libglvnd' 'libxcb' 'libxkbcommon' 'libxkbcommon-x11' 'vulkan-icd-loader' 'wayland')
-optdepends=('hc-bin: herdr-core background server (the app offers to fetch it on first run)')
+optdepends=('herdr-core-bin: herdr-core background server (the app offers to fetch it on first run)'
+            'herdr-core: herdr-core background server, built from source')
 provides=("herdr-app=${pkgver}")
 # Installs the same files as herdr-app-bin, so the two must not coexist.
 conflicts=('herdr-app-bin' 'herdr-app')
