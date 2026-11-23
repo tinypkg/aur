@@ -6,9 +6,12 @@ pkgdesc="Desktop client for Noop: your own team of Claude Code and Codex agents 
 arch=('x86_64')
 url="https://huacnlee.github.io/noop/"
 license=('MIT')
+# The program links against GTK 4 and the base of GStreamer (libgstapp,
+# libgstaudio); the plug-ins that play the videos are optional.
 depends=('cairo' 'dbus' 'fontconfig' 'gdk-pixbuf2' 'gcc-libs' 'glib2' 'glibc'
-         'graphene' 'gstreamer' 'gtk4' 'harfbuzz' 'libglvnd' 'libx11' 'libxcb'
-         'libxkbcommon' 'pango' 'vulkan-icd-loader' 'wayland')
+         'graphene' 'gst-plugins-base-libs' 'gstreamer' 'gtk4' 'harfbuzz'
+         'libglvnd' 'libx11' 'libxcb' 'libxkbcommon' 'pango'
+         'vulkan-icd-loader' 'wayland')
 optdepends=('gst-plugins-good: play MP4 videos and open videos from the hub'
             'gst-libav: play H.264 videos')
 options=('!strip' '!debug')
