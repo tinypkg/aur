@@ -95,6 +95,7 @@
 - **[neoko-terminal-desktop-bin](https://aur.archlinux.org/packages/neoko-terminal-desktop-bin)** - 小橘终端桌面客户端：本地终端 + Relay 配对远程连接，GTK 4，凭据存系统钥匙环（[主页](https://github.com/lazycat-contrib/lazycat-neko-webshell)）
 - **[nmem-cli](https://aur.archlinux.org/packages/nmem-cli)** - CLI and TUI for Nowledge Mem - AI memory management ([主页](https://mem.nowledge.co))
 - **[nowledge-mem-bin](https://aur.archlinux.org/packages/nowledge-mem-bin)** - Desktop app for Nowledge Mem - AI memory and context management ([主页](https://mem.nowledge.co))
+- **[noop-bin](https://aur.archlinux.org/packages/noop-bin)** - 自己的 AI 团队：在自己的电脑上跑一支 Claude Code 和 Codex 小队，按你以往的判断方式做事，只在真需要你时才来问一句；客户端程序，命令名 `noop-client`，仅 x86_64（[官网](https://huacnlee.github.io/noop/) · [源码](https://github.com/huacnlee/noop)）
 - **[ocd-bin](https://aur.archlinux.org/packages/ocd-bin)** - Self-hosted Cloudflare Workers 兼容平台 open-compute 的 CLI，单 Rust 二进制集成 Workers/KV/D1/R2/DO/Queues 等（[官网](https://open-compute.dev) · [源码](https://github.com/elliothux/open-compute)）
 - **[octoscode-bin](https://aur.archlinux.org/packages/octoscode-bin)** - Octoscode - Octos's Coding Agent ([主页](https://github.com/octos-org/octoscode))
 - **[owl-dictionary-bin](https://aur.archlinux.org/packages/owl-dictionary-bin)** - Owl 词典：支持 MDX/MDD 词典文件的 Web 词典应用，GTK4 桌面端；x86_64 与 aarch64 均可用（[源码](https://github.com/ca-x/owl)）
