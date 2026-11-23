@@ -199,11 +199,18 @@ jobs:
             for path in usr/bin/agentero usr/lib/Agentero/cli/agentero-cli \
                         usr/lib/Agentero/pdfium/libpdfium.so \
                         usr/lib/Agentero/adapters/manifest.json \
-                        usr/share/applications/Agentero.desktop \
-                        usr/share/icons/hicolor/256x256@2/apps/agentero.png \
-                        usr/share/icons/hicolor/32x32/apps/agentero.png; do
+                        usr/share/applications/Agentero.desktop; do
               grep -qE "(^| )(\\./)?${path}( -> .*)?$" <<<"$contents" || {
                 echo "$deb does not install $path" >&2
+                exit 1
+              }
+            done
+
+            # The larger icons carry an "@2" in their name. Some releases
+            # already use the plain name, so both spellings are accepted.
+            for icon in 256x256 1024x1024 32x32; do
+              grep -qE "(^| )(\\./)?usr/share/icons/hicolor/${icon}(@2)?/apps/agentero\.png$" <<<"$contents" || {
+                echo "$deb does not install the ${icon} icon" >&2
                 exit 1
               }
             done
