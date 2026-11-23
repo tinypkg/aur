@@ -11,7 +11,7 @@ provides=('astrlink')
 conflicts=('astrlink')
 options=('!strip' '!debug')
 
-source_x86_64=("AstrLink_${pkgver}_amd64.deb::https://github.com/Calcium-Ion/AstrLink/releases/download/v${pkgver}/AstrLink_${pkgver}_amd64.deb")
+source_x86_64=("AstrLink_${pkgver}_amd64.deb::https://github.com/Calcium-Ion/AstrLink/releases/download/v${pkgver}/astrlink_${pkgver}_amd64.deb")
 sha256sums_x86_64=('SKIP')
 noextract=("AstrLink_${pkgver}_amd64.deb")
 
