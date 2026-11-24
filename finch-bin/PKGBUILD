@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=finch-bin
-pkgver=1.8.1
+pkgver=1.8.2
 pkgrel=1
 pkgdesc="Finch: desktop client for the Finch agent platform, with cross-session memory, skills and mini tools"
 arch=('x86_64')
