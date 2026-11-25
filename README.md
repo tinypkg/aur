@@ -86,6 +86,7 @@
 - **[minke-bin](https://aur.archlinux.org/packages/minke-bin)** - Minke desktop agent powered by DeepSeek Harness（[主页](https://github.com/lencx/Minke)）
 - **[mygo-cloudmusic-bin](https://aur.archlinux.org/packages/mygo-cloudmusic-bin)** - MyGo 云音乐：第三方网易云音乐原生客户端，双架构（[官网](https://music.egoist.dev) · [源码](https://github.com/egoist/mygo-cloudmusic)）
 - **[mygo-music-bin](https://aur.archlinux.org/packages/mygo-music-bin)** - 原生音乐播放器，界面基于 WebView，支持插件扩展与 ALSA / PulseAudio 输出，提供 x86_64 与 aarch64（[主页](https://github.com/egoist/mygo-music)）
+- **[mieru-bin](https://aur.archlinux.org/packages/mieru-bin)** - Mieru 代理客户端：安全的 SOCKS5 / HTTP / HTTPS 代理客户端，配置用 `mieru apply config` 导入，`mieru start` 在后台运行；静态二进制，不依赖任何库，x86_64 与 aarch64（[源码](https://github.com/enfein/mieru)）
 - **[mimo-code-bin](https://aur.archlinux.org/packages/mimo-code-bin)** - 小米面向开发者的新一代 AI 编程助手，支持无限上下文 ([主页](https://mimo.xiaomi.com/mimocode))
 - **[mise-bin](https://aur.archlinux.org/packages/mise-bin)** - dev tools, env vars, task runner ([主页](https://github.com/jdx/mise))
 - **[mise-musl-bin](https://aur.archlinux.org/packages/mise-musl-bin)** - Portable musl build of mise for dev tools, environment variables, and task running ([主页](https://github.com/jdx/mise))
