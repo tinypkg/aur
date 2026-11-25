@@ -180,12 +180,13 @@ jobs:
               fail "$deb does not install usr/bin/mieru"
 
             # The program must be built for the architecture of its package.
+            # The runner has no bsdtar, but dpkg-deb unpacks the package of
+            # Debian whatever compression its payload uses.
             rm -rf "$RUNNER_TEMP/unpack"
             mkdir -p "$RUNNER_TEMP/unpack"
-            data_archive=$(bsdtar -tf "$RUNNER_TEMP/payload/$deb" | sed -n '/^data\.tar\./{p;q;}')
-            [ -n "$data_archive" ] || fail "$deb holds no data.tar.*"
-            bsdtar -xOf "$RUNNER_TEMP/payload/$deb" "$data_archive" |
-              bsdtar --no-same-owner -xf - -C "$RUNNER_TEMP/unpack"
+            dpkg-deb --extract "$RUNNER_TEMP/payload/$deb" "$RUNNER_TEMP/unpack"
+            [ -x "$RUNNER_TEMP/unpack/usr/bin/mieru" ] ||
+              fail "$deb does not unpack a program at usr/bin/mieru"
 
             header=$(LC_ALL=C readelf -h "$RUNNER_TEMP/unpack/usr/bin/mieru")
             case "$arch" in
@@ -223,10 +224,9 @@ jobs:
           deb="mieru_${LATEST_VERSION}_amd64.deb"
           rm -rf "$RUNNER_TEMP/run"
           mkdir -p "$RUNNER_TEMP/run"
-          data_archive=$(bsdtar -tf "$RUNNER_TEMP/payload/$deb" | sed -n '/^data\.tar\./{p;q;}')
-          bsdtar -xOf "$RUNNER_TEMP/payload/$deb" "$data_archive" |
-            bsdtar --no-same-owner -xf - -C "$RUNNER_TEMP/run"
+          dpkg-deb --extract "$RUNNER_TEMP/payload/$deb" "$RUNNER_TEMP/run"
           program="$RUNNER_TEMP/run/usr/bin/mieru"
+          [ -x "$program" ] || fail "$deb does not unpack a program at usr/bin/mieru"
 
           # The program is a static build: it must run without any library
           # of the system. A static program has no interpreter and asks for
