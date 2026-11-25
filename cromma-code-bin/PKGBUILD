@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=cromma-code-bin
-pkgver=0.4.5
+pkgver=0.4.7
 pkgrel=1
 pkgdesc="The playful desktop terminal for Claude Code and Codex: watch agents work as a game and dispatch worker bees"
 arch=('x86_64')
