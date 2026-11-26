@@ -1,8 +1,8 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=bowel-bin
-pkgver=0.4.8
-pkgrel=2
+pkgver=0.4.9
+pkgrel=1
 pkgdesc="Desktop client for the mihomo proxy core, for non-commercial use"
 arch=('x86_64' 'aarch64')
 url="https://github.com/21stware/bowel"
