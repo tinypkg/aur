@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=mingle-bin
-pkgver=0.4.12
+pkgver=0.4.13
 pkgrel=1
 pkgdesc="Bring your agent companion into the chat apps you already use: it runs on your machine, no server needed"
 arch=('x86_64' 'aarch64')
