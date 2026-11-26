@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=creabim-bin
-pkgver=1.1.1
+pkgver=1.2.0
 pkgrel=1
 pkgdesc="Free, open-source BIM modeller: one model for 3D, plans, sections, elevations, sheets, schedules, quantities and IFC"
 arch=('x86_64')
@@ -16,7 +16,7 @@ options=('!strip' '!debug')
 
 # Upstream puts the build date in the file name, so the version alone does not
 # name the asset; the workflow rewrites this line together with pkgver.
-_date=2026-11-11
+_date=2026-11-26
 _deb="CreaBIM-${pkgver}-${_date}-linux-x64.deb"
 
 source=("${_deb}::https://github.com/chopinregis/CreaBIM/releases/download/v${pkgver}/${_deb}")
