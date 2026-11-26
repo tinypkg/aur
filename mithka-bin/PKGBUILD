@@ -1,6 +1,6 @@
 # Maintainer: czyt <czytcn@gmail.com>
 pkgname=mithka-bin
-pkgver=1.12.8
+pkgver=1.13.10
 pkgrel=1
 pkgdesc="A fast, compact Telegram client built with Flutter and TDLib"
 arch=('x86_64' 'aarch64')
@@ -13,7 +13,7 @@ conflicts=('mithka')
 options=('!strip' '!debug')
 
 # The release date (20261115) is part of the asset file names.
-_tagdate="20261115"
+_tagdate=20261126
 source=(
     "mithka-${pkgver}-LICENSE::https://raw.githubusercontent.com/iebb/mithka/v${pkgver}/LICENSE"
     "mithka-${pkgver}-icon::https://raw.githubusercontent.com/iebb/mithka/v${pkgver}/assets/app_icon.png"
