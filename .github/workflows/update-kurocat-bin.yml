@@ -1,0 +1,312 @@
+name: Update kurocat-bin Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g., 1.4.7). Leave empty to use the latest stable GitHub release."
+        required: false
+        type: string
+      force:
+        description: "Force a packaging-only pkgrel bump"
+        required: false
+        default: false
+      allow_downgrade:
+        description: "Allow an explicitly requested version downgrade"
+        required: false
+        default: false
+  schedule:
+    - cron: "31 */12 * * *"
+
+concurrency:
+  group: aur-kurocat-bin
+  cancel-in-progress: false
+
+jobs:
+  update-pkgbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Resolve the release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          fail() { echo "$1" >&2; exit 1; }
+
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION="${INPUT_VERSION#v}"
+            API_URL="https://api.github.com/repos/chanke17/KuroCat/releases/tags/v${VERSION}"
+          else
+            API_URL='https://api.github.com/repos/chanke17/KuroCat/releases/latest'
+          fi
+
+          release=$(curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 120 \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "$API_URL") || fail "Could not read the release from GitHub"
+
+          TAG=$(jq -er '.tag_name | strings | select(length > 1)' <<<"$release") ||
+            fail "Release has no tag name"
+          VERSION="${TAG#v}"
+          [[ "$TAG" == "v${VERSION}" && "$VERSION" =~ ^[0-9]+([.][0-9]+)+$ ]] ||
+            fail "Unsupported release tag: $TAG"
+          jq -e '.draft == false and .prerelease == false' <<<"$release" >/dev/null ||
+            fail "Release $TAG is a draft or a prerelease"
+
+          # The Debian packages are the payload of this package. The release
+          # also carries .tar.gz, .zip, .exe and .dmg builds for other systems,
+          # and a release without the .debs has to fail loudly rather than
+          # publish something else.
+          for arch in amd64 arm64; do
+            deb="KuroCat-Linux-${arch}.deb"
+            digest=$(jq -r --arg n "$deb" '.assets[] | select(.name == $n) | .digest // ""' <<<"$release")
+            [[ "$digest" == sha256:* ]] || fail "Release $TAG does not carry $deb"
+            jq -e --arg n "$deb" \
+              '.assets | any(.name == $n and .state == "uploaded" and .size > 0)' \
+              <<<"$release" >/dev/null ||
+              fail "Release $TAG carries no usable $deb"
+          done
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Compare release with PKGBUILD
+        id: compare
+        env:
+          ALLOW_DOWNGRADE: ${{ inputs.allow_downgrade }}
+          FORCE_UPDATE: ${{ inputs.force }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          CURRENT_VERSION=$(sed -n 's/^pkgver=//p' kurocat-bin/PKGBUILD)
+          [[ -n "$CURRENT_VERSION" ]] || { echo 'PKGBUILD has no pkgver' >&2; exit 1; }
+          CURRENT_REL=$(sed -n 's/^pkgrel=//p' kurocat-bin/PKGBUILD)
+          [[ -n "$CURRENT_REL" ]] || { echo 'PKGBUILD has no pkgrel' >&2; exit 1; }
+
+          # Compare against what AUR actually serves: a run whose publication
+          # failed after the GitHub copy moved on must be retried, not skipped
+          # as "already up to date".
+          AUR_VERSION=$(
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              "https://aur.archlinux.org/rpc/?v=5&type=info&arg=kurocat-bin" |
+              jq -er 'if .resultcount == 0 then "" else .results[0].Version end'
+          )
+          AHEAD_REF="$LATEST_VERSION-$CURRENT_REL"
+          if [[ -n "$AUR_VERSION" && "$AUR_VERSION" != "$AHEAD_REF" ]] && \
+             [ "$(printf '%s\n%s\n' "$AUR_VERSION" "$AHEAD_REF" | sort -V | head -n1)" = "$AHEAD_REF" ]; then
+            echo "AUR is ahead of the GitHub state; reconcile before publishing" >&2
+            exit 1
+          fi
+
+          NEEDS_UPDATE=false
+          BUMP_REL=false
+          if [[ "$LATEST_VERSION" == "$CURRENT_VERSION" ]]; then
+            if [[ "$FORCE_UPDATE" == true ]]; then
+              NEEDS_UPDATE=true
+              BUMP_REL=true
+            elif [[ "$AUR_VERSION" != "$CURRENT_VERSION-$CURRENT_REL" ]]; then
+              # Also the first publication, when AUR has no such package yet.
+              NEEDS_UPDATE=true
+              echo "Publishing the existing package state to AUR"
+            fi
+          else
+            OLDEST_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | head -n1)
+            if [[ "$OLDEST_VERSION" != "$CURRENT_VERSION" ]]; then
+              [[ -n "$REQUESTED_VERSION" && "$ALLOW_DOWNGRADE" == true ]] || {
+                echo "Refusing downgrade from $CURRENT_VERSION to $LATEST_VERSION" >&2
+                exit 1
+              }
+            fi
+            NEEDS_UPDATE=true
+          fi
+
+          echo "needs_update=$NEEDS_UPDATE" >> "$GITHUB_OUTPUT"
+          echo "bump_rel=$BUMP_REL" >> "$GITHUB_OUTPUT"
+
+      - name: Verify the release payload
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          fail() { echo "$1" >&2; exit 1; }
+
+          BASE="https://github.com/chanke17/KuroCat/releases/download/v${LATEST_VERSION}"
+          mkdir -p "$RUNNER_TEMP/payload"
+
+          for arch in amd64 arm64; do
+            deb="KuroCat-Linux-${arch}.deb"
+
+            curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 600 \
+              "$BASE/$deb" --output "$RUNNER_TEMP/payload/$deb"
+
+            # GitHub tells the checksum of every file of the release.
+            digest=$(curl --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 120 \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H 'Accept: application/vnd.github+json' \
+              "https://api.github.com/repos/chanke17/KuroCat/releases/tags/v${LATEST_VERSION}" |
+              jq -er --arg n "$deb" '.assets[] | select(.name == $n) | .digest')
+            got=$(sha256sum "$RUNNER_TEMP/payload/$deb" | cut -d' ' -f1)
+            [ "$got" = "${digest#sha256:}" ] ||
+              fail "Checksum mismatch for $deb: got $got want ${digest#sha256:}"
+
+            deb_version=$(dpkg-deb --field "$RUNNER_TEMP/payload/$deb" Version)
+            deb_arch=$(dpkg-deb --field "$RUNNER_TEMP/payload/$deb" Architecture)
+            [ "$deb_version" = "$LATEST_VERSION" ] ||
+              fail "$deb carries Version $deb_version, expected $LATEST_VERSION"
+            [ "$deb_arch" = "$arch" ] ||
+              fail "$deb carries Architecture $deb_arch, expected $arch"
+
+            # Read the listing in full first: piping into `grep -q` would kill
+            # dpkg-deb with SIGPIPE, which pipefail then reports as a failure.
+            contents=$(dpkg-deb --contents "$RUNNER_TEMP/payload/$deb")
+            grep -qE '\./usr/bin/kurocat$' <<<"$contents" ||
+              fail "$deb does not install usr/bin/kurocat"
+            grep -qE '\./usr/share/applications/kurocat\.desktop$' <<<"$contents" ||
+              fail "$deb does not install the desktop entry of the program"
+
+            # The program must be built for the architecture of its package.
+            # The runner has no bsdtar, but dpkg-deb unpacks the package of
+            # Debian whatever compression its payload uses.
+            rm -rf "$RUNNER_TEMP/unpack"
+            mkdir -p "$RUNNER_TEMP/unpack"
+            dpkg-deb --extract "$RUNNER_TEMP/payload/$deb" "$RUNNER_TEMP/unpack"
+            [ -x "$RUNNER_TEMP/unpack/usr/bin/kurocat" ] ||
+              fail "$deb does not unpack a program at usr/bin/kurocat"
+
+            header=$(LC_ALL=C readelf -h "$RUNNER_TEMP/unpack/usr/bin/kurocat")
+            case "$arch" in
+              amd64) machine='X86-64' ;;
+              arm64) machine='AArch64' ;;
+            esac
+            grep -q "Machine:.*${machine}" <<<"$header" ||
+              fail "The program of $deb is not a ${machine} executable"
+
+            echo "verified $deb ($deb_version, $deb_arch, $machine)"
+          done
+
+          # The Debian package carries no copyright file, so the licence comes
+          # from the repository of the release.
+          curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 \
+            --connect-timeout 15 --max-time 120 \
+            "https://github.com/chanke17/KuroCat/raw/refs/tags/v${LATEST_VERSION}/LICENSE" \
+            --output "$RUNNER_TEMP/payload/LICENSE"
+          grep -q "MIT License" "$RUNNER_TEMP/payload/LICENSE" ||
+            fail "The licence of release v${LATEST_VERSION} is not the MIT licence"
+
+      - name: Run the packaged program
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          fail() { echo "$1" >&2; exit 1; }
+
+          # The runner is an x86_64 machine, so that is the package to try.
+          deb="KuroCat-Linux-amd64.deb"
+          rm -rf "$RUNNER_TEMP/run"
+          mkdir -p "$RUNNER_TEMP/run"
+          dpkg-deb --extract "$RUNNER_TEMP/payload/$deb" "$RUNNER_TEMP/run"
+          program="$RUNNER_TEMP/run/usr/bin/kurocat"
+          [ -x "$program" ] || fail "$deb does not unpack a program at usr/bin/kurocat"
+
+          # The program is built for GTK 3 and Cairo; the runner carries
+          # neither. The libraries are only installed when they are really
+          # missing, so the check also runs where they are already there.
+          missing=$(ldd "$program" | grep "not found" || true)
+          if [ -n "$missing" ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends \
+              libgtk-3-0t64 libcairo2 libx11-6 libxi6 libxext6
+
+            missing=$(ldd "$program" | grep "not found" || true)
+            if [ -n "$missing" ]; then
+              echo "The program misses libraries:" >&2
+              echo "$missing" >&2
+              exit 1
+            fi
+          fi
+
+          # The program reports its own version without a display.
+          version=$("$program" --version) || fail "The program of $deb does not run"
+          [ "$version" = "KuroCat $LATEST_VERSION" ] ||
+            fail "The program of $deb reports version $version, expected KuroCat $LATEST_VERSION"
+
+          echo "the program of $deb runs and reports version $version"
+
+      - name: Update PKGBUILD
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd kurocat-bin
+
+          if [[ "$BUMP_REL" == true ]]; then
+            CURRENT_REL=$(sed -n 's/^pkgrel=//p' PKGBUILD)
+            [[ "$CURRENT_REL" =~ ^[0-9]+$ ]] || { echo "Invalid pkgrel: $CURRENT_REL" >&2; exit 1; }
+            sed -i "s/^pkgrel=.*/pkgrel=$((CURRENT_REL + 1))/" PKGBUILD
+          else
+            sed -i "s/^pkgver=.*/pkgver=$LATEST_VERSION/" PKGBUILD
+            sed -i 's/^pkgrel=.*/pkgrel=1/' PKGBUILD
+          fi
+
+      - name: Publish to AUR
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@084b0d9b15415bf9cdb65d44dad1efe37a354050 # v4.2.0
+        with:
+          pkgname: kurocat-bin
+          pkgbuild: ./kurocat-bin/PKGBUILD
+          updpkgsums: true
+          post_process: bash /github/workspace/.github/scripts/prune-aur-workdir.sh .
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.compare.outputs.bump_rel == 'true' && format('Bump pkgrel for version {0}', steps.release.outputs.version) || format('Update to version {0}', steps.release.outputs.version) }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519
+
+      - name: Commit successfully published version to GitHub
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          BUMP_REL: ${{ steps.compare.outputs.bump_rel }}
+          LATEST_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add kurocat-bin/PKGBUILD
+          # Publishing the state GitHub already has changes nothing here.
+          if git diff --cached --quiet; then
+            echo "AUR publication required no GitHub metadata change."
+            exit 0
+          fi
+          if [[ "$BUMP_REL" == true ]]; then
+            git commit -m "Bump pkgrel for kurocat-bin $LATEST_VERSION"
+          else
+            git commit -m "Update kurocat-bin to version $LATEST_VERSION"
+          fi
+          git pull --rebase origin main
+          git push

@@ -70,6 +70,7 @@
 - **[kiri-desktop-bin](https://aur.archlinux.org/packages/kiri-desktop-bin)** - Kiri 容器运行时完整版：无需 VM、直接用宿主内核跑容器并提供 Docker API（含 GUI 与自带 docker CLI/Compose/buildx，支持 x86_64 与 aarch64）（[官网](https://runkiri.com) · [源码](https://github.com/libracoder/kiri)）
 - **[kiri-desktop-lite-bin](https://aur.archlinux.org/packages/kiri-desktop-lite-bin)** - Kiri 容器运行时纯引擎版：Docker API on `/run/kiri/docker.sock`，无 GUI 无自带 CLI（[官网](https://runkiri.com) · [源码](https://github.com/libracoder/kiri)）
 - **[kudu-app-bin](https://aur.archlinux.org/packages/kudu-app-bin)** - Free Windows, Mac and Linux cleaner, scanner, and more. ([主页](https://github.com/AdventDevInc/kudu))
+- **[kurocat-bin](https://aur.archlinux.org/packages/kurocat-bin)** - KuroCat 黑猫桌宠：全状态捕获键盘与鼠标，2.5D 球面转头、捕猎大圆眼与抚摸互动，60fps 透明窗口，原生 C++ 与 GTK 3，x86_64 与 aarch64（[源码](https://github.com/chanke17/KuroCat)）
 - **[lig-bin](https://aur.archlinux.org/packages/lig-bin)** - 终端里的 IDE 式自动补全：边输入边在光标下方弹出子命令、选项、分支、包名与路径提示，支持 zsh、bash、fish；静态二进制，装完运行 `lig install` 接入你的 shell（[主页](https://github.com/KevenGoncalves/lig)）
 - **[linger-bin](https://aur.archlinux.org/packages/linger-bin)** - Linger：跑在本机上的个人 AI agent，内置本地模型，把邮件、聊天和会议变成共享记忆；首次启动会自己装好 Postgres、Node 等运行组件，Electron 桌面应用，仅 x86_64（[源码](https://github.com/simplexai-labs/linger)）
 - **[little-snitch-bin](https://aur.archlinux.org/packages/little-snitch-bin)** - Little Snitch informs you whenever a program attempts to establish an outgoing Internet connection ([主页](https://obdev.at/products/littlesnitch))
