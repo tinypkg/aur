@@ -2,7 +2,7 @@
 
 pkgname=bowel-bin
 pkgver=0.4.8
-pkgrel=1
+pkgrel=2
 pkgdesc="Desktop client for the mihomo proxy core, for non-commercial use"
 arch=('x86_64' 'aarch64')
 url="https://github.com/21stware/bowel"
