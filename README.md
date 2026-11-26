@@ -17,6 +17,7 @@
 - **[blink1control2](https://aur.archlinux.org/packages/blink1control2-bin)** - Blink1Control GUI 用于控制 blink(1) USB RGB LED 设备 ([主页](https://github.com/todbot/Blink1Control2))
 - **[bombadil-bin](https://aur.archlinux.org/packages/bombadil-bin)** - 面向 Web 与终端界面的属性测试工具（property-based testing），静态二进制，x86_64 与 aarch64（[主页](https://github.com/antithesishq/bombadil) · [文档](https://antithesishq.github.io/bombadil/)）
 - **[boo-bin](https://aur.archlinux.org/packages/boo-bin)** - A GNU screen style terminal multiplexer built on libghostty ([主页](https://github.com/coder/boo))
+- **[bowel-bin](https://aur.archlinux.org/packages/bowel-bin)** - bowel：mihomo 内核的桌面客户端，Go 编写、原生 GPU 渲染不用 WebView，按用途分组的路由、订阅与节点管理，另有命令行、TUI 与守护进程；仅限非商业用途，x86_64 与 aarch64（[源码](https://github.com/21stware/bowel)）
 - **[cc-mesh-bin](https://aur.archlinux.org/packages/cc-mesh-bin)** - Claude Code / Codex 本地 Tauri 桌面代理网关，支持 Anthropic Messages ↔ OpenAI 兼容协议转换、模型映射和多端点轮换/熔断 ([主页](https://github.com/VkRainB/ccMesh))
 - **[cc-switch-bin](https://aur.archlinux.org/packages/cc-switch-bin)** - Claude Code & Codex 供应商配置管理工具 ([主页](https://github.com/farion1231/cc-switch))
 - **[cc-switch-cli](https://aur.archlinux.org/packages/cc-switch-cli)** - Cross-platform CLI assistant for Claude Code, Codex & Gemini CLI ([主页](https://github.com/SaladDay/cc-switch-cli))
