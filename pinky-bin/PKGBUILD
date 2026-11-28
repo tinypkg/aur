@@ -1,7 +1,7 @@
 # Maintainer: czyt <czytcn@gmail.com>
 
 pkgname=pinky-bin
-pkgver=2026.1128.1
+pkgver=2026.1128.3
 pkgrel=1
 pkgdesc="Let AI agents use an Android phone or iPhone, with you approving the risky steps: drives the phone over MCP, records every run, and brings its own adb"
 arch=('x86_64')
